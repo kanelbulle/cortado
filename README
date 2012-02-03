@@ -1,5 +1,7 @@
 This is a Minijava compiler written in java.
 
-Minijava specification:
+-- Minijava specification --
 http://www.csc.kth.se/utbildning/kth/kurser/DD2488/komp11/project/newgrammar.pdf
 
+-- Resources --
+* http://www.cs.auckland.ac.nz/~bruce-h/lectures/330ChaptersPDF/
