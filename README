@@ -3,5 +3,9 @@ This is a Minijava compiler written in java.
 -- Minijava specification --
 http://www.csc.kth.se/utbildning/kth/kurser/DD2488/komp11/project/newgrammar.pdf
 
+-- Tools used --
+* http://jflex.de
+* http://www2.cs.tum.edu/projects/cup
+
 -- Resources --
 * http://www.cs.auckland.ac.nz/~bruce-h/lectures/330ChaptersPDF/
