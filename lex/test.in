@@ -1,4 +1,3 @@
-hej
 (test)
 1 * 1
 1*1
@@ -7,4 +6,26 @@ hej
 +
 
 -
-fail
+
+/* string test */
+"the"
+"quick brown fox"
+"234 squirrels ate 5 cookies"
+""
+"33"
+
+/* variable name test */
+varname
+var_name
+VarName
+v33N4m3
+
+/* datatypes */
+int
+boolean
+int[10]
+
+/* terminals */
+class
+if
+else
