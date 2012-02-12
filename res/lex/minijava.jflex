@@ -46,8 +46,8 @@ import java_cup.runtime.*;
 /* ---------------- SCANNING ---------------- */
 
 %{
-	public Symbol token( int tokenType ) {
-		System.err.println("Obtain token \"" + yytext() + "\"" );
+	public Symbol token(int tokenType) {
+		System.err.println("<token>\t -- \"" + yytext() + "\"" );
 		return new Symbol( tokenType, yychar, yychar + yytext().length(), yytext() );
 	}
 %}
@@ -71,66 +71,60 @@ WS = [ \t\f]
 COMMENT   = "/*" [^*] ~"*/" | "/*" "*"+ "/"
 
 %% /* ---------------- LEXICAL RULES ---------------- */
-
-"class" 					{ System.out.println("<class>"); return token(Sym.PLUS); }
-"public static void main"	{ yybegin(MAIN); System.out.println("<main>"); return token(Sym.PLUS); }
-	<MAIN> "String"			{ yybegin(YYINITIAL); System.out.println("<main: String>"); return token(Sym.PLUS); }
-"public" 					{ System.out.println("<public>"); return token(Sym.PLUS); }
-
+ 
+"class" 						{ return token(Sym.CLASS); }
+//"public static void main"		{ yybegin(MAIN); return token(Sym.); }
+//	<MAIN> "String"				{ yybegin(YYINITIAL); return token(Sym.); }
+"public" 						{ return token(Sym.PUBLIC); }
 
 /* ----- Comments (skipped) ----- */
-{COMMENT} 					{ System.out.println("<comment>\t -- " + yytext()); }
-
+{COMMENT} 					{ }
 
 /* ----- Statements ----- */
-"if" 						{ System.out.println("<if>"); return token(Sym.PLUS); }
-"else" 						{ System.out.println("<else>"); return token(Sym.PLUS); }
-"while" 					{ System.out.println("<while>"); return token(Sym.PLUS); }
-"System.out.println" 		{ System.out.println("<println>"); return token(Sym.PLUS); }
-
+"if" 							{ return token(Sym.IF); }
+"else" 							{ return token(Sym.ELSE); }
+"while" 						{ return token(Sym.WHILE); }
+"System.out.println" 			{ return token(Sym.SYSOUT); }
 
 /* ----- Expressions ----- */
-"length"					{ System.out.println("<length>"); return token(Sym.PLUS); }
+"length"						{ return token(Sym.LENGTH); }
 //int_lit //TODO: what is int_lit?
-"true"						{ System.out.println("<true>"); return token(Sym.PLUS); }
-"false"						{ System.out.println("<false>"); return token(Sym.PLUS); }
-"this"						{ System.out.println("<this>"); return token(Sym.PLUS); }
-//new int [Exp]				{ System.out.println("<>"); return token(Sym.PLUS); }
-// new id()					{ System.out.println("<>"); return token(Sym.PLUS); }
-"!"							{ System.out.println("<bang>"); return token(Sym.PLUS); }
+"true"							{ return token(Sym.TRUE); }
+"false"							{ return token(Sym.FALSE); }
+"this"							{ return token(Sym.THIS); }
+//new int [Exp]					{ return token(Sym.); }
+// new id()						{ return token(Sym.); }
+"!"								{ return token(Sym.BANG); }
 
-
-/* ----- Datatypes: int, int[], boolean, "identifier" ----- */
-"int" 							{ System.out.println("<int>"); return token(Sym.PLUS); }
-int\[([0-9]+ | [a-zA-Z0_9]+)\] 	{ System.out.println("<int[X]>\t -- X = " + yytext()); return token(Sym.PLUS); }
-"boolean" 						{ System.out.println("<boolean>"); return token(Sym.PLUS); }
-[a-zA-Z]([0-9a-zA-Z] | _)* 		{ System.out.println("<identifier>\t -- " + yytext()); return token(Sym.PLUS); }
-
+/* ----- Datatypes ----- */
+"int" 							{ return token(Sym.INT); }
+int\[([0-9]+ | [a-zA-Z0_9]+)\] 	{ return token(Sym.INT_ARRAY); }
+"boolean" 						{ return token(Sym.BOOLEAN); }
+[a-zA-Z]([0-9a-zA-Z] | _)* 		{ return token(Sym.IDENTIFIER); }
 
 /* Operators */
-"(" 		{ System.out.println("<operator>\t -- " + yytext()); return token(Sym.LPAREN); }
-")" 		{ System.out.println("<operator>\t -- " + yytext()); return token(Sym.RPAREN); }
-"[" 		{ System.out.println("<operator>\t -- " + yytext()); return token(Sym.LBRACKET); }
-"]" 		{ System.out.println("<operator>\t -- " + yytext()); return token(Sym.RBRACKET); }
-"{" 		{ System.out.println("<operator>\t -- " + yytext()); return token(Sym.LCURLY); }
-"}" 		{ System.out.println("<operator>\t -- " + yytext()); return token(Sym.RCURLY); }
-"&&" 		{ System.out.println("<operator>\t -- " + yytext()); return token(Sym.AND); }
-"<" 		{ System.out.println("<operator>\t -- " + yytext()); return token(Sym.LESS); }
-"+" 		{ System.out.println("<operator>\t -- " + yytext()); return token(Sym.PLUS); }
-"-" 		{ System.out.println("<operator>\t -- " + yytext()); return token(Sym.MINUS); }
-"*" 		{ System.out.println("<operator>\t -- " + yytext()); return token(Sym.MULTIPLY); }
+"(" 							{ return token(Sym.LPAREN); }
+")" 							{ return token(Sym.RPAREN); }
+"[" 							{ return token(Sym.LBRACKET); }
+"]" 							{ return token(Sym.RBRACKET); }
+"{" 							{ return token(Sym.LCURLY); }
+"}" 							{ return token(Sym.RCURLY); }
+"&&" 							{ return token(Sym.AND); }
+"<" 							{ return token(Sym.LESS); }
+"+" 							{ return token(Sym.PLUS); }
+"-" 							{ return token(Sym.MINUS); }
+"*" 							{ return token(Sym.MULTIPLY); }
 
 /* Integer */
-[1-9][0-9]* { System.out.println("<integer>\t -- " + yytext()); return token(Sym.PLUS); }
+[1-9][0-9]* 						{ return token(Sym.NUMBER); }
 
 /* String */
-\"([0-9a-zA-Z] | {WS})*\" | \"\" 	{ System.out.println("<string>\t -- " + yytext()); return token(Sym.PLUS); }
+\"([0-9a-zA-Z] | {WS})*\" | \"\" 	{ return token(Sym.STRING); }
 
 /* Whitespace (i.e: newline, tabs space) - Ignored */
-{WS} | {NEWLINE} 					{ System.out.println("<WS>"); }
+{WS} | {NEWLINE} 					{ }
 
 /* Non matched input = invalid input, inform parser exception */
-. | {NEWLINE} 						{ System.out.println("<ERROR>\t -- " + yytext()); return token(Sym.error); }
-
-<<EOF>> 							{ System.out.println("<<EOF>>"); return token(Sym.EOF); }
+. | {NEWLINE} 						{ return token(Sym.error); }
+<<EOF>> 							{ return token(Sym.EOF); }
 

@@ -24,18 +24,28 @@ parser code {:
 
 scan with {: return lexer.yylex(); :};
 
-/* Terminals (tokens returned by the scanner). */
-terminal            PLUS, MINUS, MULTIPLY, LPAREN, RPAREN, LBRACKET, RBRACKET, LCURLY, RCURLY, AND, LESS;
-terminal            SEMI, UMINUS;
+/* ======== Terminals (tokens returned by the scanner) ======== */
+
+/* Statements */
+terminal		IF, ELSE, WHILE, SYSOUT;
+
+/* Expressions */
+terminal 		LENGTH, TRUE, FALSE, THIS, BANG;
+
+/* Datatypes */
+terminal 		INT, INT_ARRAY, BOOLEAN, STRING, IDENTIFIER;
+
+/* Operators */
+terminal     	PLUS, MINUS, MULTIPLY, LPAREN, RPAREN, LBRACKET, RBRACKET, LCURLY, RCURLY, AND, LESS;
 terminal Integer    NUMBER;
 
+terminal SEMI;
 /* Non terminals */
 non terminal            expr_list, expr_part;
 non terminal Integer    expr, term, factor;
 
 /* Precedences */
 precedence left PLUS, MINUS;
-precedence left UMINUS;
 
 /* The grammar */
 expr_list ::= expr_list expr_part | 
@@ -43,7 +53,6 @@ expr_list ::= expr_list expr_part |
 expr_part ::= expr SEMI;
 expr      ::= 	expr:e1 PLUS expr:e2 {: System.out.println(e1.intValue() + e2.intValue()); :}
 		| expr MINUS expr  
-		| MINUS expr %prec UMINUS
 		| LPAREN expr RPAREN
 		| NUMBER
 		;
