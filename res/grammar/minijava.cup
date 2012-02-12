@@ -3,12 +3,30 @@ import java_cup.runtime.*;
 import se.cortado.Scanner;
 
 /* Preliminaries to set up and use the scanner.  */
-//init with {: scanner.init();              :};
-scan with {: return Scanner.yylex(); :};
+//init with {: scanner.init(); :};
+
+parser code {:
+	private Lexer lexer;
+	private File file;
+	
+	public Parser(File file) {
+		this();
+		this.file = file;
+		try {
+			lexer = new Lexer(new FileReader(file));
+		}
+		catch (IOException exception) {
+			throw new Error("Unable to open file \"" + file + "\"");
+		}
+	}
+
+:};
+
+scan with {: return lexer.yylex(); :};
 
 /* Terminals (tokens returned by the scanner). */
-terminal            SEMI, PLUS, MINUS, TIMES, DIVIDE, MOD;
-terminal            UMINUS, LPAREN, RPAREN;
+terminal            PLUS, MINUS, MULTIPLY, LPAREN, RPAREN, LBRACKET, RBRACKET, LCURLY, RCURLY, AND, LESS;
+terminal            SEMI, UMINUS;
 terminal Integer    NUMBER;
 
 /* Non terminals */
@@ -17,7 +35,6 @@ non terminal Integer    expr, term, factor;
 
 /* Precedences */
 precedence left PLUS, MINUS;
-precedence left TIMES, DIVIDE, MOD;
 precedence left UMINUS;
 
 /* The grammar */
@@ -26,9 +43,6 @@ expr_list ::= expr_list expr_part |
 expr_part ::= expr SEMI;
 expr      ::= 	expr:e1 PLUS expr:e2 {: System.out.println(e1.intValue() + e2.intValue()); :}
 		| expr MINUS expr  
-		| expr TIMES expr  
-		| expr DIVIDE expr  
-		| expr MOD expr 
 		| MINUS expr %prec UMINUS
 		| LPAREN expr RPAREN
 		| NUMBER

@@ -2,6 +2,10 @@
 
 package se.cortado;
 
+import java.io.*;
+import se.cortado.Sym;
+import java_cup.runtime.*;
+
 %% 
 
 /* ---------------- OPTIONS ---------------- */
@@ -20,7 +24,7 @@ package se.cortado;
 
 /* Creates a main function in the generated class, outputs line/col numbers (if enabled) */
 //%debug
-%standalone
+//%standalone
 
 /* ---------------- CLASS OPTIONS ---------------- */
 /* Make generated class implement interfaces */
@@ -29,8 +33,8 @@ package se.cortado;
 /* Make generated class extend class (only one class permitted) */
 //%extends "classname"
 
-/* Defines visibility */
-// %public | %final | %abstract | %apiprivate
+/* Defines visibility (%public | %final | %abstract | %apiprivate) */
+%public 
 
 /* The code enclosed in %init{ and %init} is copied verbatim into the constructor of the generated class. Here, member variables declared in the %{...%} directive can be initialised. */
 //%init{...%init}
@@ -39,10 +43,19 @@ package se.cortado;
 //%ctorarg "type" "ident"
 
 
-/* ---------------- SCANNING METHOD ---------------- */
+/* ---------------- SCANNING ---------------- */
+
+%{
+	public Symbol token( int tokenType ) {
+		System.err.println("Obtain token \"" + yytext() + "\"" );
+		return new Symbol( tokenType, yychar, yychar + yytext().length(), yytext() );
+	}
+%}
 
 /* The type of object that yylex() will return. The default end of file value under this setting is null. */
-//%type Integer
+%type Symbol
+
+//%cup
 
 /* The exceptions listed inside %yylexthrow{ ... %yylexthrow} will be declared in the throws clause of the scanning method. */
 //%yylexthrow "exception1" [, "exception2", ...]
@@ -57,67 +70,67 @@ NEWLINE = \r|\n|\r\n
 WS = [ \t\f]
 COMMENT   = "/*" [^*] ~"*/" | "/*" "*"+ "/"
 
-LPAR = "("
-RPAR = ")"
-LBRACKET = "["
-RBRACKET = "]"
-LCURLY = "{"
-RCURLY = "}"
-AND = "&&"
-LESS = "<"
-PLUS = "+"
-MINUS = "-"
-MULTIPLY = "*"
-
 %% /* ---------------- LEXICAL RULES ---------------- */
 
-"class" 					{ System.out.println("<class>"); return 1; }
-"public static void main"	{ yybegin(MAIN); System.out.println("<main>"); return 1; }
-	<MAIN> "String"			{ yybegin(YYINITIAL); System.out.println("<main: String>"); return 1; }
-"public" 					{ System.out.println("<public>"); return 1; }
+"class" 					{ System.out.println("<class>"); return token(Sym.PLUS); }
+"public static void main"	{ yybegin(MAIN); System.out.println("<main>"); return token(Sym.PLUS); }
+	<MAIN> "String"			{ yybegin(YYINITIAL); System.out.println("<main: String>"); return token(Sym.PLUS); }
+"public" 					{ System.out.println("<public>"); return token(Sym.PLUS); }
 
 
 /* ----- Comments (skipped) ----- */
-{COMMENT} 		{ System.out.println("<comment>\t -- " + yytext()); }
+{COMMENT} 					{ System.out.println("<comment>\t -- " + yytext()); }
 
 
 /* ----- Statements ----- */
-"if" 						{ System.out.println("<if>"); return 1; }
-"else" 						{ System.out.println("<else>"); return 1; }
-"while" 					{ System.out.println("<while>"); return 1; }
-"System.out.println" 		{ System.out.println("<println>"); return 1; }
+"if" 						{ System.out.println("<if>"); return token(Sym.PLUS); }
+"else" 						{ System.out.println("<else>"); return token(Sym.PLUS); }
+"while" 					{ System.out.println("<while>"); return token(Sym.PLUS); }
+"System.out.println" 		{ System.out.println("<println>"); return token(Sym.PLUS); }
 
 
 /* ----- Expressions ----- */
-"length"					{ System.out.println("<length>"); return 1; }
+"length"					{ System.out.println("<length>"); return token(Sym.PLUS); }
 //int_lit //TODO: what is int_lit?
-"true"						{ System.out.println("<true>"); return 1; }
-"false"						{ System.out.println("<false>"); return 1; }
-"this"						{ System.out.println("<this>"); return 1; }
-//new int [Exp]				{ System.out.println("<>"); return 1; }
-// new id()					{ System.out.println("<>"); return 1; }
-"!"							{ System.out.println("<bang>"); return 1; }
+"true"						{ System.out.println("<true>"); return token(Sym.PLUS); }
+"false"						{ System.out.println("<false>"); return token(Sym.PLUS); }
+"this"						{ System.out.println("<this>"); return token(Sym.PLUS); }
+//new int [Exp]				{ System.out.println("<>"); return token(Sym.PLUS); }
+// new id()					{ System.out.println("<>"); return token(Sym.PLUS); }
+"!"							{ System.out.println("<bang>"); return token(Sym.PLUS); }
 
 
 /* ----- Datatypes: int, int[], boolean, "identifier" ----- */
-"int" 							{ System.out.println("<int>"); return 1; }
-int\[([0-9]+ | [a-zA-Z0_9]+)\] 	{ System.out.println("<int[X]>\t -- X = " + yytext()); return 1; }
-"boolean" 						{ System.out.println("<boolean>"); return 1; }
-[a-zA-Z]([0-9a-zA-Z] | _)* 		{ System.out.println("<identifier>\t -- " + yytext()); return 2; }
+"int" 							{ System.out.println("<int>"); return token(Sym.PLUS); }
+int\[([0-9]+ | [a-zA-Z0_9]+)\] 	{ System.out.println("<int[X]>\t -- X = " + yytext()); return token(Sym.PLUS); }
+"boolean" 						{ System.out.println("<boolean>"); return token(Sym.PLUS); }
+[a-zA-Z]([0-9a-zA-Z] | _)* 		{ System.out.println("<identifier>\t -- " + yytext()); return token(Sym.PLUS); }
 
 
 /* Operators */
-{LPAR} | {RPAR} | {LBRACKET} | {RBRACKET} | {LCURLY} | {RCURLY} | {AND} | {LESS} | {PLUS} | {MINUS} | {MULTIPLY} { System.out.println("<operator>\t -- " + yytext()); return 1; }
+"(" 		{ System.out.println("<operator>\t -- " + yytext()); return token(Sym.LPAREN); }
+")" 		{ System.out.println("<operator>\t -- " + yytext()); return token(Sym.RPAREN); }
+"[" 		{ System.out.println("<operator>\t -- " + yytext()); return token(Sym.LBRACKET); }
+"]" 		{ System.out.println("<operator>\t -- " + yytext()); return token(Sym.RBRACKET); }
+"{" 		{ System.out.println("<operator>\t -- " + yytext()); return token(Sym.LCURLY); }
+"}" 		{ System.out.println("<operator>\t -- " + yytext()); return token(Sym.RCURLY); }
+"&&" 		{ System.out.println("<operator>\t -- " + yytext()); return token(Sym.AND); }
+"<" 		{ System.out.println("<operator>\t -- " + yytext()); return token(Sym.LESS); }
+"+" 		{ System.out.println("<operator>\t -- " + yytext()); return token(Sym.PLUS); }
+"-" 		{ System.out.println("<operator>\t -- " + yytext()); return token(Sym.MINUS); }
+"*" 		{ System.out.println("<operator>\t -- " + yytext()); return token(Sym.MULTIPLY); }
 
 /* Integer */
-[1-9][0-9]* { System.out.println("<integer>\t -- " + yytext()); return 3; }
+[1-9][0-9]* { System.out.println("<integer>\t -- " + yytext()); return token(Sym.PLUS); }
 
 /* String */
-\"([0-9a-zA-Z] | {WS})*\" | \"\" { System.out.println("<string>\t -- " + yytext()); }
+\"([0-9a-zA-Z] | {WS})*\" | \"\" 	{ System.out.println("<string>\t -- " + yytext()); return token(Sym.PLUS); }
 
 /* Whitespace (i.e: newline, tabs space) - Ignored */
-{WS} | {NEWLINE} {}
+{WS} | {NEWLINE} 					{ System.out.println("<WS>"); }
 
-/* Non matched input = invalid input, inform parser by throwing exception */
-. | {NEWLINE} { throw new Error("LEX: Illegal character <"+yytext()+">"); }
+/* Non matched input = invalid input, inform parser exception */
+. | {NEWLINE} 						{ System.out.println("<ERROR>\t -- " + yytext()); return token(Sym.error); }
+
+<<EOF>> 							{ System.out.println("<<EOF>>"); return token(Sym.EOF); }
 
