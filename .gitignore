@@ -2,6 +2,7 @@
 .classpath
 .project
 local.properties
+.metadata/
 *.class
 *.java~
 

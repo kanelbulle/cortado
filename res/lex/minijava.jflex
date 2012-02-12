@@ -1,6 +1,6 @@
-/* ---------------- USERCODE ---------------- */
+/* ---------------- USERCODE (copied verbatim to generated class) ---------------- */
 
-// nothing yet...
+package se.cortado;
 
 %% 
 
