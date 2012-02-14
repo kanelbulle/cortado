@@ -26,7 +26,7 @@ scan with {: return lexer.yylex(); :};
 /* ======== Terminals (tokens returned by the scanner) ======== */
 
 /* MISC */
-terminal		PUBLIC, STATIC, VOID, CLASS, COMMA;
+terminal		PUBLIC, STATIC, VOID, CLASS, COMMA, DOT;
 
 /* Statements */
 terminal		IF, ELSE, WHILE, SYSOUT;
@@ -58,6 +58,9 @@ start with program;
 
 program ::= main_class class_decls;
 
+main_class ::= class_decl LCURLY main_method RCURLY;
+main_method ::= PUBLIC STATIC VOID IDENTIFIER LPAREN STRING_ARRAY IDENTIFIER RPAREN LCURLY var_decls stmt_list RCURLY;
+
 stmt_list ::= stmt | stmt stmt_list;
 
 var_decls ::= var_decl | var_decl var_decls;
@@ -68,8 +71,6 @@ var_decl ::= type IDENTIFIER;
 method_decl ::= PUBLIC type IDENTIFIER formal_list;
 class_decl ::= CLASS IDENTIFIER LCURLY;
 
-main_class ::= class_decl LCURLY main_method RCURLY;
-main_method ::= PUBLIC STATIC VOID IDENTIFIER LPAREN STRING_ARRAY IDENTIFIER RPAREN LCURLY var_decls stmt_list RCURLY;
 
 type ::= INT | INT_ARRAY | BOOLEAN | STRING_ARRAY;
 
@@ -77,6 +78,7 @@ formal_list ::= type IDENTIFIER | type IDENTIFIER formal_rest;
 formal_rest ::= COMMA type IDENTIFIER;
 
 stmt ::= COMMA;
+
 
 /*
 expr_list ::= expr_list expr_part | 
