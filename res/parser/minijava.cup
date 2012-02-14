@@ -58,26 +58,24 @@ start with program;
 
 program ::= main_class class_decls;
 
-main_class ::= class_decl LCURLY main_method RCURLY;
+main_class ::= CLASS IDENTIFIER LCURLY main_method RCURLY;
 main_method ::= PUBLIC STATIC VOID IDENTIFIER LPAREN STRING_ARRAY IDENTIFIER RPAREN LCURLY var_decls stmt_list RCURLY;
 
 stmt_list ::= stmt | stmt stmt_list;
-
 var_decls ::= var_decl | var_decl var_decls;
 method_decls ::= method_decl | method_decl method_decls;
 class_decls ::= class_decl | class_decl class_decls;
 
 var_decl ::= type IDENTIFIER;
 method_decl ::= PUBLIC type IDENTIFIER formal_list;
-class_decl ::= CLASS IDENTIFIER LCURLY;
-
+class_decl ::= CLASS IDENTIFIER LCURLY var_decls method_decls RCURLY;
 
 type ::= INT | INT_ARRAY | BOOLEAN | STRING_ARRAY;
 
 formal_list ::= type IDENTIFIER | type IDENTIFIER formal_rest;
 formal_rest ::= COMMA type IDENTIFIER;
 
-stmt ::= COMMA;
+stmt ::= SEMI;
 
 
 /*

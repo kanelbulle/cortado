@@ -117,6 +117,8 @@ int\[([0-9]+ | [a-zA-Z0_9]+)\] 	{ return token(Sym.INT_ARRAY); }
 "-" 							{ return token(Sym.MINUS); }
 "*" 							{ return token(Sym.MULTIPLY); }
 
+/* Separators */
+";"								{ return token(Sym.SEMI); }
 ","								{ return token(Sym.COMMA); }
 "."								{ return token(Sym.DOT); }
 
