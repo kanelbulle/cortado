@@ -26,7 +26,7 @@ scan with {: return lexer.yylex(); :};
 /* ======== Terminals (tokens returned by the scanner) ======== */
 
 /* MISC */
-terminal		PUBLIC, STATIC, VOID, CLASS, COMMA, DOT;
+terminal		PUBLIC, STATIC, VOID, CLASS, COMMA, DOT, RETURN;
 
 /* Statements */
 terminal		IF, ELSE, WHILE, SYSOUT;
@@ -38,7 +38,7 @@ terminal 		LENGTH, TRUE, FALSE, THIS, BANG;
 terminal 		INT, INT_ARRAY, BOOLEAN, STRING_ARRAY, IDENTIFIER;
 
 /* Operators */
-terminal     	PLUS, MINUS, MULTIPLY, LPAREN, RPAREN, LBRACKET, RBRACKET, LCURLY, RCURLY, AND, LESS;
+terminal     	PLUS, MINUS, MULTIPLY, LPAREN, RPAREN, LBRACKET, RBRACKET, LCURLY, RCURLY, AND, LESS, ASSIGN, EQUALS;
 terminal Integer    NUMBER, LONG_NUMBER;
 
 terminal SEMI;
@@ -66,16 +66,24 @@ var_decls ::= var_decl | var_decl var_decls;
 method_decls ::= method_decl | method_decl method_decls;
 class_decls ::= class_decl | class_decl class_decls;
 
-var_decl ::= type IDENTIFIER;
-method_decl ::= PUBLIC type IDENTIFIER formal_list;
+var_decl ::= type IDENTIFIER SEMI;
+method_decl ::= PUBLIC type IDENTIFIER LPAREN formal_list RPAREN LCURLY var_decls stmt_list RETURN expr SEMI RCURLY;
 class_decl ::= CLASS IDENTIFIER LCURLY var_decls method_decls RCURLY;
 
-type ::= INT | INT_ARRAY | BOOLEAN | STRING_ARRAY;
+type ::= INT | INT_ARRAY | BOOLEAN | IDENTIFIER;
 
 formal_list ::= type IDENTIFIER | type IDENTIFIER formal_rest;
 formal_rest ::= COMMA type IDENTIFIER;
 
-stmt ::= SEMI;
+stmt ::=	LCURLY stmt_list RCURLY 
+			| stmt SEMI
+			| IF LPAREN expr RPAREN stmt ELSE stmt
+			| WHILE LPAREN expr RPAREN stmt
+			| SYSOUT LPAREN expr RPAREN SEMI
+			| IDENTIFIER ASSIGN expr SEMI
+			| IDENTIFIER LBRACKET expr RBRACKET ASSIGN expr SEMI;
+
+
 
 
 /*

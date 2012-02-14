@@ -75,6 +75,7 @@ COMMENT   = "/*" [^*] ~"*/" | "/*" "*"+ "/"
 "class" 						{ return token(Sym.CLASS); }
 "static"						{ return token(Sym.STATIC); }
 "void"							{ return token(Sym.VOID); }
+"return"						{ return token(Sym.RETURN); }
 //"public static void main"		{ yybegin(MAIN); return token(Sym.); }
 //	<MAIN> "String"				{ yybegin(YYINITIAL); return token(Sym.); }
 "public" 						{ return token(Sym.PUBLIC); }
@@ -116,6 +117,8 @@ int\[([0-9]+ | [a-zA-Z0_9]+)\] 	{ return token(Sym.INT_ARRAY); }
 "+" 							{ return token(Sym.PLUS); }
 "-" 							{ return token(Sym.MINUS); }
 "*" 							{ return token(Sym.MULTIPLY); }
+"="								{ return token(Sym.ASSIGN); }
+"=="							{ return token(Sym.EQUALS); }
 
 /* Separators */
 ";"								{ return token(Sym.SEMI); }
