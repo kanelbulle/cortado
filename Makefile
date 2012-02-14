@@ -1,6 +1,6 @@
 all: cortado
 
-cortado: lexer parser
+cortado: parser lexer
 	javac -d bin/ -classpath "lib/java-cup-11a-runtime.jar" gen/se/cortado/*.java src/se/cortado/*.java
 
 lexer: res/lexer/minijava.jflex

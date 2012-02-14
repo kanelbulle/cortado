@@ -73,6 +73,8 @@ COMMENT   = "/*" [^*] ~"*/" | "/*" "*"+ "/"
 %% /* ---------------- LEXICAL RULES ---------------- */
  
 "class" 						{ return token(Sym.CLASS); }
+"static"						{ return token(Sym.STATIC); }
+"void"							{ return token(Sym.VOID); }
 //"public static void main"		{ yybegin(MAIN); return token(Sym.); }
 //	<MAIN> "String"				{ yybegin(YYINITIAL); return token(Sym.); }
 "public" 						{ return token(Sym.PUBLIC); }
@@ -116,7 +118,8 @@ int\[([0-9]+ | [a-zA-Z0_9]+)\] 	{ return token(Sym.INT_ARRAY); }
 "*" 							{ return token(Sym.MULTIPLY); }
 
 /* Integer */
-[1-9][0-9]* 						{ return token(Sym.NUMBER); }
+0|[1-9][0-9]* 					{ return token(Sym.NUMBER); }
+0|[1-9][0-9]*[lL]				{ return token(Sym.LONG_NUMBER); }
 
 /* String */
 \"([0-9a-zA-Z] | {WS})*\" | \"\" 	{ return token(Sym.STRING); }
