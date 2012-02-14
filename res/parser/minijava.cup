@@ -3,7 +3,6 @@ import java_cup.runtime.*;
 import se.cortado.Scanner;
 
 /* Preliminaries to set up and use the scanner.  */
-//init with {: scanner.init(); :};
 
 parser code {:
 	private Lexer lexer;
@@ -26,6 +25,9 @@ scan with {: return lexer.yylex(); :};
 
 /* ======== Terminals (tokens returned by the scanner) ======== */
 
+/* MISC */
+terminal		PUBLIC, STATIC, VOID, CLASS, COMMA;
+
 /* Statements */
 terminal		IF, ELSE, WHILE, SYSOUT;
 
@@ -33,27 +35,63 @@ terminal		IF, ELSE, WHILE, SYSOUT;
 terminal 		LENGTH, TRUE, FALSE, THIS, BANG;
 
 /* Datatypes */
-terminal 		INT, INT_ARRAY, BOOLEAN, STRING, IDENTIFIER;
+terminal 		INT, INT_ARRAY, BOOLEAN, STRING_ARRAY, IDENTIFIER;
 
 /* Operators */
 terminal     	PLUS, MINUS, MULTIPLY, LPAREN, RPAREN, LBRACKET, RBRACKET, LCURLY, RCURLY, AND, LESS;
-terminal Integer    NUMBER;
+terminal Integer    NUMBER, LONG_NUMBER;
 
 terminal SEMI;
 /* Non terminals */
-non terminal            expr_list, expr_part;
+non terminal            expr_list, expr_part, program, main_class, class_decl, class_decls, var_decl, var_decls, method_decl, method_decls, main_method, stmt_list, stmt, formal_list, formal_rest;
 non terminal Integer    expr, term, factor;
+non terminal type;
 
 /* Precedences */
 precedence left PLUS, MINUS;
+precedence left MULTIPLY;
+
+/* State to start with */
+start with program;
 
 /* The grammar */
+
+program ::= main_class class_decls;
+
+stmt_list ::= stmt | stmt stmt_list;
+
+var_decls ::= var_decl | var_decl var_decls;
+method_decls ::= method_decl | method_decl method_decls;
+class_decls ::= class_decl | class_decl class_decls;
+
+var_decl ::= type IDENTIFIER;
+method_decl ::= PUBLIC type IDENTIFIER formal_list;
+class_decl ::= CLASS IDENTIFIER LCURLY;
+
+main_class ::= class_decl LCURLY main_method RCURLY;
+main_method ::= PUBLIC STATIC VOID IDENTIFIER LPAREN STRING_ARRAY IDENTIFIER RPAREN LCURLY var_decls stmt_list RCURLY;
+
+type ::= INT | INT_ARRAY | BOOLEAN | STRING_ARRAY;
+
+formal_list ::= type IDENTIFIER | type IDENTIFIER formal_rest;
+formal_rest ::= COMMA type IDENTIFIER;
+
+stmt ::= COMMA;
+
+/*
 expr_list ::= expr_list expr_part | 
               expr_part;
+              
 expr_part ::= expr SEMI;
-expr      ::= 	expr:e1 PLUS expr:e2 {: System.out.println(e1.intValue() + e2.intValue()); :}
-		| expr MINUS expr  
-		| LPAREN expr RPAREN
-		| NUMBER
-		;
+
+expr      ::=	
+
+				| expr:e1 PLUS expr:e2
+					{: System.out.println(e1.intValue() + e2.intValue()); :}
+				| expr MINUS expr
+					{: :}
+				| LPAREN expr RPAREN
+				| NUMBER
+				;
+*/
 
