@@ -129,7 +129,7 @@ int\[([0-9]+ | [a-zA-Z0_9]+)\] 	{ return token(Sym.INT_ARRAY); }
 0|[1-9][0-9]* 					{ return token(Sym.INTEGER); }
 
 /* String */
-\"([0-9a-zA-Z] | {WS})*\" | \"\" 	{ return token(Sym.STRING); }
+// \"([0-9a-zA-Z] | {WS})*\" | \"\" 	{ return token(Sym.STRING); }
 
 /* Whitespace (i.e: newline, tabs space) - Ignored */
 {WS} | {NEWLINE} 					{ }

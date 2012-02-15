@@ -1,18 +1,19 @@
 
 import java_cup.runtime.*;
 import se.cortado.Scanner;
+import java.io.*;
 
 /* Preliminaries to set up and use the scanner.  */
 
 parser code {:
-	private Lexer lexer;
+	private Scanner scanner;
 	private File file;
 	
 	public Parser(File file) {
 		this();
 		this.file = file;
 		try {
-			lexer = new Lexer(new FileReader(file));
+			scanner = new Scanner(new FileReader(file));
 		}
 		catch (IOException exception) {
 			throw new Error("Unable to open file \"" + file + "\"");
@@ -21,7 +22,7 @@ parser code {:
 
 :};
 
-scan with {: return lexer.yylex(); :};
+scan with {: return scanner.yylex(); :};
 
 /* ======== Terminals (tokens returned by the scanner) ======== */
 
@@ -47,8 +48,10 @@ non terminal            expr, expr_list, expr_rest, program, main_class, class_d
 non terminal type;
 
 /* Precedences */
+precedence left BANG;
 precedence left PLUS, MINUS;
 precedence left MULTIPLY;
+precedence left AND, LESS, DOT;
 
 /* State to start with */
 start with program;
@@ -82,8 +85,9 @@ stmt ::=	LCURLY stmt_list RCURLY
 			| IDENTIFIER ASSIGN expr SEMI
 			| IDENTIFIER LBRACKET expr RBRACKET ASSIGN expr SEMI;
 
-expr_list ::= expr | expr expr_rest;
-expr_rest ::= COMMA expr;
+expr_list ::= expr expr_rest;
+expr_rest ::= expr_rest COMMA expr | COMMA expr;
+
 expr ::=	expr:e1 PLUS expr:e2
 			| expr:e1 MINUS expr:e2
 			| expr:e1 MULTIPLY expr:e2
@@ -102,19 +106,3 @@ expr ::=	expr:e1 PLUS expr:e2
 			| BANG expr
 			| LPAREN expr RPAREN;
 
-/*
-expr_list ::= expr_list expr_part | 
-              expr_part;
-              
-expr_part ::= expr SEMI;
-
-expr      ::=	
-
-				| expr:e1 PLUS expr:e2
-					{: System.out.println(e1.intValue() + e2.intValue()); :}
-				| expr MINUS expr
-					{: :}
-				| LPAREN expr RPAREN
-				| NUMBER
-				;
-*/
