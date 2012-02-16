@@ -44,7 +44,7 @@ terminal Integer    INTEGER;
 
 terminal SEMI;
 /* Non terminals */
-non terminal            expr, expr_list, expr_rest, program, main_class, class_decl, class_decls, var_decl, var_decls, method_decl, method_decls, main_method, stmt_list, stmt, formal_list, formal_rest;
+non terminal	expr, expr_list, expr_rest, program, main_class, class_decl, class_decls, var_decl, var_decls, method_decl, method_decls, main_method, stmt_list, stmt, formal_list, formal_rest;
 non terminal type;
 
 /* Precedences */

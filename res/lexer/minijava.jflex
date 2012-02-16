@@ -92,7 +92,6 @@ COMMENT   = "/*" [^*] ~"*/" | "/*" "*"+ "/"
 
 /* ----- Expressions ----- */
 "length"						{ return token(Sym.LENGTH); }
-//int_lit //TODO: what is int_lit?
 "true"							{ return token(Sym.TRUE); }
 "false"							{ return token(Sym.FALSE); }
 "this"							{ return token(Sym.THIS); }
