@@ -1,7 +1,7 @@
 all: cortado
 
 cortado: parser lexer
-	javac -d bin/ -classpath "lib/java-cup-11a-runtime.jar" gen/se/cortado/*.java src/se/cortado/*.java
+	javac -d bin/ -classpath "lib/java-cup-11a-runtime.jar" gen/se/cortado/*.java src/se/cortado/*.java src/se/cortado/syntax/visitor/*.java src/se/cortado/syntaxtree/*.java
 
 lexer: res/lexer/minijava.jflex
 	rm -f gen/se/cortado/Scanner.java
