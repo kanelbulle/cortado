@@ -1,5 +1,7 @@
 package se.cortado;
 
+import java.io.File;
+
 public class Main {
 	
 	public static void main(String[] args) {
@@ -8,7 +10,13 @@ public class Main {
 		}
 		
 		String fileName = args[1];
+		Parser p = new Parser(new File(fileName));
 		
+		try  {
+			p.parse();
+		} catch (Exception e) {
+			System.out.println("NO PARSE FOR YOU!");
+			e.printStackTrace();
+		}
 	}
-
 }
