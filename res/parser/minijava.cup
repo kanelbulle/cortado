@@ -64,6 +64,7 @@ non terminal MethodDecl main_method;
 non terminal FormalList formal_list;
 non terminal VarDeclList var_decls;
 non terminal StatementList stmt_list;
+non terminal Integer test;
 
 non terminal expr_list, program, class_decl, var_decl, method_decl, method_decls, stmt, formal;
 non terminal type;
@@ -75,25 +76,34 @@ precedence left MULTIPLY;
 precedence left AND, LESS, DOT;
 
 /* State to start with */
-start with program;
+start with test;
 
 /* The grammar */
 
+test ::= CLASS
+		{:
+			System.out.println("balle");
+			System.out.flush();
+			RESULT = new Integer(1);
+		:}
+		; 
+
+/*
 program ::= main_class:mc class_decls:cd
 			{: RESULT = new Program(mc, cd); :};
 			
 main_class ::= CLASS IDENTIFIER:id LCURLY main_method:md RCURLY 
-				{: RESULT = new MainClass(id, md); :}
+				{: RESULT = new MainClass(new Identifier(id.toString()), md); :}
 				;
 
 main_method ::= PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING_ARRAY IDENTIFIER:id2 RPAREN LCURLY 
 var_decls:vd stmt_list:sl RCURLY
 				{: 	FormalList fl = new FormalList();
-					fl.addElement(new Formal(new StringArrayType(), id2));
-					RESULT = new MethodDecl(new VoidType(), id1, fl, vd, sl, null); :}
+					fl.addElement(new Formal(new StringArrayType(), new Identifier(id2.toString())));
+					RESULT = new MethodDecl(new VoidType(), new Identifier(id1.toString()), fl, vd, sl, new IdentifierExp("hej")); :}
 				;
 
-/*
+
 var_decls ::= var_decls var_decl | var_decl;
 var_decl ::= type IDENTIFIER SEMI;
 
@@ -149,7 +159,7 @@ expr ::=	expr:e1 PLUS expr:e2
 			| FALSE
 			{: RESULT = new False(); :}
 			| IDENTIFIER:id
-			{: RESULT = new Identifier(); :}
+			{: RESULT = new Identifier(id); :}
 			| THIS
 			{: RESULT = new This(); :}
 			| NEW INT LBRACKET expr:e1 RBRACKET
