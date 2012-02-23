@@ -1,13 +1,19 @@
-
 import java_cup.runtime.*;
-import se.cortado.Scanner;
+
 import java.io.*;
+import java.util.Stack;
+
+import se.cortado.Scanner;
+import se.cortado.syntaxtree.*;
+
 
 /* Preliminaries to set up and use the scanner.  */
 
 parser code {:
 	private Scanner scanner;
 	private File file;
+	
+	Stack<FormalList> formalLists = new Stack<FormalList>();
 	
 	public Parser(File file) {
 		this();
@@ -24,10 +30,10 @@ parser code {:
 
 scan with {: return scanner.yylex(); :};
 
-/* ======== Terminals (tokens returned by the scanner) ======== */
+/* ======== Terminals (tokens RESULTed by the scanner) ======== */
 
 /* MISC */
-terminal		PUBLIC, STATIC, VOID, CLASS, COMMA, DOT, RETURN, NEW;
+terminal		PUBLIC, STATIC, VOID, CLASS, COMMA, DOT, RESULT, NEW;
 
 /* Statements */
 terminal		IF, ELSE, WHILE, SYSOUT;
@@ -44,7 +50,7 @@ terminal Integer    INTEGER;
 
 terminal SEMI;
 /* Non terminals */
-non terminal	expr, expr_list, expr_rest, program, main_class, class_decl, class_decls, var_decl, var_decls, method_decl, method_decls, main_method, stmt_list, stmt, formal_list, formal_rest;
+non terminal	expr, expr_list, program, main_class, class_decl, class_decls, var_decl, var_decls, method_decl, method_decls, main_method, stmt_list, stmt, formal_list, formal;
 non terminal type;
 
 /* Precedences */
@@ -58,7 +64,8 @@ start with program;
 
 /* The grammar */
 
-program ::= main_class class_decls;
+program ::= main_class:mc class_decls:cd
+			{: RESULT = new Program(new MainClass(mc), new ClassDeclList(cd); :};
 
 main_class ::= CLASS IDENTIFIER LCURLY main_method RCURLY;
 main_method ::= PUBLIC STATIC VOID IDENTIFIER LPAREN STRING_ARRAY IDENTIFIER RPAREN LCURLY var_decls stmt_list RCURLY;
@@ -67,15 +74,20 @@ var_decls ::= var_decls var_decl | var_decl;
 var_decl ::= type IDENTIFIER SEMI;
 
 method_decls ::= method_decls method_decl | method_decl;
-method_decl ::= PUBLIC type IDENTIFIER LPAREN formal_list RPAREN LCURLY var_decls stmt_list RETURN expr SEMI RCURLY;
+method_decl ::= PUBLIC type IDENTIFIER LPAREN formal_list RPAREN LCURLY var_decls stmt_list RESULT expr SEMI RCURLY;
 
 class_decls ::= class_decls class_decl | class_decl;
 class_decl ::= CLASS IDENTIFIER LCURLY var_decls method_decls RCURLY;
 
 type ::= INT | INT_ARRAY | BOOLEAN | IDENTIFIER;
 
-formal_list ::= type IDENTIFIER | type IDENTIFIER formal_rest;
-formal_rest ::= COMMA type IDENTIFIER;
+formal_list ::= formal_list:fl COMMA formal
+				| formal
+				;
+				
+formal ::= type:t IDENTIFIER:id
+			{: RESULT = new Formal(t, id); :}
+			;
 
 stmt_list ::= stmt_list stmt | stmt;
 stmt ::=	LCURLY stmt_list RCURLY 
@@ -83,26 +95,45 @@ stmt ::=	LCURLY stmt_list RCURLY
 			| WHILE LPAREN expr RPAREN stmt
 			| SYSOUT LPAREN expr RPAREN SEMI
 			| IDENTIFIER ASSIGN expr SEMI
-			| IDENTIFIER LBRACKET expr RBRACKET ASSIGN expr SEMI;
+			| IDENTIFIER LBRACKET expr RBRACKET ASSIGN expr SEMI
+			;
 
-expr_list ::= expr expr_rest;
-expr_rest ::= expr_rest COMMA expr | COMMA expr;
+expr_list ::= 	expr_list:el COMMA expr:e1
+				| expr
+				;
 
 expr ::=	expr:e1 PLUS expr:e2
+			{: RESULT = new Plus(e1, e2); :}
 			| expr:e1 MINUS expr:e2
+			{: RESULT = new Minus(e1, e2); :}
 			| expr:e1 MULTIPLY expr:e2
+			{: RESULT = new Times(e1, e2); :}
 			| expr:e1 AND expr:e2
+			{: RESULT = new And(e1, e2); :}
 			| expr:e1 LESS expr:e2
-			| expr LBRACKET expr RBRACKET
-			| expr DOT LENGTH
-			| expr DOT IDENTIFIER LPAREN expr_list RPAREN
-			| INTEGER
+			{: RESULT = new LessThan(e1, e2); :}
+			| expr:e1 LBRACKET expr:e2 RBRACKET
+			{: RESULT = new ArrayLookup(e1, e2); :}
+			| expr:e1 DOT LENGTH
+			{: RESULT = new ArrayLength(e1); :}
+			| expr:e1 DOT IDENTIFIER:id LPAREN expr_list:el RPAREN
+			{: RESULT = new Call(e1, id, el); :}
+			| INTEGER:i
+			{: RESULT = new IntegerLiteral(i.intValue()); :}
 			| TRUE
+			{: RESULT = new True(); :}
 			| FALSE
-			| IDENTIFIER
+			{: RESULT = new False(); :}
+			| IDENTIFIER:id
+			{: RESULT = new Identifier(); :}
 			| THIS
-			| NEW INT LBRACKET expr RBRACKET
-			| NEW IDENTIFIER LPAREN RPAREN
-			| BANG expr
-			| LPAREN expr RPAREN;
+			{: RESULT = new This(); :}
+			| NEW INT LBRACKET expr:e1 RBRACKET
+			{: RESULT = new NewArray(e1); :}
+			| NEW IDENTIFIER:id LPAREN RPAREN
+			{: RESULT = new NewObject(id); :}
+			| BANG expr:e1
+			{: RESULT = new Not((Exp) e1); :}
+			| LPAREN expr RPAREN
+			;
 
