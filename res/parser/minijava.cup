@@ -11,18 +11,12 @@ import se.cortado.sym;
 /* Preliminaries to set up and use the scanner.  */
 
 parser code {:
-	public ClassDeclList classStack = new ClassDeclList();
-	public ExpList expStack = new ExpList();
-	public FormalList formalStack = new FormalList();
-	public StatementList statementStack = new StatementList();
-	public VarDeclList varStack = new VarDeclList();
-	
 	private Scanner scanner;
 	private File file;
 	
 	Stack<FormalList> formalLists = new Stack<FormalList>();
 	
-	public parser(File file) {
+/* 	public parser(File file) {
 		this();
 		this.file = file;
 		try {
@@ -31,14 +25,14 @@ parser code {:
 		catch (IOException exception) {
 			throw new Error("Unable to open file \"" + file + "\"");
 		}
+	} */
+
+	public void syntax_error(Symbol cur_token){
+		System.out.println("syntax_error:" + cur_token);
+
 	}
 
 :};
-
-init with {: System.out.println("init with"); :}
-scan with {: Symbol s = scanner.yylex();
-			System.out.println("sym: " + s);
-return s; :};
 
 /* ======== Terminals (tokens RESULTed by the scanner) ======== */
 
@@ -91,13 +85,13 @@ test ::= PUBLIC CLASS
 			RESULT = new Integer(1);
 		:}
 		;
-		
-		
+
+
 
 /*
 program ::= main_class:mc class_decls:cd
 			{: RESULT = new Program(mc, cd); :};
-			
+
 main_class ::= CLASS IDENTIFIER:id LCURLY main_method:md RCURLY 
 				{: RESULT = new MainClass(new Identifier(id.toString()), md); :}
 				;
@@ -124,7 +118,7 @@ type ::= INT | INT_ARRAY | BOOLEAN | IDENTIFIER;
 formal_list ::= formal_list:fl COMMA formal
 				| formal
 				;
-				
+
 formal ::= type:t IDENTIFIER:id
 			{: RESULT = new Formal(t, id); :}
 			;
@@ -183,6 +177,3 @@ new_array ::=	NEW INT LBRACKET expr:e1 RBRACKET
 
 
 */
-
-
-

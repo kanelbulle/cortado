@@ -61,7 +61,7 @@ import java_cup.runtime.*;
 /* The type of object that yylex() will return. The default end of file value under this setting is null. */
 %type Symbol
 
-//%cup
+%cup
 
 /* The exceptions listed inside %yylexthrow{ ... %yylexthrow} will be declared in the throws clause of the scanning method. */
 //%yylexthrow "exception1" [, "exception2", ...]
@@ -71,13 +71,18 @@ import java_cup.runtime.*;
 
 /* Defines a set of lexical states, there can be more than one. */
 %state MAIN
-	
+
+/* ---------------- DECLARATIONS ---------------- */
+
+/* Defines a set of lexical states, there can be more than one. */
+%state MAIN
+
 NEWLINE = \r|\n|\r\n
 WS = [ \t\f]
 COMMENT   = "/*" [^*] ~"*/" | "/*" "*"+ "/"
 
 %% /* ---------------- LEXICAL RULES ---------------- */
- 
+
 "class" 						{ return token(sym.CLASS); }
 "static"						{ return token(sym.STATIC); }
 "void"							{ return token(sym.VOID); }
