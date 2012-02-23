@@ -36,7 +36,9 @@ parser code {:
 :};
 
 init with {: System.out.println("init with"); :}
-scan with {: return scanner.yylex(); :};
+scan with {: Symbol s = scanner.yylex();
+			System.out.println("sym: " + s);
+return s; :};
 
 /* ======== Terminals (tokens RESULTed by the scanner) ======== */
 
@@ -82,13 +84,15 @@ start with test;
 
 /* The grammar */
 
-test ::= CLASS
+test ::= PUBLIC CLASS
 		{:
 			System.out.println("balle");
 			System.out.flush();
 			RESULT = new Integer(1);
 		:}
-		; 
+		;
+		
+		
 
 /*
 program ::= main_class:mc class_decls:cd

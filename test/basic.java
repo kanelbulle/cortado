@@ -1,1 +1,1 @@
-class
+public class

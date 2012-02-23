@@ -51,6 +51,9 @@ import java_cup.runtime.*;
 			System.out.println("sym.error");
 			}
 		System.err.println("<token>\t -- \"" + yytext() + "\"" );
+		System.out.println("yychar:" + yychar);
+		System.out.println("yytext:" + yytext());
+		System.out.println("yytext.length():" + yytext().length());
 		return new Symbol( tokenType, yychar, yychar + yytext().length(), yytext() );
 	}
 %}
