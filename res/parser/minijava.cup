@@ -11,6 +11,12 @@ import se.cortado.sym;
 /* Preliminaries to set up and use the scanner.  */
 
 parser code {:
+	public ClassDeclList classStack = new ClassDeclList();
+	public ExpList expStack = new ExpList();
+	public FormalList formalStack = new FormalList();
+	public StatementList statementStack = new StatementList();
+	public VarDeclList varStack = new VarDeclList();
+
 	private Scanner scanner;
 	private File file;
 	
@@ -55,6 +61,7 @@ terminal IntegerLiteral	INTEGER;
 
 terminal SEMI;
 /* Non terminals */
+non terminal Program program;
 non terminal Exp expr;
 non terminal MainClass main_class;
 non terminal ClassDeclList class_decls;
@@ -62,9 +69,8 @@ non terminal MethodDecl main_method;
 non terminal FormalList formal_list;
 non terminal VarDeclList var_decls;
 non terminal StatementList stmt_list;
-non terminal Integer test;
 
-non terminal expr_list, program, class_decl, var_decl, method_decl, method_decls, stmt, formal;
+non terminal expr_list, class_decl, var_decl, method_decl, method_decls, stmt, formal;
 non terminal type;
 
 /* Precedences */
@@ -74,21 +80,10 @@ precedence left MULTIPLY;
 precedence left AND, LESS, DOT;
 
 /* State to start with */
-start with test;
+start with program;
 
 /* The grammar */
 
-test ::= PUBLIC CLASS
-		{:
-			System.out.println("balle");
-			System.out.flush();
-			RESULT = new Integer(1);
-		:}
-		;
-
-
-
-/*
 program ::= main_class:mc class_decls:cd
 			{: RESULT = new Program(mc, cd); :};
 
@@ -103,7 +98,7 @@ var_decls:vd stmt_list:sl RCURLY
 					RESULT = new MethodDecl(new VoidType(), new Identifier(id1.toString()), fl, vd, sl, new IdentifierExp("hej")); :}
 				;
 
-
+/*
 var_decls ::= var_decls var_decl | var_decl;
 var_decl ::= type IDENTIFIER SEMI;
 
