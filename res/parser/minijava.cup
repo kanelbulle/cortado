@@ -11,7 +11,7 @@ import se.cortado.syntaxtree.*;
 
 parser code {:
 	public ClassDeclList classStack = new ClassDeclList();
-	public ExpList expStack = ExpList();
+	public ExpList expStack = new ExpList();
 	public FormalList formalStack = new FormalList();
 	public StatementList statementStack = new StatementList();
 	public VarDeclList varStack = new VarDeclList();
@@ -48,7 +48,8 @@ terminal		IF, ELSE, WHILE, SYSOUT;
 terminal 		LENGTH, TRUE, FALSE, THIS, BANG;
 
 /* Datatypes */
-terminal 		INT, INT_ARRAY, BOOLEAN, STRING_ARRAY, IDENTIFIER;
+terminal Identifier IDENTIFIER;
+terminal 		INT, INT_ARRAY, BOOLEAN, STRING_ARRAY;
 
 /* Operators */
 terminal     	PLUS, MINUS, MULTIPLY, LPAREN, RPAREN, LBRACKET, RBRACKET, LCURLY, RCURLY, AND, LESS, ASSIGN;
@@ -60,8 +61,11 @@ non terminal Exp expr;
 non terminal MainClass main_class;
 non terminal ClassDeclList class_decls;
 non terminal MethodDecl main_method;
+non terminal FormalList formal_list;
+non terminal VarDeclList var_decls;
+non terminal StatementList stmt_list;
 
-non terminal expr_list, program, class_decl, var_decl, var_decls, method_decl, method_decls, stmt_list, stmt, formal_list, formal;
+non terminal expr_list, program, class_decl, var_decl, method_decl, method_decls, stmt, formal;
 non terminal type;
 
 /* Precedences */
@@ -79,8 +83,7 @@ program ::= main_class:mc class_decls:cd
 			{: RESULT = new Program(mc, cd); :};
 			
 main_class ::= CLASS IDENTIFIER:id LCURLY main_method:md RCURLY 
-				{:	MethodDecl md = new MethodDecl(md);
-					RESULT = new MainClass(id, md); :}
+				{: RESULT = new MainClass(id, md); :}
 				;
 
 main_method ::= PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING_ARRAY IDENTIFIER:id2 RPAREN LCURLY 

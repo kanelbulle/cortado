@@ -31,9 +31,7 @@ public class ASTPrintVisitor implements Visitor {
 		System.out.print("MainClass(");
 		n.i1.accept(this);
 		System.out.print(", ");
-		n.i2.accept(this);
-		System.out.print(", ");
-		n.s.accept(this);
+		n.md.accept(this);
 		System.out.println(")");
 	}
 
