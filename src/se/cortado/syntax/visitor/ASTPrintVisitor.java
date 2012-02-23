@@ -148,6 +148,10 @@ public class ASTPrintVisitor implements Visitor {
 	public void visit(IntegerType n) {
 		System.out.print("IntegerType()");
 	}
+	
+	public void visit(VoidType n) {
+		System.out.print("VoidType()");
+	}
 
 	// String s;
 	public void visit(IdentifierType n) {
@@ -335,7 +339,7 @@ public class ASTPrintVisitor implements Visitor {
 		n.e.accept(this);
 		System.out.print(")");
 	}
-
+	
 	// String s;
 	public void visit(Identifier n) {
 		System.out.print("Identifier(" + n.s + ")");

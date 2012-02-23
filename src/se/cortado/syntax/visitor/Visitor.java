@@ -50,6 +50,7 @@ public interface Visitor {
 	public void visit(Type node);
 	public void visit(VarDecl node);
 	public void visit(VarDeclList node);
+	public void visit(VoidType node);
 	public void visit(While node);
 	
 }

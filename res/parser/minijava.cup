@@ -10,6 +10,12 @@ import se.cortado.syntaxtree.*;
 /* Preliminaries to set up and use the scanner.  */
 
 parser code {:
+	public ClassDeclList classStack = new ClassDeclList();
+	public ExpList expStack = ExpList();
+	public FormalList formalStack = new FormalList();
+	public StatementList statementStack = new StatementList();
+	public VarDeclList varStack = new VarDeclList();
+	
 	private Scanner scanner;
 	private File file;
 	
@@ -33,7 +39,7 @@ scan with {: return scanner.yylex(); :};
 /* ======== Terminals (tokens RESULTed by the scanner) ======== */
 
 /* MISC */
-terminal		PUBLIC, STATIC, VOID, CLASS, COMMA, DOT, RESULT, NEW;
+terminal		PUBLIC, STATIC, VOID, CLASS, COMMA, DOT, RESULT, NEW, RETURN;
 
 /* Statements */
 terminal		IF, ELSE, WHILE, SYSOUT;
@@ -46,11 +52,16 @@ terminal 		INT, INT_ARRAY, BOOLEAN, STRING_ARRAY, IDENTIFIER;
 
 /* Operators */
 terminal     	PLUS, MINUS, MULTIPLY, LPAREN, RPAREN, LBRACKET, RBRACKET, LCURLY, RCURLY, AND, LESS, ASSIGN;
-terminal Integer    INTEGER;
+terminal IntegerLiteral	INTEGER;
 
 terminal SEMI;
 /* Non terminals */
-non terminal	expr, expr_list, program, main_class, class_decl, class_decls, var_decl, var_decls, method_decl, method_decls, main_method, stmt_list, stmt, formal_list, formal;
+non terminal Exp expr;
+non terminal MainClass main_class;
+non terminal ClassDeclList class_decls;
+non terminal MethodDecl main_method;
+
+non terminal expr_list, program, class_decl, var_decl, var_decls, method_decl, method_decls, stmt_list, stmt, formal_list, formal;
 non terminal type;
 
 /* Precedences */
@@ -65,11 +76,21 @@ start with program;
 /* The grammar */
 
 program ::= main_class:mc class_decls:cd
-			{: RESULT = new Program(new MainClass(mc), new ClassDeclList(cd); :};
+			{: RESULT = new Program(mc, cd); :};
+			
+main_class ::= CLASS IDENTIFIER:id LCURLY main_method:md RCURLY 
+				{:	MethodDecl md = new MethodDecl(md);
+					RESULT = new MainClass(id, md); :}
+				;
 
-main_class ::= CLASS IDENTIFIER LCURLY main_method RCURLY;
-main_method ::= PUBLIC STATIC VOID IDENTIFIER LPAREN STRING_ARRAY IDENTIFIER RPAREN LCURLY var_decls stmt_list RCURLY;
+main_method ::= PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING_ARRAY IDENTIFIER:id2 RPAREN LCURLY 
+var_decls:vd stmt_list:sl RCURLY
+				{: 	FormalList fl = new FormalList();
+					fl.addElement(new Formal(new StringArrayType(), id2));
+					RESULT = new MethodDecl(new VoidType(), id1, fl, vd, sl, null); :}
+				;
 
+/*
 var_decls ::= var_decls var_decl | var_decl;
 var_decl ::= type IDENTIFIER SEMI;
 
@@ -136,4 +157,13 @@ expr ::=	expr:e1 PLUS expr:e2
 			{: RESULT = new Not((Exp) e1); :}
 			| LPAREN expr RPAREN
 			;
+
+new_array ::=	NEW INT LBRACKET expr:e1 RBRACKET
+				{: RESULT = new NewArray(e1); :}
+				;
+
+
+*/
+
+
 
