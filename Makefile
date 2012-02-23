@@ -9,4 +9,4 @@ lexer: res/lexer/minijava.jflex
 
 parser: res/parser/minijava.cup
 	rm -f gen/se/cortado/Parser.java
-	java -jar lib/java-cup-11a.jar -package se.cortado -parser Parser -symbols Sym -destdir gen/se/cortado/ res/parser/minijava.cup
+	java -jar lib/java-cup-11a.jar -package se.cortado -destdir gen/se/cortado/ res/parser/minijava.cup

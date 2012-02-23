@@ -10,7 +10,7 @@ public class Main {
 		}
 		
 		String fileName = args[0];
-		Parser p = new Parser(new File(fileName));
+		parser p = new parser(new File(fileName));
 		
 		try  {
 			System.out.println("" + p.debug_parse());
