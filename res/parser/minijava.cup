@@ -20,25 +20,23 @@ parser code {:
 	private Scanner scanner;
 	private File file;
 	
-	Stack<FormalList> formalLists = new Stack<FormalList>();
+	Symbol current_symbol;
 	
-/* 	public parser(File file) {
-		this();
-		this.file = file;
-		try {
-			scanner = new Scanner(new FileReader(file));
-		}
-		catch (IOException exception) {
-			throw new Error("Unable to open file \"" + file + "\"");
-		}
-	} */
+	Stack<FormalList> formalLists = new Stack<FormalList>();
 
 	public void syntax_error(Symbol cur_token){
 		System.out.println("syntax_error:" + cur_token);
-
 	}
-
+	
+	public int intFromValue(String v) {
+		return Integer.parseInt(v);
+	}
 :};
+
+scan with {: 
+			current_symbol = getScanner().next_token();
+			return current_symbol;
+			:};
 
 /* ======== Terminals (tokens RESULTed by the scanner) ======== */
 
@@ -46,32 +44,54 @@ parser code {:
 terminal		PUBLIC, STATIC, VOID, CLASS, COMMA, DOT, RESULT, NEW, RETURN;
 
 /* Statements */
-terminal		IF, ELSE, WHILE, SYSOUT;
+terminal If 			IF;
+terminal While 			WHILE;
+terminal Print 			SYSOUT;
+terminal ELSE;
 
 /* Expressions */
-terminal 		LENGTH, TRUE, FALSE, THIS, BANG;
+terminal LENGTH;
+terminal True			TRUE;
+terminal False 			FALSE;
+terminal This			THIS;
+terminal Not			BANG;
+terminal IntegerLiteral	INTEGER;
 
 /* Datatypes */
-terminal Identifier IDENTIFIER;
+terminal Identifier 	IDENTIFIER;
 terminal 		INT, INT_ARRAY, BOOLEAN, STRING_ARRAY;
 
 /* Operators */
-terminal     	PLUS, MINUS, MULTIPLY, LPAREN, RPAREN, LBRACKET, RBRACKET, LCURLY, RCURLY, AND, LESS, ASSIGN;
-terminal IntegerLiteral	INTEGER;
+terminal Plus 			PLUS;
+terminal Minus 			MINUS;
+terminal Times 			MULTIPLY;
+terminal And			AND;
+terminal LessThan 		LESS;
+terminal Assign 		ASSIGN;
+
+terminal LPAREN, RPAREN, LBRACKET, RBRACKET, LCURLY, RCURLY;
+
 
 terminal SEMI;
 /* Non terminals */
-non terminal Program program;
-non terminal Exp expr;
-non terminal MainClass main_class;
-non terminal ClassDeclList class_decls;
-non terminal MethodDecl main_method;
-non terminal FormalList formal_list;
-non terminal VarDeclList var_decls;
-non terminal StatementList stmt_list;
+non terminal Program 		program;
+non terminal MainClass 		main_class;
+non terminal MethodDecl 	main_method;
+non terminal ClassDeclList	class_decl;
+non terminal VarDecl		var_decl;
+non terminal MethodDecl		method_decl;
 
-non terminal expr_list, class_decl, var_decl, method_decl, method_decls, stmt, formal;
-non terminal type;
+non terminal Statement		stmt;
+non terminal Exp 			expr;
+non terminal Formal			formal;
+non terminal Type			type;
+
+non terminal ExpList 		expr_list;
+non terminal ClassDeclList 	class_decls;
+non terminal MethodDeclList	method_decls;
+non terminal FormalList 	formal_list;
+non terminal VarDeclList 	var_decls;
+non terminal StatementList 	stmt_list;
 
 /* Precedences */
 precedence left BANG;
@@ -98,9 +118,17 @@ var_decls:vd stmt_list:sl RCURLY
 					RESULT = new MethodDecl(new VoidType(), new Identifier(id1.toString()), fl, vd, sl, new IdentifierExp("hej")); :}
 				;
 
-/*
 var_decls ::= var_decls var_decl | var_decl;
 var_decl ::= type IDENTIFIER SEMI;
+
+stmt_list ::= stmt_list stmt | stmt;
+stmt ::=	LCURLY stmt_list RCURLY 
+			| IF LPAREN expr RPAREN stmt ELSE stmt
+			| WHILE LPAREN expr RPAREN stmt
+			| SYSOUT LPAREN expr RPAREN SEMI
+			| IDENTIFIER ASSIGN expr SEMI
+			| IDENTIFIER LBRACKET expr RBRACKET ASSIGN expr SEMI
+			;
 
 method_decls ::= method_decls method_decl | method_decl;
 method_decl ::= PUBLIC type IDENTIFIER LPAREN formal_list RPAREN LCURLY var_decls stmt_list RESULT expr SEMI RCURLY;
@@ -118,14 +146,7 @@ formal ::= type:t IDENTIFIER:id
 			{: RESULT = new Formal(t, id); :}
 			;
 
-stmt_list ::= stmt_list stmt | stmt;
-stmt ::=	LCURLY stmt_list RCURLY 
-			| IF LPAREN expr RPAREN stmt ELSE stmt
-			| WHILE LPAREN expr RPAREN stmt
-			| SYSOUT LPAREN expr RPAREN SEMI
-			| IDENTIFIER ASSIGN expr SEMI
-			| IDENTIFIER LBRACKET expr RBRACKET ASSIGN expr SEMI
-			;
+
 
 expr_list ::= 	expr_list:el COMMA expr:e1
 				| expr
@@ -148,13 +169,13 @@ expr ::=	expr:e1 PLUS expr:e2
 			| expr:e1 DOT IDENTIFIER:id LPAREN expr_list:el RPAREN
 			{: RESULT = new Call(e1, id, el); :}
 			| INTEGER:i
-			{: RESULT = new IntegerLiteral(i.intValue()); :}
+			{: RESULT = new IntegerLiteral(parser.intFromValue((String)parser.current_symbol.value)); :}
 			| TRUE
 			{: RESULT = new True(); :}
 			| FALSE
 			{: RESULT = new False(); :}
 			| IDENTIFIER:id
-			{: RESULT = new Identifier(id); :}
+			{: RESULT = new IdentifierExp("hej"); :}
 			| THIS
 			{: RESULT = new This(); :}
 			| NEW INT LBRACKET expr:e1 RBRACKET
@@ -169,6 +190,3 @@ expr ::=	expr:e1 PLUS expr:e2
 new_array ::=	NEW INT LBRACKET expr:e1 RBRACKET
 				{: RESULT = new NewArray(e1); :}
 				;
-
-
-*/

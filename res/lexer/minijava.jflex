@@ -113,6 +113,7 @@ COMMENT   = "/*" [^*] ~"*/" | "/*" "*"+ "/"
 /* ----- Datatypes ----- */
 "int" 							{ return token(sym.INT); }
 int\[([0-9]+ | [a-zA-Z0_9]+)\] 	{ return token(sym.INT_ARRAY); }
+String\[\]						{ return token(sym.STRING_ARRAY); }
 "boolean" 						{ return token(sym.BOOLEAN); }
 [a-zA-Z]([0-9a-zA-Z] | _)* 		{ return token(sym.IDENTIFIER); }
 
