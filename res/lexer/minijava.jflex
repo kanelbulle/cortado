@@ -49,12 +49,15 @@ import java_cup.runtime.*;
 	public Symbol token(int tokenType) {
 		if (tokenType == sym.error) {
 			System.out.println("sym.error");
-			}
+		}
+	
 		System.err.println("<token>\t -- \"" + yytext() + "\"" );
-		System.out.println("yychar:" + yychar);
+	
+		System.out.println("yyline:" + yyline);
+		System.out.println("yychar:" + yycolumn);
 		System.out.println("yytext:" + yytext());
-		System.out.println("yytext.length():" + yytext().length());
-		return new Symbol( tokenType, yychar, yychar + yytext().length(), yytext() );
+
+		return new Symbol(tokenType, yyline, yycolumn, yytext());
 	}
 %}
 
