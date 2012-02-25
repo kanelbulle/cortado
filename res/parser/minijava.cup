@@ -41,38 +41,37 @@ scan with {:
 /* ======== Terminals (tokens RESULTed by the scanner) ======== */
 
 /* MISC */
-terminal		PUBLIC, STATIC, VOID, CLASS, COMMA, DOT, RESULT, NEW, RETURN;
+terminal					PUBLIC, STATIC, VOID, CLASS, COMMA, DOT, RESULT, NEW, RETURN;
 
 /* Statements */
-terminal If 			IF;
-terminal While 			WHILE;
-terminal Print 			SYSOUT;
-terminal ELSE;
+terminal If 				IF;
+terminal While 				WHILE;
+terminal Print 				SYSOUT;
+terminal 					ELSE;
 
 /* Expressions */
-terminal LENGTH;
-terminal True			TRUE;
-terminal False 			FALSE;
-terminal This			THIS;
-terminal Not			BANG;
-terminal IntegerLiteral	INTEGER;
+terminal 					LENGTH;
+terminal True				TRUE;
+terminal False 				FALSE;
+terminal This				THIS;
+terminal Not				BANG;
+terminal IntegerLiteral		INTEGER;
 
 /* Datatypes */
-terminal Identifier 	IDENTIFIER;
-terminal 		INT, INT_ARRAY, BOOLEAN, STRING_ARRAY;
+terminal Identifier 		IDENTIFIER;
+terminal 					INT, INT_ARRAY, BOOLEAN, STRING_ARRAY;
 
 /* Operators */
-terminal Plus 			PLUS;
-terminal Minus 			MINUS;
-terminal Times 			MULTIPLY;
-terminal And			AND;
-terminal LessThan 		LESS;
-terminal Assign 		ASSIGN;
+terminal Plus 				PLUS;
+terminal Minus 				MINUS;
+terminal Times 				MULTIPLY;
+terminal And				AND;
+terminal LessThan 			LESS;
+terminal Assign 			ASSIGN;
 
-terminal LPAREN, RPAREN, LBRACKET, RBRACKET, LCURLY, RCURLY;
+terminal 					LPAREN, RPAREN, LBRACKET, RBRACKET, LCURLY, RCURLY;
 
-
-terminal SEMI;
+terminal 					SEMI;
 /* Non terminals */
 non terminal Program 		program;
 non terminal MainClass 		main_class;
