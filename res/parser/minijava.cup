@@ -58,7 +58,7 @@ terminal Not				BANG;
 terminal IntegerLiteral		INTEGER;
 
 /* Datatypes */
-terminal Identifier 		IDENTIFIER;
+terminal String				IDENTIFIER;
 terminal 					INT, INT_ARRAY, BOOLEAN, STRING_ARRAY;
 
 /* Operators */
@@ -91,6 +91,8 @@ non terminal MethodDeclList	method_decls;
 non terminal FormalList 	formal_list;
 non terminal VarDeclList 	var_decls;
 non terminal StatementList 	stmt_list;
+non terminal 				empty;
+non terminal var_declls;
 
 /* Precedences */
 precedence left BANG;
@@ -103,24 +105,25 @@ start with program;
 
 /* The grammar */
 
-program ::= main_class:mc class_decls:cd
-			{: RESULT = new Program(mc, cd); :};
+program ::= main_class:mc
+			{: RESULT = new Program(mc, null); :};
 
 main_class ::= CLASS IDENTIFIER:id LCURLY main_method:md RCURLY 
-				{: RESULT = new MainClass(new Identifier(id.toString()), md); :}
+				{: 	System.out.println("HEEEEELO: " + id);
+					RESULT = new MainClass(new Identifier(id), md); :}
 				;
 
-main_method ::= PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING_ARRAY IDENTIFIER:id2 RPAREN LCURLY 
-var_decls:vd stmt_list:sl RCURLY
+main_method ::= PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING_ARRAY IDENTIFIER:id2 RPAREN LCURLY var_decls:vd stmt_list:sl RCURLY
 				{: 	FormalList fl = new FormalList();
-					fl.addElement(new Formal(new StringArrayType(), new Identifier(id2.toString())));
-					RESULT = new MethodDecl(new VoidType(), new Identifier(id1.toString()), fl, vd, sl, new IdentifierExp("hej")); :}
+					fl.addElement(new Formal(new StringArrayType(), new Identifier(id2)));
+					RESULT = new MethodDecl(new VoidType(), new Identifier(id1), fl, null, null, new IdentifierExp("hej")); :}
 				;
 
-var_decls ::= var_decls var_decl | var_decl;
+var_decls ::= var_declls | empty;
+var_declls ::= var_declls var_decl | var_decl;
 var_decl ::= type IDENTIFIER SEMI;
 
-stmt_list ::= stmt_list stmt | stmt;
+stmt_list ::= stmt_list stmt | empty;
 stmt ::=	LCURLY stmt_list RCURLY 
 			| IF LPAREN expr RPAREN stmt ELSE stmt
 			| WHILE LPAREN expr RPAREN stmt
@@ -142,10 +145,8 @@ formal_list ::= formal_list:fl COMMA formal
 				;
 
 formal ::= type:t IDENTIFIER:id
-			{: RESULT = new Formal(t, id); :}
+			{: RESULT = new Formal(t, new Identifier(id)); :}
 			;
-
-
 
 expr_list ::= 	expr_list:el COMMA expr:e1
 				| expr
@@ -166,7 +167,7 @@ expr ::=	expr:e1 PLUS expr:e2
 			| expr:e1 DOT LENGTH
 			{: RESULT = new ArrayLength(e1); :}
 			| expr:e1 DOT IDENTIFIER:id LPAREN expr_list:el RPAREN
-			{: RESULT = new Call(e1, id, el); :}
+			{: RESULT = new Call(e1, new Identifier(id), el); :}
 			| INTEGER:i
 			{: RESULT = new IntegerLiteral(parser.intFromValue((String)parser.current_symbol.value)); :}
 			| TRUE
@@ -180,7 +181,7 @@ expr ::=	expr:e1 PLUS expr:e2
 			| NEW INT LBRACKET expr:e1 RBRACKET
 			{: RESULT = new NewArray(e1); :}
 			| NEW IDENTIFIER:id LPAREN RPAREN
-			{: RESULT = new NewObject(id); :}
+			{: RESULT = new NewObject(new Identifier(id)); :}
 			| BANG expr:e1
 			{: RESULT = new Not((Exp) e1); :}
 			| LPAREN expr RPAREN
@@ -189,3 +190,5 @@ expr ::=	expr:e1 PLUS expr:e2
 new_array ::=	NEW INT LBRACKET expr:e1 RBRACKET
 				{: RESULT = new NewArray(e1); :}
 				;
+
+empty ::= ;
