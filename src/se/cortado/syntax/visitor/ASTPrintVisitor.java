@@ -16,11 +16,11 @@ public class ASTPrintVisitor implements Visitor {
 	// ClassDeclList cl;
 	public void visit(Program n) {
 		System.out.println("Program(");
-		n.m.accept(this);
+		n.mainClass.accept(this);
 		System.out.println("ClassDeclList(");
-		for ( int i = 0; i < n.cl.size(); i++ ) {
+		for ( int i = 0; i < n.classDeclList.size(); i++ ) {
 			if (i>0) System.out.println(", ");
-			n.cl.elementAt(i).accept(this);
+			n.classDeclList.elementAt(i).accept(this);
 		}
 		System.out.println("))");
 	}
@@ -85,9 +85,9 @@ public class ASTPrintVisitor implements Visitor {
 	// Identifier i;
 	public void visit(VarDecl n) {
 		System.out.print("VarDecl(");
-		n.t.accept(this);
+		n.type.accept(this);
 		System.out.print(", ");
-		n.i.accept(this);
+		n.identifier.accept(this);
 		System.out.print(")");
 	}
 
@@ -99,29 +99,29 @@ public class ASTPrintVisitor implements Visitor {
 	// Exp e;
 	public void visit(MethodDecl n) {
 		System.out.print("MethodDecl(");
-		n.t.accept(this);
+		n.type.accept(this);
 		System.out.print(", ");
-		n.i.accept(this);
+		n.identifier.accept(this);
 		System.out.print(", (");
-		for ( int i = 0; i < n.fl.size(); i++ ) {
-			n.fl.elementAt(i).accept(this);
-			if (i+1 < n.fl.size()) 
+		for ( int i = 0; i < n.formalList.size(); i++ ) {
+			n.formalList.elementAt(i).accept(this);
+			if (i+1 < n.formalList.size()) 
 				System.out.print(", ");
 		}
 		System.out.println("), (");
-		for ( int i = 0; i < n.vl.size(); i++ ) {
-			n.vl.elementAt(i).accept(this);
-			if ( i+1 < n.vl.size() )
+		for ( int i = 0; i < n.varDeclList.size(); i++ ) {
+			n.varDeclList.elementAt(i).accept(this);
+			if ( i+1 < n.varDeclList.size() )
 				System.out.print(", ");
 		}
 		System.out.println("), (");
-		for ( int i = 0; i < n.sl.size(); i++ ) {
-			n.sl.elementAt(i).accept(this);
-			if ( i+1 < n.sl.size() ) 
+		for ( int i = 0; i < n.statementList.size(); i++ ) {
+			n.statementList.elementAt(i).accept(this);
+			if ( i+1 < n.statementList.size() ) 
 				System.out.println(", ");
 		}
 		System.out.println("), ");
-		n.e.accept(this);
+		n.exp.accept(this);
 		System.out.println(")");
 	}
 

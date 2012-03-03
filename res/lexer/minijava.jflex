@@ -51,11 +51,11 @@ import java_cup.runtime.*;
 			System.out.println("sym.error");
 		}
 	
-		System.err.println("<token>\t -- \"" + yytext() + "\"" );
+		//System.err.println("<token>\t -- \"" + yytext() + "\"" );
 	
-		System.out.println("yyline:" + yyline);
-		System.out.println("yychar:" + yycolumn);
-		System.out.println("yytext:" + yytext());
+		//System.out.println("yyline:" + yyline);
+		//System.out.println("yychar:" + yycolumn);
+		//System.out.println("yytext:" + yytext());
 
 		return new Symbol(tokenType, yyline, yycolumn, yytext());
 	}

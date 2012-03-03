@@ -3,11 +3,12 @@ import se.cortado.syntax.visitor.*;
 
 public class Program {
 
-	public MainClass m;
-	public ClassDeclList cl;
+	public MainClass mainClass;
+	public ClassDeclList classDeclList;
 
 	public Program(MainClass am, ClassDeclList acl) {
-		m=am; cl=acl; 
+		mainClass = am;
+		classDeclList = acl; 
 	}
 
 	public void accept(Visitor v) {

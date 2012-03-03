@@ -2,11 +2,12 @@ package se.cortado.syntaxtree;
 import se.cortado.syntax.visitor.*;
 
 public class VarDecl {
-	public Type t;
-	public Identifier i;
+	public Type type;
+	public Identifier identifier;
 
 	public VarDecl(Type at, Identifier ai) {
-		t=at; i=ai;
+		type = at;
+		identifier = ai;
 	}
 
 	public void accept(Visitor v) {

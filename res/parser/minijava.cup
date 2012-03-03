@@ -10,12 +10,15 @@ import se.cortado.sym;
 
 /* Preliminaries to set up and use the scanner.  */
 
+action code {:
+	public ClassDeclList mClassDeclStack = new ClassDeclList();
+	public ExpList mExpStack = new ExpList();
+	public FormalList mFormalStack = new FormalList();
+	public StatementList mStatementStack = new StatementList();
+	public VarDeclList mVarDeclStack = new VarDeclList();
+:};
+
 parser code {:
-	public ClassDeclList classStack = new ClassDeclList();
-	public ExpList expStack = new ExpList();
-	public FormalList formalStack = new FormalList();
-	public StatementList statementStack = new StatementList();
-	public VarDeclList varStack = new VarDeclList();
 
 	private Scanner scanner;
 	private File file;
@@ -72,6 +75,7 @@ terminal Assign 			ASSIGN;
 terminal 					LPAREN, RPAREN, LBRACKET, RBRACKET, LCURLY, RCURLY;
 
 terminal 					SEMI;
+
 /* Non terminals */
 non terminal Program 		program;
 non terminal MainClass 		main_class;
@@ -103,87 +107,98 @@ precedence left AND, LESS, DOT;
 /* State to start with */
 start with program;
 
-/* The grammar */
+
+/* ======== The grammar ======== */
 
 program ::= main_class:mc
-			{: RESULT = new Program(mc, null); :};
+				{: RESULT = new Program(mc, new ClassDeclList()); :}
+				;
 
 main_class ::= CLASS IDENTIFIER:id LCURLY main_method:md RCURLY 
-				{: 	System.out.println("HEEEEELO: " + id);
-					RESULT = new MainClass(new Identifier(id), md); :}
+				{: RESULT = new MainClass(new Identifier(id), md); :}
 				;
 
 main_method ::= PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING_ARRAY IDENTIFIER:id2 RPAREN LCURLY var_decls:vd stmt_list:sl RCURLY
 				{: 	FormalList fl = new FormalList();
 					fl.addElement(new Formal(new StringArrayType(), new Identifier(id2)));
-					RESULT = new MethodDecl(new VoidType(), new Identifier(id1), fl, null, null, new IdentifierExp("hej")); :}
+					VarDeclList curVarDeclStack = mVarDeclStack;
+					mVarDeclStack = new VarDeclList();
+	/// TODO: new void return type?
+					RESULT = new MethodDecl(new VoidType(), new Identifier(id1), fl, curVarDeclStack, new StatementList(), new IdentifierExp("voidType")); :}
 				;
 
-var_decls ::= var_declls | empty;
-var_declls ::= var_declls var_decl | var_decl;
-var_decl ::= type IDENTIFIER SEMI;
+var_decls 		::= var_declls | empty;
+var_declls 		::= var_declls var_decl | var_decl;
+var_decl 		::= type:t IDENTIFIER:id SEMI
+					{:	mVarDeclStack.addElement(new VarDecl(t, new Identifier(id))); :}
+					;
 
-stmt_list ::= stmt_list stmt | empty;
-stmt ::=	LCURLY stmt_list RCURLY 
-			| IF LPAREN expr RPAREN stmt ELSE stmt
-			| WHILE LPAREN expr RPAREN stmt
-			| SYSOUT LPAREN expr RPAREN SEMI
-			| IDENTIFIER ASSIGN expr SEMI
-			| IDENTIFIER LBRACKET expr RBRACKET ASSIGN expr SEMI
-			;
+stmt_list 		::= stmt_list stmt | empty;
+stmt 			::=	LCURLY stmt_list RCURLY 
+				| IF LPAREN expr RPAREN stmt ELSE stmt
+				| WHILE LPAREN expr RPAREN stmt
+				| SYSOUT LPAREN expr RPAREN SEMI
+				| IDENTIFIER ASSIGN expr SEMI
+				| IDENTIFIER LBRACKET expr RBRACKET ASSIGN expr SEMI
+				;
 
-method_decls ::= method_decls method_decl | method_decl;
-method_decl ::= PUBLIC type IDENTIFIER LPAREN formal_list RPAREN LCURLY var_decls stmt_list RESULT expr SEMI RCURLY;
+method_decls 	::= method_decls method_decl | method_decl;
+method_decl 	::= PUBLIC type IDENTIFIER LPAREN formal_list RPAREN LCURLY var_decls stmt_list RESULT expr SEMI RCURLY;
 
-class_decls ::= class_decls class_decl | class_decl;
-class_decl ::= CLASS IDENTIFIER LCURLY var_decls method_decls RCURLY;
+class_decls 	::= class_decls class_decl | class_decl;
+class_decl 		::= CLASS IDENTIFIER LCURLY var_decls method_decls RCURLY;
 
-type ::= INT | INT_ARRAY | BOOLEAN | IDENTIFIER;
-
-formal_list ::= formal_list:fl COMMA formal
+/* TODO */
+type ::= 		INT		 		{: RESULT = new IntegerType(); :} 
+				| INT_ARRAY 	{: RESULT = new IntegerType(); :}
+				| BOOLEAN 		{: RESULT = new IntegerType(); :}
+				| IDENTIFIER	{: RESULT = new IntegerType(); :}
+				;
+	
+formal_list 	::= formal_list:fl COMMA formal
 				| formal
 				;
 
-formal ::= type:t IDENTIFIER:id
-			{: RESULT = new Formal(t, new Identifier(id)); :}
-			;
+formal 			::= type:t IDENTIFIER:id
+					{: RESULT = new Formal(t, new Identifier(id)); :}
+				;
 
 expr_list ::= 	expr_list:el COMMA expr:e1
 				| expr
 				;
 
-expr ::=	expr:e1 PLUS expr:e2
-			{: RESULT = new Plus(e1, e2); :}
+expr ::=	expr:e1 PLUS expr:e2 
+				{: RESULT = new Plus(e1, e2); :}
 			| expr:e1 MINUS expr:e2
-			{: RESULT = new Minus(e1, e2); :}
+				{: RESULT = new Minus(e1, e2); :}
 			| expr:e1 MULTIPLY expr:e2
-			{: RESULT = new Times(e1, e2); :}
+				{: RESULT = new Times(e1, e2); :}
 			| expr:e1 AND expr:e2
-			{: RESULT = new And(e1, e2); :}
+				{: RESULT = new And(e1, e2); :}
 			| expr:e1 LESS expr:e2
-			{: RESULT = new LessThan(e1, e2); :}
+				{: RESULT = new LessThan(e1, e2); :}
 			| expr:e1 LBRACKET expr:e2 RBRACKET
-			{: RESULT = new ArrayLookup(e1, e2); :}
+				{: RESULT = new ArrayLookup(e1, e2); :}
 			| expr:e1 DOT LENGTH
-			{: RESULT = new ArrayLength(e1); :}
+				{: RESULT = new ArrayLength(e1); :}
 			| expr:e1 DOT IDENTIFIER:id LPAREN expr_list:el RPAREN
-			{: RESULT = new Call(e1, new Identifier(id), el); :}
+				{: RESULT = new Call(e1, new Identifier(id), el); :}
 			| INTEGER:i
-			{: RESULT = new IntegerLiteral(parser.intFromValue((String)parser.current_symbol.value)); :}
+				{: RESULT = new IntegerLiteral(parser.intFromValue((String)parser.current_symbol.value)); :}
 			| TRUE
-			{: RESULT = new True(); :}
+				{: RESULT = new True(); :}
 			| FALSE
-			{: RESULT = new False(); :}
+				{: RESULT = new False(); :}
 			| IDENTIFIER:id
-			{: RESULT = new IdentifierExp("hej"); :}
+				{: RESULT = new IdentifierExp("hej"); :}
 			| THIS
-			{: RESULT = new This(); :}
+				{: RESULT = new This(); :}
 			| NEW INT LBRACKET expr:e1 RBRACKET
-			{: RESULT = new NewArray(e1); :}
+				{: RESULT = new NewArray(e1); :}
 			| NEW IDENTIFIER:id LPAREN RPAREN
-			{: RESULT = new NewObject(new Identifier(id)); :}
+				{: RESULT = new NewObject(new Identifier(id)); :}
 			| BANG expr:e1
-			{: RESULT = new Not((Exp) e1); :}
+				{: RESULT = new Not((Exp) e1); :}
 			| LPAREN expr RPAREN
 			;
 

@@ -2,16 +2,20 @@ package se.cortado.syntaxtree;
 import se.cortado.syntax.visitor.*;
 
 public class MethodDecl {
-	public Type t;
-	public Identifier i;
-	public FormalList fl;
-	public VarDeclList vl;
-	public StatementList sl;
-	public Exp e;
+	public Type type;
+	public Identifier identifier;
+	public FormalList formalList;
+	public VarDeclList varDeclList;
+	public StatementList statementList;
+	public Exp exp;
 
-	public MethodDecl(Type at, Identifier ai, FormalList afl, VarDeclList avl, 
-			StatementList asl, Exp ae) {
-		t=at; i=ai; fl=afl; vl=avl; sl=asl; e=ae;
+	public MethodDecl(Type at, Identifier ai, FormalList afl, VarDeclList avl, StatementList asl, Exp ae) {
+		type = at;
+		identifier = ai;
+		formalList = afl;
+		varDeclList = avl;
+		statementList = asl;
+		exp = ae;
 	}
 
 	public void accept(Visitor v) {

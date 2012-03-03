@@ -1,5 +1,9 @@
 all: cortado
 
+run:
+	javac -d bin/ -classpath "lib/java-cup-11a.jar" gen/se/cortado/*.java src/se/cortado/*.java src/se/cortado/syntax/visitor/*.java src/se/cortado/syntaxtree/*.java
+	java -cp bin/:lib/java-cup-11a.jar se.cortado.Main test/basic.java
+	
 cortado: parser lexer
 	javac -d bin/ -classpath "lib/java-cup-11a.jar" gen/se/cortado/*.java src/se/cortado/*.java src/se/cortado/syntax/visitor/*.java src/se/cortado/syntaxtree/*.java
 
