@@ -16,6 +16,7 @@ action code {:
 	public FormalList mFormalStack = new FormalList();
 	public StatementList mStatementStack = new StatementList();
 	public VarDeclList mVarDeclStack = new VarDeclList();
+	public MethodDeclList mMethodDeclStack = new MethodDeclList();
 :};
 
 parser code {:
@@ -123,8 +124,11 @@ main_method ::= PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING_ARRAY IDENTIFIER
 					fl.addElement(new Formal(new StringArrayType(), new Identifier(id2)));
 					VarDeclList curVarDeclStack = mVarDeclStack;
 					mVarDeclStack = new VarDeclList();
+					StatementList curStatementStack = mStatementStack;
+					mStatementStack = new StatementList();				
 	/// TODO: new void return type?
-					RESULT = new MethodDecl(new VoidType(), new Identifier(id1), fl, curVarDeclStack, new StatementList(), new IdentifierExp("voidType")); :}
+	
+					RESULT = new MethodDecl(new VoidType(), new Identifier(id1), fl, curVarDeclStack, curStatementStack, new IdentifierExp("voidType")); :}
 				;
 
 var_decls 		::= var_declls | empty;
@@ -135,28 +139,47 @@ var_decl 		::= type:t IDENTIFIER:id SEMI
 
 stmt_list 		::= stmt_list stmt | empty;
 stmt 			::=	LCURLY stmt_list RCURLY 
-				| IF LPAREN expr RPAREN stmt ELSE stmt
-				| WHILE LPAREN expr RPAREN stmt
-				| SYSOUT LPAREN expr RPAREN SEMI
-				| IDENTIFIER ASSIGN expr SEMI
-				| IDENTIFIER LBRACKET expr RBRACKET ASSIGN expr SEMI
+				| IF LPAREN expr:e RPAREN stmt:s1 ELSE stmt:s2
+					{: mStatementStack.addElement(new If(e, s1, s2)); :}
+				| WHILE LPAREN expr:e RPAREN stmt:s
+					{: mStatementStack.addElement(new While(e, s)); :}
+				| SYSOUT LPAREN expr:e RPAREN SEMI
+					{: mStatementStack.addElement(new Print(e)); :}
+				| IDENTIFIER:id ASSIGN expr:e SEMI
+					{: mStatementStack.addElement(new Assign(new Identifier(id), e)); :}
+				| IDENTIFIER:id LBRACKET expr:e1 RBRACKET ASSIGN expr:e2 SEMI
+					{: mStatementStack.addElement(new ArrayAssign(new Identifier(id), e1, e2)); :}
 				;
 
 method_decls 	::= method_decls method_decl | method_decl;
-method_decl 	::= PUBLIC type IDENTIFIER LPAREN formal_list RPAREN LCURLY var_decls stmt_list RESULT expr SEMI RCURLY;
+method_decl 	::= PUBLIC type:t IDENTIFIER:id LPAREN formal_list RPAREN LCURLY var_decls:vars stmt_list:stmtlist RESULT expr:e SEMI RCURLY
+					{:	
+						FormalList curFormalStack = mFormalStack;
+						mFormalStack = new FormalList();
+						
+						mMethodDeclStack.addElement(new MethodDecl(t, new Identifier(id), curFormalStack, vars, stmtlist, e)); :}
+					;
 
 class_decls 	::= class_decls class_decl | class_decl;
-class_decl 		::= CLASS IDENTIFIER LCURLY var_decls method_decls RCURLY;
+class_decl 		::= CLASS IDENTIFIER:id LCURLY var_decls method_decls RCURLY
+					{:	
+						VarDeclList curVarDeclStack = mVarDeclStack;
+						mVarDeclStack = new VarDeclList();
+						MethodDeclList curMethodDeclStack = mMethodDeclStack;
+						mMethodDeclStack = new MethodDeclList();
+						
+						mClassDeclStack.addElement(new ClassDeclSimple(new Identifier(id), curVarDeclStack, curMethodDeclStack)); :}
+					;
 
 /* TODO */
 type ::= 		INT		 		{: RESULT = new IntegerType(); :} 
-				| INT_ARRAY 	{: RESULT = new IntegerType(); :}
-				| BOOLEAN 		{: RESULT = new IntegerType(); :}
-				| IDENTIFIER	{: RESULT = new IntegerType(); :}
+				| INT_ARRAY 	{: RESULT = new IntArrayType(); :}
+				| BOOLEAN 		{: RESULT = new BooleanType(); :}
+				| IDENTIFIER:id	{: RESULT = new IdentifierType(id); :}
 				;
 	
 formal_list 	::= formal_list:fl COMMA formal
-				| formal
+				| formal:f {: mFormalStack.addElement(f); :}
 				;
 
 formal 			::= type:t IDENTIFIER:id
@@ -164,7 +187,7 @@ formal 			::= type:t IDENTIFIER:id
 				;
 
 expr_list ::= 	expr_list:el COMMA expr:e1
-				| expr
+				| expr:e {: mExpStack.addElement(e); :}
 				;
 
 expr ::=	expr:e1 PLUS expr:e2 

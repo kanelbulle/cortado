@@ -17,22 +17,22 @@ public class ASTPrintVisitor implements Visitor {
 	public void visit(Program n) {
 		System.out.println("Program(");
 		n.mainClass.accept(this);
-		System.out.println("ClassDeclList(");
+		System.out.println("\tClassDeclList(");
 		for ( int i = 0; i < n.classDeclList.size(); i++ ) {
 			if (i>0) System.out.println(", ");
 			n.classDeclList.elementAt(i).accept(this);
 		}
-		System.out.println("))");
+		System.out.println("\t)\n)");
 	}
 
 	// Identifier i1,i2;
 	// Statement s;
 	public void visit(MainClass n) {
-		System.out.print("MainClass(");
+		System.out.print("\tMainClass(");
 		n.i1.accept(this);
 		System.out.print(", ");
 		n.md.accept(this);
-		System.out.println(")");
+		System.out.println("\t)");
 	}
 
 	// Identifier i;
