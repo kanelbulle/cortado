@@ -15,6 +15,7 @@ action code {:
 	public ExpList mExpStack = new ExpList();
 	public FormalList mFormalStack = new FormalList();
 	public StatementList mStatementStack = new StatementList();
+	public VarDeclList mClassVarDeclStack = new VarDeclList();
 	public VarDeclList mVarDeclStack = new VarDeclList();
 	public MethodDeclList mMethodDeclStack = new MethodDeclList();
 :};
@@ -39,13 +40,14 @@ parser code {:
 
 scan with {: 
 			current_symbol = getScanner().next_token();
+			System.out.println("" + current_symbol);
 			return current_symbol;
 			:};
 
 /* ======== Terminals (tokens RESULTed by the scanner) ======== */
 
 /* MISC */
-terminal					PUBLIC, STATIC, VOID, CLASS, COMMA, DOT, RESULT, NEW, RETURN;
+terminal					PUBLIC, STATIC, VOID, CLASS, COMMA, DOT, NEW, RETURN;
 
 /* Statements */
 terminal If 				IF;
@@ -55,11 +57,11 @@ terminal 					ELSE;
 
 /* Expressions */
 terminal 					LENGTH;
-terminal True				TRUE;
-terminal False 				FALSE;
-terminal This				THIS;
-terminal Not				BANG;
-terminal IntegerLiteral		INTEGER;
+terminal 					TRUE;
+terminal  					FALSE;
+terminal 					THIS;
+terminal 					BANG;
+terminal 					INTEGER;
 
 /* Datatypes */
 terminal String				IDENTIFIER;
@@ -89,6 +91,7 @@ non terminal Statement		stmt;
 non terminal Exp 			expr;
 non terminal Formal			formal;
 non terminal Type			type;
+non terminal Exp			returnExp;
 
 non terminal ExpList 		expr_list;
 non terminal ClassDeclList 	class_decls;
@@ -111,8 +114,8 @@ start with program;
 
 /* ======== The grammar ======== */
 
-program ::= main_class:mc
-				{: RESULT = new Program(mc, new ClassDeclList()); :}
+program ::= main_class:mc class_decls
+				{: RESULT = new Program(mc, mClassDeclStack); :}
 				;
 
 main_class ::= CLASS IDENTIFIER:id LCURLY main_method:md RCURLY 
@@ -152,23 +155,35 @@ stmt 			::=	LCURLY stmt_list RCURLY
 				;
 
 method_decls 	::= method_decls method_decl | method_decl;
-method_decl 	::= PUBLIC type:t IDENTIFIER:id LPAREN formal_list RPAREN LCURLY var_decls:vars stmt_list:stmtlist RESULT expr:e SEMI RCURLY
+method_decl 	::= PUBLIC type:t IDENTIFIER:id LPAREN formal_list RPAREN LCURLY var_decls stmt_list returnExp:e SEMI RCURLY
 					{:	
 						FormalList curFormalStack = mFormalStack;
-						mFormalStack = new FormalList();
+						VarDeclList curVarDeclStack = mVarDeclStack;
+						StatementList curStatementStack = mStatementStack;
 						
-						mMethodDeclStack.addElement(new MethodDecl(t, new Identifier(id), curFormalStack, vars, stmtlist, e)); :}
+						mFormalStack = new FormalList();
+						mVarDeclStack = new VarDeclList();
+						mStatementStack = new StatementList();
+						
+						mMethodDeclStack.addElement(new MethodDecl(t, new Identifier(id), curFormalStack, curVarDeclStack, curStatementStack, e)); :}
 					;
+
+returnExp		::= RETURN expr:e
+					{: RESULT = e; :} 
+					| empty;
 
 class_decls 	::= class_decls class_decl | class_decl;
 class_decl 		::= CLASS IDENTIFIER:id LCURLY var_decls method_decls RCURLY
-					{:	
-						VarDeclList curVarDeclStack = mVarDeclStack;
-						mVarDeclStack = new VarDeclList();
-						MethodDeclList curMethodDeclStack = mMethodDeclStack;
-						mMethodDeclStack = new MethodDeclList();
-						
-						mClassDeclStack.addElement(new ClassDeclSimple(new Identifier(id), curVarDeclStack, curMethodDeclStack)); :}
+						{:	
+							System.out.println("Adding class declaration to ClassDeclListStack");
+							VarDeclList curVarDeclStack = mClassVarDeclStack;
+							System.out.println("" + curVarDeclStack);
+							mClassVarDeclStack = new VarDeclList();
+							MethodDeclList curMethodDeclStack = mMethodDeclStack;
+							mMethodDeclStack = new MethodDeclList();
+							
+							mClassDeclStack.addElement(new ClassDeclSimple(new Identifier(id), curVarDeclStack, curMethodDeclStack));
+						:}
 					;
 
 /* TODO */
@@ -187,7 +202,9 @@ formal 			::= type:t IDENTIFIER:id
 				;
 
 expr_list ::= 	expr_list:el COMMA expr:e1
-				| expr:e {: mExpStack.addElement(e); :}
+					{: mExpStack.addElement(e1); :}
+				| expr:e 
+					{: mExpStack.addElement(e); :}
 				;
 
 expr ::=	expr:e1 PLUS expr:e2 
@@ -204,10 +221,12 @@ expr ::=	expr:e1 PLUS expr:e2
 				{: RESULT = new ArrayLookup(e1, e2); :}
 			| expr:e1 DOT LENGTH
 				{: RESULT = new ArrayLength(e1); :}
-			| expr:e1 DOT IDENTIFIER:id LPAREN expr_list:el RPAREN
-				{: RESULT = new Call(e1, new Identifier(id), el); :}
+			| expr:e1 DOT IDENTIFIER:id LPAREN expr_list RPAREN
+				{: ExpList el = mExpStack;
+					mExpStack = new ExpList();
+					RESULT = new Call(e1, new Identifier(id), el); :}
 			| INTEGER:i
-				{: RESULT = new IntegerLiteral(parser.intFromValue((String)parser.current_symbol.value)); :}
+				{: RESULT = new IntegerLiteral(1); :}
 			| TRUE
 				{: RESULT = new True(); :}
 			| FALSE

@@ -51,7 +51,7 @@ import java_cup.runtime.*;
 			System.out.println("sym.error");
 		}
 	
-		//System.err.println("<token>\t -- \"" + yytext() + "\"" );
+		System.err.println("<token>\t -- \"" + yytext() + "\"" );
 	
 		//System.out.println("yyline:" + yyline);
 		//System.out.println("yychar:" + yycolumn);
@@ -150,5 +150,5 @@ String\[\]						{ return token(sym.STRING_ARRAY); }
 
 /* Non matched input = invalid input, inform parser exception */
 . | {NEWLINE} 						{ return token(sym.error); }
-<<EOF>> 							{ System.out.println("reached EOF"); return token(sym.EOF); }
+<<EOF>> 							{ return token(sym.EOF); }
 
