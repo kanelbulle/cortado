@@ -9,6 +9,11 @@ public class MethodDeclList {
    public MethodDeclList() {
       list = new Vector<MethodDecl>();
    }
+   
+   public MethodDeclList(MethodDecl n) {
+      list = new Vector<MethodDecl>();
+      addElement(n);
+   }
 
    public void addElement(MethodDecl n) {
       list.addElement(n);

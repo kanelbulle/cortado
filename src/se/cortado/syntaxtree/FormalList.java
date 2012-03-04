@@ -10,6 +10,11 @@ public class FormalList {
       list = new Vector<Formal>();
    }
 
+   public FormalList(Formal n) {
+      list = new Vector<Formal>();
+      addElement(n);
+   }
+
    public void addElement(Formal n) {
       list.addElement(n);
    }

@@ -9,6 +9,11 @@ public class ClassDeclList {
 	public ClassDeclList() {
 		list = new Vector<ClassDecl>();
 	}
+	
+	public ClassDeclList(ClassDecl n) {
+		list = new Vector<ClassDecl>();
+		addElement(n);
+	}
 
 	public void addElement(ClassDecl n) {
 		list.addElement(n);

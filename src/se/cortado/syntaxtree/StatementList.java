@@ -5,8 +5,14 @@ import java.util.Vector;
 
 public class StatementList {
 	private Vector<Statement> list;
+	
 	public StatementList() {
 		list = new Vector<Statement>();
+	}
+	
+	public StatementList(Statement n) {
+		list = new Vector<Statement>();
+		addElement(n);
 	}
 
 	public void addElement(Statement n) {

@@ -8,6 +8,11 @@ public class VarDeclList {
    public VarDeclList() {
       list = new java.util.ArrayList<VarDecl>();
    }
+   
+   public VarDeclList(VarDecl n) {
+      list = new java.util.ArrayList<VarDecl>();
+      addElement(n);
+   }
 
    public void addElement(VarDecl n) {
       list.add(n);
