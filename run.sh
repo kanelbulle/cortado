@@ -1,2 +1,3 @@
-java -cp bin/:lib/java-cup-11a.jar se.cortado.Main test/basic.java
+#!/bin/bash
+java -cp bin/:lib/java-cup-11a.jar se.cortado.Main $1
 
