@@ -40,7 +40,7 @@ parser code {:
 
 scan with {: 
 			current_symbol = getScanner().next_token();
-			System.out.println("" + current_symbol);
+			//System.out.println("" + current_symbol);
 			return current_symbol;
 			:};
 
@@ -175,11 +175,10 @@ returnExp		::= RETURN expr:e
 class_decls 	::= class_decls class_decl | class_decl;
 class_decl 		::= CLASS IDENTIFIER:id LCURLY var_decls method_decls RCURLY
 						{:	
-							System.out.println("Adding class declaration to ClassDeclListStack");
 							VarDeclList curVarDeclStack = mClassVarDeclStack;
-							System.out.println("" + curVarDeclStack);
-							mClassVarDeclStack = new VarDeclList();
 							MethodDeclList curMethodDeclStack = mMethodDeclStack;
+							
+							mClassVarDeclStack = new VarDeclList();
 							mMethodDeclStack = new MethodDeclList();
 							
 							mClassDeclStack.addElement(new ClassDeclSimple(new Identifier(id), curVarDeclStack, curMethodDeclStack));
