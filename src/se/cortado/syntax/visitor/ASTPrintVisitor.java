@@ -367,7 +367,7 @@ public class ASTPrintVisitor implements Visitor {
 	public void visit(ClassDeclList node) {
 		System.out.println(indent() + "ClassDeclList(");
 		level++;
-		
+
 		for ( int i = 0; i < node.size(); i++ ) {
 			node.elementAt(i).accept(this);
 			System.out.println(", ");

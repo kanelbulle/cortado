@@ -73,7 +73,7 @@ terminal Minus 				MINUS;
 terminal Times 				MULTIPLY;
 terminal And				AND;
 terminal LessThan 			LESS;
-terminal Assign 			ASSIGN;
+terminal		 			ASSIGN;
 
 terminal 					LPAREN, RPAREN, LBRACKET, RBRACKET, LCURLY, RCURLY;
 
@@ -83,7 +83,7 @@ terminal 					SEMI;
 non terminal Program 		program;
 non terminal MainClass 		main_class;
 non terminal MethodDecl 	main_method;
-non terminal ClassDeclList	class_decl;
+non terminal ClassDecl		class_decl;
 non terminal VarDecl		var_decl;
 non terminal MethodDecl		method_decl;
 
@@ -100,7 +100,7 @@ non terminal FormalList 	formal_list;
 non terminal VarDeclList 	var_decls;
 non terminal StatementList 	stmt_list;
 non terminal 				empty;
-non terminal var_declls;
+non terminal var_declls, stmt_listt;
 
 /* Precedences */
 precedence left BANG;
@@ -114,8 +114,8 @@ start with program;
 
 /* ======== The grammar ======== */
 
-program ::= main_class:mc class_decls
-				{: RESULT = new Program(mc, mClassDeclStack); :}
+program ::= main_class:mc class_decls:cdl
+				{: RESULT = new Program(mc, cdl); :}
 				;
 
 main_class ::= CLASS IDENTIFIER:id LCURLY main_method:md RCURLY 
@@ -137,10 +137,11 @@ main_method ::= PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING_ARRAY IDENTIFIER
 var_decls 		::= var_declls | empty;
 var_declls 		::= var_declls var_decl | var_decl;
 var_decl 		::= type:t IDENTIFIER:id SEMI
-					{:	mVarDeclStack.addElement(new VarDecl(t, new Identifier(id))); :}
+						{:	mVarDeclStack.addElement(new VarDecl(t, new Identifier(id))); :}
 					;
 
-stmt_list 		::= stmt_list stmt | empty;
+stmt_list 		::= stmt_listt | empty;
+stmt_listt		::= stmt_listt stmt | stmt;
 stmt 			::=	LCURLY stmt_list RCURLY 
 				| IF LPAREN expr:e RPAREN stmt:s1 ELSE stmt:s2
 					{: mStatementStack.addElement(new If(e, s1, s2)); :}
@@ -172,16 +173,29 @@ returnExp		::= RETURN expr:e
 					{: RESULT = e; :} 
 					| empty;
 
-class_decls 	::= class_decls class_decl | class_decl;
 class_decl 		::= CLASS IDENTIFIER:id LCURLY var_decls method_decls RCURLY
-						{:	
-							VarDeclList curVarDeclStack = mClassVarDeclStack;
-							MethodDeclList curMethodDeclStack = mMethodDeclStack;
-							
-							mClassVarDeclStack = new VarDeclList();
-							mMethodDeclStack = new MethodDeclList();
-							
-							mClassDeclStack.addElement(new ClassDeclSimple(new Identifier(id), curVarDeclStack, curMethodDeclStack));
+	{:	
+		VarDeclList curVarDeclStack = mClassVarDeclStack;
+		MethodDeclList curMethodDeclStack = mMethodDeclStack;
+		
+		mClassVarDeclStack = new VarDeclList();
+		mMethodDeclStack = new MethodDeclList();
+		
+
+		
+		RESULT = new ClassDeclSimple(new Identifier(id), curVarDeclStack, curMethodDeclStack);
+	:}
+;
+
+class_decls 	::= class_decl:cd
+						{: ClassDeclList cdl = new ClassDeclList();
+							cdl.addElement(cd);
+							RESULT = cdl;
+						:}
+					| class_decls:cdl class_decl:cd
+						{:
+							cdl.addElement(cd);
+							RESULT = cdl;
 						:}
 					;
 
