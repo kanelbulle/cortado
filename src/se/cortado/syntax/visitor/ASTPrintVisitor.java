@@ -26,16 +26,14 @@ public class ASTPrintVisitor implements Visitor {
 	public void visit(Program n) {
 		System.out.println(indent() + "Program(");
 		level++;
+		
 		n.mainClass.accept(this);
-		System.out.println(indent() + "ClassDeclList(");
-		level++;
-		for ( int i = 0; i < n.classDeclList.size(); i++ ) {
-			if (i>0) System.out.println(indent() + ", ");
-			n.classDeclList.elementAt(i).accept(this);
-		}
+		System.out.println(", ");
+		
+		n.classDeclList.accept(this);
+		
 		level--;
-		System.out.println(indent() + ")\n)");
-		level--;
+		System.out.println("\n" + indent() + ")");
 	}
 
 	// Identifier i1,i2;
@@ -52,29 +50,27 @@ public class ASTPrintVisitor implements Visitor {
 		n.md.accept(this);
 		
 		level--;
-		System.out.println(indent() + ")");
+		System.out.print("\n" + indent() + ")");
 	}
 
 	// Identifier i;
 	// VarDeclList vl;
 	// MethodDeclList ml;
 	public void visit(ClassDeclSimple n) {
-		System.out.print("ClassDeclSimple(");
+		System.out.println(indent() + "ClassDeclSimple(");
+		level++;
+		
+		System.out.print(indent());
 		n.i.accept(this);
-		System.out.print(", (");
-		for ( int i = 0; i < n.vl.size(); i++ ) {
-			n.vl.elementAt(i).accept(this);
-			if ( i+1 < n.vl.size() ) 
-				System.out.print(", ");
-		}
-		System.out.println(indent() + "),");
-		System.out.println(indent() + "(");
-		for ( int i = 0; i < n.ml.size(); i++ ) {
-			n.ml.elementAt(i).accept(this);
-			if ( i+1 < n.ml.size() ) 
-				System.out.println(indent() + ", ");
-		}
-		System.out.println(indent() + "))");
+		
+		System.out.println(", ");
+		n.vl.accept(this);
+		
+		System.out.println(", ");
+		n.ml.accept(this);
+		
+		level--;
+		System.out.print("\n" + indent() + ")");
 	}
 
 	// Identifier i;
@@ -140,7 +136,7 @@ public class ASTPrintVisitor implements Visitor {
 		n.exp.accept(this);
 
 		level--;
-		System.out.println("\n" + indent() + ")");
+		System.out.print("\n" + indent() + ")");
 	}
 
 	// Type t;
@@ -361,8 +357,6 @@ public class ASTPrintVisitor implements Visitor {
 		System.out.print("Identifier(" + n.s + ")");
 	}
 
-	
-	
 	@Override
 	public void visit(ClassDecl node) {
 		// TODO Auto-generated method stub
@@ -371,8 +365,16 @@ public class ASTPrintVisitor implements Visitor {
 
 	@Override
 	public void visit(ClassDeclList node) {
-		// TODO Auto-generated method stub
+		System.out.println(indent() + "ClassDeclList(");
+		level++;
 		
+		for ( int i = 0; i < node.size(); i++ ) {
+			node.elementAt(i).accept(this);
+			System.out.println(", ");
+		}
+		
+		level--;
+		System.out.print(indent() + ")");
 	}
 
 	@Override
@@ -404,8 +406,16 @@ public class ASTPrintVisitor implements Visitor {
 
 	@Override
 	public void visit(MethodDeclList node) {
-		// TODO Auto-generated method stub
+		System.out.println(indent() + "MethodDeclList(");
+		level++;
 		
+		for (int i = 0; i < node.size(); i++) {
+			node.elementAt(i).accept(this);
+			System.out.println(",");
+		}
+		
+		level--;
+		System.out.print(indent() + ")");
 	}
 
 	@Override
