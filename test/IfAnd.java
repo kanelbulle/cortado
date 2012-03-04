@@ -1,4 +1,4 @@
-/**
+/*
    Tests semantics of &&.
    @author Lars Engebretsen
 */

@@ -1,4 +1,4 @@
-/**
+/*
    Generate, print and count all possible configurations of
    eight queens on a chessboard.
    @author Lars Engebretsen

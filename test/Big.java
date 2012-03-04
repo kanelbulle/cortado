@@ -1,4 +1,4 @@
-/**
+/*
    Test large numbers.
    @author Lars Engebretsen
 */

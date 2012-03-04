@@ -1,4 +1,4 @@
-/**
+/*
    Computes the sum of all integers from 1 up to 100.
    @author Lars Engebretsen
 */
