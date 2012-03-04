@@ -14,4 +14,4 @@ lexer: res/lexer/minijava.jflex
 parser: res/parser/minijava.cup
 	rm -f gen/se/cortado/parser.java
 	rm -f gen/se/cortado/sym.java
-	java -jar lib/java-cup-11a.jar -package se.cortado -destdir gen/se/cortado/ -expect 3 res/parser/minijava.cup
+	java -jar lib/java-cup-11a.jar -package se.cortado -destdir gen/se/cortado/ -expect 0 res/parser/minijava.cup

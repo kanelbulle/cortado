@@ -8,6 +8,11 @@ public class ExpList {
    public ExpList() {
       list = new Vector<Exp>();
    }
+   
+   public ExpList(Exp n) {
+      list = new Vector<Exp>();
+      addElement(n);
+   }
 
    public void addElement(Exp n) {
       list.addElement(n);
