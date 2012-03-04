@@ -1,5 +1,6 @@
 package se.cortado.syntaxtree;
 
+import se.cortado.syntax.visitor.*;
 import java.util.Vector;
 
 public class FormalList {
@@ -19,5 +20,9 @@ public class FormalList {
 
    public int size() { 
       return list.size(); 
+   }
+   
+   public void accept(Visitor v) {
+      v.visit(this);
    }
 }

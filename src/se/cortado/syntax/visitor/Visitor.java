@@ -44,6 +44,7 @@ public interface Visitor {
 	public void visit(Program node);
 	public void visit(Statement node);
 	public void visit(StatementList node);
+	public void visit(StringArrayType node);
 	public void visit(This node);
 	public void visit(Times node);
 	public void visit(True node);

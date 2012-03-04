@@ -1,5 +1,7 @@
 package se.cortado.syntaxtree;
 
+import se.cortado.syntax.visitor.*;
+
 public class VarDeclList {
    private java.util.ArrayList<VarDecl> list;
 
@@ -17,5 +19,9 @@ public class VarDeclList {
 
    public int size() { 
       return list.size(); 
+   }
+   
+   public void accept(Visitor v) {
+      v.visit(this);
    }
 }

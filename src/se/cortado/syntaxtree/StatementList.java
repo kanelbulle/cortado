@@ -1,5 +1,6 @@
 package se.cortado.syntaxtree;
 
+import se.cortado.syntax.visitor.*;
 import java.util.Vector;
 
 public class StatementList {
@@ -18,5 +19,9 @@ public class StatementList {
 
 	public int size() { 
 		return list.size(); 
+	}
+	
+	public void accept(Visitor v) {
+		v.visit(this);
 	}
 }

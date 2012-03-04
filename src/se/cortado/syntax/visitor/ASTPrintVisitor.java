@@ -11,28 +11,48 @@ package se.cortado.syntax.visitor;
 import se.cortado.syntaxtree.*;
 
 public class ASTPrintVisitor implements Visitor {
+	int level = 0;
+	
+	private String indent() {
+		String s = "";
+		for (int i = 0; i < level; i++) {
+			s += "\t";
+		}
+		return s;
+	}
 
 	// MainClass m;
 	// ClassDeclList cl;
 	public void visit(Program n) {
-		System.out.println("Program(");
+		System.out.println(indent() + "Program(");
+		level++;
 		n.mainClass.accept(this);
-		System.out.println("\tClassDeclList(");
+		System.out.println(indent() + "ClassDeclList(");
+		level++;
 		for ( int i = 0; i < n.classDeclList.size(); i++ ) {
-			if (i>0) System.out.println(", ");
+			if (i>0) System.out.println(indent() + ", ");
 			n.classDeclList.elementAt(i).accept(this);
 		}
-		System.out.println("\t)\n)");
+		level--;
+		System.out.println(indent() + ")\n)");
+		level--;
 	}
 
 	// Identifier i1,i2;
 	// Statement s;
 	public void visit(MainClass n) {
-		System.out.print("\tMainClass(");
+		System.out.println(indent() + "MainClass(");
+		level++;
+		
+		System.out.print(indent());
 		n.i1.accept(this);
-		System.out.print(", ");
+		
+		System.out.println(", ");
+		
 		n.md.accept(this);
-		System.out.println("\t)");
+		
+		level--;
+		System.out.println(indent() + ")");
 	}
 
 	// Identifier i;
@@ -47,14 +67,14 @@ public class ASTPrintVisitor implements Visitor {
 			if ( i+1 < n.vl.size() ) 
 				System.out.print(", ");
 		}
-		System.out.println("),");
-		System.out.println("(");
+		System.out.println(indent() + "),");
+		System.out.println(indent() + "(");
 		for ( int i = 0; i < n.ml.size(); i++ ) {
 			n.ml.elementAt(i).accept(this);
 			if ( i+1 < n.ml.size() ) 
-				System.out.println(", ");
+				System.out.println(indent() + ", ");
 		}
-		System.out.println("))");
+		System.out.println(indent() + "))");
 	}
 
 	// Identifier i;
@@ -75,10 +95,10 @@ public class ASTPrintVisitor implements Visitor {
 		for ( int i = 0; i < n.ml.size(); i++ ) {
 			System.out.println();
 			if ( i+1 < n.ml.size() ) 
-				System.out.println(", ");
+				System.out.println(indent() + ", ");
 		}
 		System.out.println();
-		System.out.println("))");
+		System.out.println(indent() + "))");
 	}
 
 	// Type t;
@@ -98,31 +118,29 @@ public class ASTPrintVisitor implements Visitor {
 	// StatementList sl;
 	// Exp e;
 	public void visit(MethodDecl n) {
-		System.out.print("MethodDecl(");
+		System.out.println(indent() + "MethodDecl(");
+		level++;
+		
+		System.out.print(indent());
 		n.type.accept(this);
-		System.out.print(", ");
+		System.out.println(", ");
+		
+		System.out.print(indent());
 		n.identifier.accept(this);
-		System.out.print(", (");
-		for ( int i = 0; i < n.formalList.size(); i++ ) {
-			n.formalList.elementAt(i).accept(this);
-			if (i+1 < n.formalList.size()) 
-				System.out.print(", ");
-		}
-		System.out.println("), (");
-		for ( int i = 0; i < n.varDeclList.size(); i++ ) {
-			n.varDeclList.elementAt(i).accept(this);
-			if ( i+1 < n.varDeclList.size() )
-				System.out.print(", ");
-		}
-		System.out.println("), (");
-		for ( int i = 0; i < n.statementList.size(); i++ ) {
-			n.statementList.elementAt(i).accept(this);
-			if ( i+1 < n.statementList.size() ) 
-				System.out.println(", ");
-		}
-		System.out.println("), ");
+		System.out.println(", ");
+		
+		n.formalList.accept(this);
+		System.out.println(", ");
+		n.varDeclList.accept(this);
+		System.out.println(", ");
+		n.statementList.accept(this);
+		System.out.println(", ");
+		
+		System.out.print(indent());
 		n.exp.accept(this);
-		System.out.println(")");
+
+		level--;
+		System.out.println("\n" + indent() + ")");
 	}
 
 	// Type t;
@@ -130,7 +148,7 @@ public class ASTPrintVisitor implements Visitor {
 	public void visit(Formal n) {
 		System.out.print("Formal(");
 		n.t.accept(this);
-		System.out.print(", ");
+		System.out.print(" ");
 		n.i.accept(this);
 		System.out.print(")");
 	}
@@ -158,11 +176,11 @@ public class ASTPrintVisitor implements Visitor {
 
 	// StatementList sl;
 	public void visit(Block n) {
-		System.out.println("Block((");
+		System.out.println(indent() + "Block((");
 		for ( int i = 0; i < n.sl.size(); i++ ) {
 			n.sl.elementAt(i).accept(this);
 			if ( i+1 < n.sl.size()) 
-				System.out.println(",");
+				System.out.println(indent() + ",");
 		}
 		System.out.print("))");
 	}
@@ -172,9 +190,9 @@ public class ASTPrintVisitor implements Visitor {
 	public void visit(If n) {
 		System.out.print("If(");
 		n.e.accept(this);
-		System.out.println(",");
+		System.out.println(indent() + ",");
 		n.s1.accept(this);
-		System.out.println(",");
+		System.out.println(indent() + ",");
 		n.s2.accept(this);
 		System.out.print(")");
 	}
@@ -184,7 +202,7 @@ public class ASTPrintVisitor implements Visitor {
 	public void visit(While n) {
 		System.out.print("While(");
 		n.e.accept(this);
-		System.out.println(",");
+		System.out.println(indent() + ",");
 		n.s.accept(this);
 		System.out.print(")");
 	}
@@ -371,8 +389,17 @@ public class ASTPrintVisitor implements Visitor {
 
 	@Override
 	public void visit(FormalList node) {
-		// TODO Auto-generated method stub
+		System.out.println(indent() + "FormalList(");
+		level++;
 		
+		for (int i = 0; i < node.size(); i++) {
+			System.out.print(indent());
+			node.elementAt(i).accept(this);
+			System.out.println(",");
+		}
+		
+		level--;
+		System.out.print(indent() + ")");
 	}
 
 	@Override
@@ -389,8 +416,22 @@ public class ASTPrintVisitor implements Visitor {
 
 	@Override
 	public void visit(StatementList node) {
-		// TODO Auto-generated method stub
+		System.out.println(indent() + "StatementList(");
+		level++;
 		
+		for (int i = 0; i < node.size(); i++) {
+			System.out.print(indent());
+			node.elementAt(i).accept(this);
+			System.out.println(",");
+		}
+		
+		level--;
+		System.out.print(indent() + ")");
+	}
+	
+	@Override
+	public void visit(StringArrayType node) {
+		System.out.print("StringArrayType");
 	}
 
 	@Override
@@ -401,7 +442,17 @@ public class ASTPrintVisitor implements Visitor {
 
 	@Override
 	public void visit(VarDeclList node) {
-		// TODO Auto-generated method stub
+		System.out.println(indent() + "VarDeclList(");
+		level++;
+		
+		for (int i = 0; i < node.size(); i++) {
+			System.out.print(indent());
+			node.elementAt(i).accept(this);
+			System.out.println(",");
+		}
+		
+		level--;
+		System.out.print(indent() + ")");
 		
 	}
 }
