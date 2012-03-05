@@ -79,11 +79,13 @@ non terminal ClassDecl		class_decl;
 non terminal VarDecl		var_decl;
 
 /* ======== List declarations ======== */
+non terminal ClassDeclList	class_decls_opt;
 non terminal ClassDeclList 	class_decls;
 non terminal MethodDeclList	method_decls;
 non terminal FormalList 	formal_list;
 non terminal VarDeclList 	var_decls;
 non terminal StatementList 	stmt_list;
+non terminal ExpList		expr_list_opt;
 non terminal ExpList 		expr_list;
 
 /* ======== Near terminals ======== */
@@ -110,7 +112,7 @@ start with program;
 /* ======== Declarations ======== */
 
 
-program 		::= main_class:mc class_decls:cdl
+program 		::= main_class:mc class_decls_opt:cdl
 						{: RESULT = new Program(mc, cdl); :}
 					;
 
@@ -140,6 +142,11 @@ var_decl 		::= type:t IDENTIFIER:id SEMI
 
 /* ======== List declarations ======== */
 
+class_decls_opt	::= empty
+						{: RESULT = new ClassDeclList(); :}
+					| class_decls:cdl
+						{: RESULT = cdl; :}
+					;
 
 class_decls 	::= class_decl:cd
 						{: RESULT = new ClassDeclList(cd); :}
@@ -171,12 +178,18 @@ var_decls 		::= var_decls:vds var_decl:vd
 						{: RESULT = new VarDeclList(vd); :}
 					;
 
-stmt_list 		::= stmt_list:sl stmt:s
+stmt_list 		::= stmt:s stmt_list:sl
 						{: sl.addElement(s); RESULT = sl; :}
 					| stmt:s
 						{: RESULT = new StatementList(s); :}
 					;
-					
+
+expr_list_opt	::= empty
+						{: RESULT = new ExpList(); :}
+					| expr_list:el
+						{: RESULT = el; :}
+					;
+
 expr_list 		::= expr_list:el COMMA expr:e1
 						{: el.addElement(e1); RESULT = el; :}
 					| expr:e 
@@ -214,7 +227,7 @@ expr 			::= expr:e1 PLUS expr:e2
 						{: RESULT = new ArrayLookup(e1, e2); :}
 					| expr:e1 DOT LENGTH
 						{: RESULT = new ArrayLength(e1); :}
-					| expr:e1 DOT IDENTIFIER:id LPAREN expr_list:el RPAREN
+					| expr:e1 DOT IDENTIFIER:id LPAREN expr_list_opt:el RPAREN
 						{: RESULT = new Call(e1, new Identifier(id), el); :}
 					| INTEGER:i
 						{: RESULT = new IntegerLiteral(1); :}
