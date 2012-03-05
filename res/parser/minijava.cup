@@ -94,6 +94,9 @@ non terminal Type			type;
 non terminal Exp			returnExp;
 non terminal 				empty;
 
+non terminal VarDeclList var_decls_opt;
+non terminal FormalList 	formal_list_opt;
+
 /* Precedences */
 precedence left BANG;
 precedence left PLUS, MINUS;
@@ -122,7 +125,7 @@ main_method 	::= PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING_ARRAY IDENTIFIE
 						:}
 					;
 				
-method_decl 	::= PUBLIC type:t IDENTIFIER:id LPAREN formal_list:fl RPAREN LCURLY var_decls:vls stmt_list:sl returnExp:e SEMI RCURLY
+method_decl 	::= PUBLIC type:t IDENTIFIER:id LPAREN formal_list_opt:fl RPAREN LCURLY var_decls:vls stmt_list:sl returnExp:e SEMI RCURLY
 						{: RESULT = new MethodDecl(t, new Identifier(id), fl, vls, sl, e); :}
 					;
 				
@@ -148,6 +151,12 @@ method_decls 	::= method_decls:mls method_decl:md
 						{: mls.addElement(md); RESULT = mls; :}
 					| method_decl:md
 						{: RESULT = new MethodDeclList(md); :}
+					;
+
+formal_list_opt	::= empty
+						{: RESULT = new FormalList(); :}
+					| formal_list:fl
+						{: RESULT = fl; :}
 					;
 
 formal_list 	::= formal_list:fl COMMA formal:f
