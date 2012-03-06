@@ -271,7 +271,7 @@ expr 			::= expr:e1 PLUS expr:e2
 					| expr:e1 DOT IDENTIFIER:id LPAREN expr_list_opt:el RPAREN
 						{: RESULT = new Call(e1, new Identifier(id), el); :}
 					| INTEGER:i
-						{: RESULT = new IntegerLiteral(1); :}
+						{: RESULT = new IntegerLiteral((String) i); :}
 					| TRUE
 						{: RESULT = new True(); :}
 					| FALSE
