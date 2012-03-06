@@ -120,7 +120,25 @@ main_class 		::= CLASS IDENTIFIER:id LCURLY main_method:md RCURLY
 						{: RESULT = new MainClass(new Identifier(id), md); :}
 					;
 
-main_method 	::= PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING_ARRAY IDENTIFIER:id2 RPAREN LCURLY var_decls:vd stmt_list:sl RCURLY
+main_method 	::= PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING_ARRAY IDENTIFIER:id2 RPAREN LCURLY  RCURLY
+						{: 	VarDeclList vd = new VarDeclList();
+							StatementList sl = new StatementList();
+							FormalList fl = new FormalList(new Formal(new StringArrayType(), new Identifier(id2)));
+							RESULT = new MethodDecl(new VoidType(), new Identifier(id1), fl, vd, sl, new IdentifierExp("voidType"));
+						:}	
+					| PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING_ARRAY IDENTIFIER:id2 RPAREN LCURLY stmt_list:sl RCURLY
+						{: 	
+							VarDeclList vd = new VarDeclList();
+							FormalList fl = new FormalList(new Formal(new StringArrayType(), new Identifier(id2)));
+							RESULT = new MethodDecl(new VoidType(), new Identifier(id1), fl, vd, sl, new IdentifierExp("voidType"));
+						:}	
+					| PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING_ARRAY IDENTIFIER:id2 RPAREN LCURLY var_decls:vd RCURLY
+						{: 	
+							StatementList sl = new StatementList();
+							FormalList fl = new FormalList(new Formal(new StringArrayType(), new Identifier(id2)));
+							RESULT = new MethodDecl(new VoidType(), new Identifier(id1), fl, vd, sl, new IdentifierExp("voidType"));
+						:}	
+					| PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING_ARRAY IDENTIFIER:id2 RPAREN LCURLY var_decls:vd stmt_list:sl RCURLY
 						{: 	
 							FormalList fl = new FormalList(new Formal(new StringArrayType(), new Identifier(id2)));
 							RESULT = new MethodDecl(new VoidType(), new Identifier(id1), fl, vd, sl, new IdentifierExp("voidType"));
