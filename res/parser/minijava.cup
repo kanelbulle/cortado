@@ -277,7 +277,7 @@ expr 			::= expr:e1 PLUS expr:e2
 					| FALSE
 						{: RESULT = new False(); :}
 					| IDENTIFIER:id
-						{: RESULT = new IdentifierExp("hej"); :}
+						{: RESULT = new IdentifierExp((String) id); :}
 					| THIS
 						{: RESULT = new This(); :}
 					| NEW INT LBRACKET expr:e1 RBRACKET
