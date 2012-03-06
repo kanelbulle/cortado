@@ -127,11 +127,31 @@ main_method 	::= PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING_ARRAY IDENTIFIE
 						:}
 					;
 				
-method_decl 	::= PUBLIC type:t IDENTIFIER:id LPAREN formal_list_opt:fl RPAREN LCURLY var_decls:vls stmt_list:sl returnExp:e SEMI RCURLY
+method_decl 	::= PUBLIC type:t IDENTIFIER:id LPAREN formal_list_opt:fl RPAREN LCURLY returnExp:e SEMI RCURLY
+						{: 	VarDeclList vls = new VarDeclList();
+							StatementList sl = new StatementList();
+							RESULT = new MethodDecl(t, new Identifier(id), fl, vls, sl, e); :}
+					| PUBLIC type:t IDENTIFIER:id LPAREN formal_list_opt:fl RPAREN LCURLY stmt_list:sl returnExp:e SEMI RCURLY
+						{: 	VarDeclList vls = new VarDeclList();
+							RESULT = new MethodDecl(t, new Identifier(id), fl, vls, sl, e); :}
+					| PUBLIC type:t IDENTIFIER:id LPAREN formal_list_opt:fl RPAREN LCURLY var_decls:vls returnExp:e SEMI RCURLY
+						{: 	StatementList sl = new StatementList();
+							RESULT = new MethodDecl(t, new Identifier(id), fl, vls, sl, e); :}
+					| PUBLIC type:t IDENTIFIER:id LPAREN formal_list_opt:fl RPAREN LCURLY var_decls:vls stmt_list:sl returnExp:e SEMI RCURLY
 						{: RESULT = new MethodDecl(t, new Identifier(id), fl, vls, sl, e); :}
 					;
 				
-class_decl 		::= CLASS IDENTIFIER:id LCURLY var_decls:vls method_decls:mls RCURLY
+class_decl 		::= CLASS IDENTIFIER:id LCURLY RCURLY
+						{:	VarDeclList vls = new VarDeclList();
+							MethodDeclList mls = new MethodDeclList();
+							RESULT = new ClassDeclSimple(new Identifier(id), vls, mls); :}
+					| CLASS IDENTIFIER:id LCURLY var_decls:vls RCURLY
+						{:	MethodDeclList mls = new MethodDeclList();
+							RESULT = new ClassDeclSimple(new Identifier(id), vls, mls); :}	
+					| CLASS IDENTIFIER:id LCURLY method_decls:mls RCURLY
+						{:	VarDeclList vls = new VarDeclList();
+							RESULT = new ClassDeclSimple(new Identifier(id), vls, mls); :}
+					| CLASS IDENTIFIER:id LCURLY var_decls:vls method_decls:mls RCURLY
 						{:	RESULT = new ClassDeclSimple(new Identifier(id), vls, mls); :}
 					;
 					

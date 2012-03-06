@@ -8,11 +8,9 @@ class Superklasse {
 }
 
 class Halvklasse {
-	int var1;
-	
+
 	public int fnurf(int n) {
-		int var2;
-		var2 = 1;
 		return 1;
 	}
 }
+
