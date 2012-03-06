@@ -63,11 +63,15 @@ public class ASTPrintVisitor implements Visitor {
 		System.out.print(indent());
 		n.i.accept(this);
 		
-		System.out.println(", ");
-		n.vl.accept(this);
+		if (n.vl.size() != 0) {
+			System.out.println(", ");
+			n.vl.accept(this);
+		}
 		
-		System.out.println(", ");
-		n.ml.accept(this);
+		if (n.ml.size() != 0) {
+			System.out.println(", ");
+			n.ml.accept(this);
+		}
 		
 		level--;
 		System.out.print("\n" + indent() + ")");
@@ -125,12 +129,20 @@ public class ASTPrintVisitor implements Visitor {
 		n.identifier.accept(this);
 		System.out.println(", ");
 		
-		n.formalList.accept(this);
-		System.out.println(", ");
-		n.varDeclList.accept(this);
-		System.out.println(", ");
-		n.statementList.accept(this);
-		System.out.println(", ");
+		if (n.formalList.size() != 0) {
+			n.formalList.accept(this);
+			System.out.println(", ");
+		}
+		
+		if (n.varDeclList.size() != 0) {
+			n.varDeclList.accept(this);
+			System.out.println(", ");
+		}
+		
+		if (n.statementList.size() != 0) {
+			n.statementList.accept(this);
+			System.out.println(", ");
+		}
 		
 		System.out.print(indent());
 		n.exp.accept(this);
@@ -364,10 +376,7 @@ public class ASTPrintVisitor implements Visitor {
 	}
 
 	@Override
-	public void visit(ClassDeclList node) {
-		
-		if (node.size() == 0) return;
-		
+	public void visit(ClassDeclList node) {	
 		System.out.println(indent() + "ClassDeclList(");
 		level++;
 
@@ -394,9 +403,6 @@ public class ASTPrintVisitor implements Visitor {
 
 	@Override
 	public void visit(FormalList node) {
-		
-		if (node.size() == 0) return;
-		
 		System.out.println(indent() + "FormalList(");
 		level++;
 		
@@ -411,10 +417,7 @@ public class ASTPrintVisitor implements Visitor {
 	}
 
 	@Override
-	public void visit(MethodDeclList node) {
-		
-		if (node.size() == 0) return;
-		
+	public void visit(MethodDeclList node) {	
 		System.out.println(indent() + "MethodDeclList(");
 		level++;
 		
@@ -435,9 +438,6 @@ public class ASTPrintVisitor implements Visitor {
 
 	@Override
 	public void visit(StatementList node) {
-		
-		if (node.size() == 0) return;
-		
 		System.out.println(indent() + "StatementList(");
 		level++;
 		
@@ -463,10 +463,7 @@ public class ASTPrintVisitor implements Visitor {
 	}
 
 	@Override
-	public void visit(VarDeclList node) {
-		
-		if (node.size() == 0) return;
-		
+	public void visit(VarDeclList node) {		
 		System.out.println(indent() + "VarDeclList(");
 		level++;
 		
