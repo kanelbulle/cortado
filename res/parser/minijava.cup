@@ -291,10 +291,14 @@ formal 			::= type:t IDENTIFIER:id
 						{: RESULT = new Formal(t, new Identifier(id)); :}
 					;
 
-type 			::= INT		 		{: RESULT = new IntegerType(); :} 
-					| INT_ARRAY 	{: RESULT = new IntArrayType(); :}
-					| BOOLEAN 		{: RESULT = new BooleanType(); :}
-					| IDENTIFIER:id	{: RESULT = new IdentifierType(id); :}
+type 			::= INT
+						{: RESULT = new IntegerType(); :} 
+					| INT LBRACKET RBRACKET
+						{: RESULT = new IntArrayType(); :}
+					| BOOLEAN
+						{: RESULT = new BooleanType(); :}
+					| IDENTIFIER:id
+						{: RESULT = new IdentifierType(id); :}
 					;
 	
 returnExp		::= RETURN expr:e
