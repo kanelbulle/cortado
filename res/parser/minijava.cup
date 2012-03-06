@@ -19,19 +19,14 @@ parser code {:
 	Stack<FormalList> formalLists = new Stack<FormalList>();
 
 	public void syntax_error(Symbol cur_token){
-		System.out.println("syntax_error:" + cur_token);
-	}
-	
-	public int intFromValue(String v) {
-		return Integer.parseInt(v);
+		System.out.println("Error on line " + cur_token.left);
 	}
 :};
 
-scan with {: 
-			current_symbol = getScanner().next_token();
-			//System.out.println("" + current_symbol);
-			return current_symbol;
-			:};
+scan with {:
+	current_symbol = getScanner().next_token();
+	return current_symbol;
+:};
 
 /* ======== Terminals (tokens RESULTed by the scanner) ======== */
 
