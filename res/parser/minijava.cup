@@ -218,7 +218,7 @@ stmt_list_opt	::= empty
 						{: RESULT = sl; :}
 					;
 
-stmt_list 		::= stmt:s stmt_list:sl
+stmt_list 		::= stmt_list:sl stmt:s
 						{: sl.addElement(s); RESULT = sl; :}
 					| stmt:s
 						{: RESULT = new StatementList(s); :}
