@@ -184,25 +184,28 @@ public class ASTPrintVisitor implements Visitor {
 
 	// StatementList sl;
 	public void visit(Block n) {
-		System.out.println(indent() + "Block((");
-		for ( int i = 0; i < n.sl.size(); i++ ) {
-			n.sl.elementAt(i).accept(this);
-			if ( i+1 < n.sl.size()) 
-				System.out.println(indent() + ",");
-		}
-		System.out.print("))");
+		System.out.println(indent() + "Block(");
+		level++;
+		n.sl.accept(this);
+		level--;
+		System.out.print("\n" + indent() + ")");
 	}
 
 	// Exp e;
 	// Statement s1,s2;
 	public void visit(If n) {
-		System.out.print("If(");
+		System.out.println("If(");
+		level++;
+		
+		System.out.print(indent());
 		n.e.accept(this);
-		System.out.println(indent() + ",");
+		System.out.println(",");
 		n.s1.accept(this);
-		System.out.println(indent() + ",");
+		System.out.println(",");
 		n.s2.accept(this);
-		System.out.print(")");
+		
+		level--;
+		System.out.print("\n" + indent() + ")");
 	}
 
 	// Exp e;

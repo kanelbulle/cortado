@@ -82,7 +82,7 @@ import java_cup.runtime.*;
 
 NEWLINE = \r|\n|\r\n
 WS = [ \t\f]
-COMMENT   = "/*" [^*] ~"*/" | "/*" "*"+ "/"
+COMMENT   = "/*" [^*] ~"*/" | "/*" "*"+ "/" | \/\/.*\n
 
 %% /* ---------------- LEXICAL RULES ---------------- */
 
@@ -90,13 +90,11 @@ COMMENT   = "/*" [^*] ~"*/" | "/*" "*"+ "/"
 "static"						{ return token(sym.STATIC); }
 "void"							{ return token(sym.VOID); }
 "return"						{ return token(sym.RETURN); }
-//"public static void main"		{ yybegin(MAIN); return token(sym.); }
-//	<MAIN> "String"				{ yybegin(YYINITIAL); return token(sym.); }
 "public" 						{ return token(sym.PUBLIC); }
 "new"							{ return token(sym.NEW); }
 
 /* ----- Comments (skipped) ----- */
-{COMMENT} 					{ }
+{COMMENT} 						{ }
 
 /* ----- Statements ----- */
 "if" 							{ return token(sym.IF); }
@@ -109,8 +107,6 @@ COMMENT   = "/*" [^*] ~"*/" | "/*" "*"+ "/"
 "true"							{ return token(sym.TRUE); }
 "false"							{ return token(sym.FALSE); }
 "this"							{ return token(sym.THIS); }
-//new int [Exp]					{ return token(sym.); }
-// new id()						{ return token(sym.); }
 "!"								{ return token(sym.BANG); }
 
 /* ----- Datatypes ----- */
@@ -142,13 +138,10 @@ String\[\]						{ return token(sym.STRING_ARRAY); }
 /* Integer */
 0|[1-9][0-9]* 					{ return token(sym.INTEGER); }
 
-/* String */
-// \"([0-9a-zA-Z] | {WS})*\" | \"\" 	{ return token(sym.STRING); }
-
 /* Whitespace (i.e: newline, tabs space) - Ignored */
-{WS} | {NEWLINE} 					{ }
+{WS} | {NEWLINE} 				{ }
 
 /* Non matched input = invalid input, inform parser exception */
-. | {NEWLINE} 						{ return token(sym.error); }
-<<EOF>> 							{ return token(sym.EOF); }
+. | {NEWLINE} 					{ return token(sym.error); }
+<<EOF>> 						{ return token(sym.EOF); }
 

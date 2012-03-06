@@ -10,29 +10,31 @@ class Halvklasse {
 	}
 }
 
-/*
 class IfAnd
 {
-    public static void main(String[] a){
-	System.out.println(new Test().go());
+    public int main(int a){
+		System.out.println(new Test().go());
+		return 1;
     }
 }
+
 
 class Test {
-    int a;
+    int a; // asdf
 
     public int go() {
-	a = 17;
-	if(a < 13 && this.change()) {
-	}
-	else {
-	}
-	return a;
-    }
-
-    public boolean change() {
-	a = 4711;
-	return true;
+		a = 17;
+		
+// hej
+		 // detta e en kommentar
+		
+		if (a < 12) {
+			a = 1;
+		} else {
+			a = 2;
+		}
+	
+		a = 4711;
+		return true;
     }
 }
-*/
