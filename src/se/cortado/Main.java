@@ -3,6 +3,7 @@ package se.cortado;
 import java.io.*;
 
 import se.cortado.syntax.visitor.ASTPrintVisitor;
+import se.cortado.syntax.visitor.ScopeVisitor;
 import se.cortado.syntaxtree.Program;
 
 import java_cup.runtime.Symbol;
@@ -17,11 +18,13 @@ public class Main {
 		String fileName = args[0];
 		parser p = new parser(new Scanner(new FileReader(fileName)));
 		ASTPrintVisitor v = new ASTPrintVisitor();
+		ScopeVisitor sv = new ScopeVisitor();
 		
 		try  {
 			Symbol s = p.parse();
 			Program prog = (Program) s.value;
-			v.visit(prog);
+//			v.visit(prog);
+			sv.visit(prog);
 		} catch (Exception e) {
 			System.out.println("NO PARSE FOR YOU!");
 			e.printStackTrace();
