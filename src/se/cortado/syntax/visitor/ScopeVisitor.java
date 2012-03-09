@@ -50,44 +50,80 @@ public class ScopeVisitor implements Visitor {
 	public void visit(ClassDeclSimple node) {
 		
 		VarDeclList vl = node.vl;
-		HashSet<String> varStack = new HashSet<String>();
+		MethodDeclList ml = node.ml;
+		HashSet<String> curVarScope = new HashSet<String>();
+		HashSet<String> curMethodScope = new HashSet<String>();
 	
+		/* ----------- First pass, set up table for scope testing ----------- */
 		System.out.println("-- Entering class <" + node.i.s + "> --");
-		/* First pass, set up table for scope testing */
+		
+		/* Add variables */
 		for (int i = 0; i < vl.size(); ++i) {
-			VarDecl curVar = vl.elementAt(i);
-			
-			if (varStack.contains(curVar.identifier.s)) {
-				// TODO: throw error?
-				System.out.println("ERROR: redeclaration of variable <" + curVar.identifier.s + ">");
-			} else {
-				System.out.println("\tAdding: <" + curVar.identifier.s + ">");
-				varStack.add(curVar.identifier.s);
-			}
-			
-			if ( ! varScope.containsKey(curVar.identifier.s)) {
-				varScope.put(curVar.identifier.s, new LinkedList<VarDecl>());
-			}
-			
-			varScope.get(curVar.identifier.s).addFirst(curVar);
+			addToScope(vl.elementAt(i), curVarScope);
 		}
 		
-		/* Second pass, actually test the type semantics in type scope */
+		/* Add methods */
+		for (int i = 0; i < ml.size(); ++i) {
+			addToScope(ml.elementAt(i), curMethodScope);
+		}
+		
+		/* ----------- Second pass, actually test the type semantics in type scope ----------- */
 		for (int i = 0; i < vl.size(); ++i) {
-			vl.accept(this);
+			// TODO
+			// vl.accept(this);
 		}
 		
 		/* Do some pretty printing */
 		// TODO
 		
+		/* ----------- Go out of scope, remove vars/methods from current scope ----------- */
 		System.out.println("-- Leaving <" + node.i.s + " --");
-		/* Destroy current scope */
-		for (String variable : varStack) {
-			System.out.println("\tRemoving: <" + variable + ">");
+		
+		/* Destroy scope variables */
+		for (String variable : curVarScope) {
+			System.out.println("\tRemoving variable: <" + variable + ">");
 			varScope.get(variable).removeFirst();
 		}
-
+		
+		/* Destroy scope methods */
+		for (String method : curMethodScope) {
+			System.out.println("\tRemoving method: <" + method + ">");
+			methodScope.get(method).removeFirst();
+		}
 	}
+	
+	private void addToScope(MethodDecl method, HashSet<String> scope) {
+		if (scope.contains(method.identifier.s)) {
+			// TODO: throw error?
+			System.out.println("ERROR: redeclaration of method <" + method.identifier.s + ">");
+		} else {
+			System.out.println("\tAdding method: <" + method.identifier.s + ">");
+			scope.add(method.identifier.s);
+		}
+		
+		if ( ! methodScope.containsKey(method.identifier.s)) {
+			methodScope.put(method.identifier.s, new LinkedList<MethodDecl>());
+		}
+		
+		methodScope.get(method.identifier.s).addFirst(method);
+	}
+
+	private void addToScope(VarDecl variable, HashSet<String> scope) {
+		if (scope.contains(variable.identifier.s)) {
+			// TODO: throw error?
+			System.out.println("ERROR: redeclaration of variable <" + variable.identifier.s + ">");
+		} else {
+			System.out.println("\tAdding variable: <" + variable.identifier.s + ">");
+			scope.add(variable.identifier.s);
+		}
+		
+		if ( ! varScope.containsKey(variable.identifier.s)) {
+			varScope.put(variable.identifier.s, new LinkedList<VarDecl>());
+		}
+		
+		varScope.get(variable.identifier.s).addFirst(variable);
+	}
+	
 	
 	@Override
 	public void visit(MethodDecl node) {
