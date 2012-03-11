@@ -95,7 +95,7 @@ public class ScopeVisitor implements Visitor {
 	private void addToScope(MethodDecl method, HashSet<String> scope) {
 		if (scope.contains(method.identifier.s)) {
 			// TODO: throw error?
-			System.out.println("ERROR: redeclaration of method <" + method.identifier.s + ">");
+			System.out.println("ERROR: redeclaration of method <" + method.identifier.s + "> at row: " + method.identifier.row);
 		} else {
 			System.out.println("\tAdding method: <" + method.identifier.s + ">");
 			scope.add(method.identifier.s);
@@ -111,7 +111,7 @@ public class ScopeVisitor implements Visitor {
 	private void addToScope(VarDecl variable, HashSet<String> scope) {
 		if (scope.contains(variable.identifier.s)) {
 			// TODO: throw error?
-			System.out.println("ERROR: redeclaration of variable <" + variable.identifier.s + ">");
+			System.out.println("ERROR: redeclaration of variable <" + variable.identifier.s + "> at row: " + variable.identifier.row);
 		} else {
 			System.out.println("\tAdding variable: <" + variable.identifier.s + ">");
 			scope.add(variable.identifier.s);

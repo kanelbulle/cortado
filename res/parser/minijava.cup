@@ -10,13 +10,17 @@ import se.cortado.sym;
 
 /* Preliminaries to set up and use the scanner.  */
 
+action code {:
+	
+	public int getReducedRow() {
+		return parser.current_symbol.left;
+	}
+	
+:};
+	
 parser code {:
-	private Scanner scanner;
-	private File file;
 	
 	Symbol current_symbol;
-	
-	Stack<FormalList> formalLists = new Stack<FormalList>();
 
 	public void syntax_error(Symbol cur_token){
 		System.out.println("Error on line " + cur_token.left);
@@ -111,64 +115,64 @@ program 		::= main_class:mc class_decls_opt:cdl
 					;
 
 main_class 		::= CLASS IDENTIFIER:id LCURLY main_method:md RCURLY 
-						{: RESULT = new MainClass(new Identifier(id), md); :}
+						{: RESULT = new MainClass(new Identifier(id, getReducedRow()), md); :}
 					;
 
 main_method 	::= PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING_ARRAY IDENTIFIER:id2 RPAREN LCURLY  RCURLY
 						{: 	VarDeclList vd = new VarDeclList();
 							StatementList sl = new StatementList();
-							FormalList fl = new FormalList(new Formal(new StringArrayType(), new Identifier(id2)));
-							RESULT = new MethodDecl(new VoidType(), new Identifier(id1), fl, vd, sl, new IdentifierExp("voidType"));
+							FormalList fl = new FormalList(new Formal(new StringArrayType(), new Identifier(id2, getReducedRow())));
+							RESULT = new MethodDecl(new VoidType(), new Identifier(id1, getReducedRow()), fl, vd, sl, new IdentifierExp("voidType"));
 						:}	
 					| PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING_ARRAY IDENTIFIER:id2 RPAREN LCURLY stmt_list:sl RCURLY
 						{: 	
 							VarDeclList vd = new VarDeclList();
-							FormalList fl = new FormalList(new Formal(new StringArrayType(), new Identifier(id2)));
-							RESULT = new MethodDecl(new VoidType(), new Identifier(id1), fl, vd, sl, new IdentifierExp("voidType"));
+							FormalList fl = new FormalList(new Formal(new StringArrayType(), new Identifier(id2, getReducedRow())));
+							RESULT = new MethodDecl(new VoidType(), new Identifier(id1, getReducedRow()), fl, vd, sl, new IdentifierExp("voidType"));
 						:}	
 					| PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING_ARRAY IDENTIFIER:id2 RPAREN LCURLY var_decls:vd RCURLY
 						{: 	
 							StatementList sl = new StatementList();
-							FormalList fl = new FormalList(new Formal(new StringArrayType(), new Identifier(id2)));
-							RESULT = new MethodDecl(new VoidType(), new Identifier(id1), fl, vd, sl, new IdentifierExp("voidType"));
+							FormalList fl = new FormalList(new Formal(new StringArrayType(), new Identifier(id2, getReducedRow())));
+							RESULT = new MethodDecl(new VoidType(), new Identifier(id1, getReducedRow()), fl, vd, sl, new IdentifierExp("voidType"));
 						:}	
 					| PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING_ARRAY IDENTIFIER:id2 RPAREN LCURLY var_decls:vd stmt_list:sl RCURLY
 						{: 	
-							FormalList fl = new FormalList(new Formal(new StringArrayType(), new Identifier(id2)));
-							RESULT = new MethodDecl(new VoidType(), new Identifier(id1), fl, vd, sl, new IdentifierExp("voidType"));
+							FormalList fl = new FormalList(new Formal(new StringArrayType(), new Identifier(id2, getReducedRow())));
+							RESULT = new MethodDecl(new VoidType(), new Identifier(id1, getReducedRow()), fl, vd, sl, new IdentifierExp("voidType"));
 						:}
 					;
 				
 method_decl 	::= PUBLIC type:t IDENTIFIER:id LPAREN formal_list_opt:fl RPAREN LCURLY returnExp:e SEMI RCURLY
 						{: 	VarDeclList vls = new VarDeclList();
 							StatementList sl = new StatementList();
-							RESULT = new MethodDecl(t, new Identifier(id), fl, vls, sl, e); :}
+							RESULT = new MethodDecl(t, new Identifier(id, getReducedRow()), fl, vls, sl, e); :}
 					| PUBLIC type:t IDENTIFIER:id LPAREN formal_list_opt:fl RPAREN LCURLY stmt_list:sl returnExp:e SEMI RCURLY
 						{: 	VarDeclList vls = new VarDeclList();
-							RESULT = new MethodDecl(t, new Identifier(id), fl, vls, sl, e); :}
+							RESULT = new MethodDecl(t, new Identifier(id, getReducedRow()), fl, vls, sl, e); :}
 					| PUBLIC type:t IDENTIFIER:id LPAREN formal_list_opt:fl RPAREN LCURLY var_decls:vls returnExp:e SEMI RCURLY
 						{: 	StatementList sl = new StatementList();
-							RESULT = new MethodDecl(t, new Identifier(id), fl, vls, sl, e); :}
+							RESULT = new MethodDecl(t, new Identifier(id, getReducedRow()), fl, vls, sl, e); :}
 					| PUBLIC type:t IDENTIFIER:id LPAREN formal_list_opt:fl RPAREN LCURLY var_decls:vls stmt_list:sl returnExp:e SEMI RCURLY
-						{: RESULT = new MethodDecl(t, new Identifier(id), fl, vls, sl, e); :}
+						{: RESULT = new MethodDecl(t, new Identifier(id, getReducedRow()), fl, vls, sl, e); :}
 					;
 				
 class_decl 		::= CLASS IDENTIFIER:id LCURLY RCURLY
 						{:	VarDeclList vls = new VarDeclList();
 							MethodDeclList mls = new MethodDeclList();
-							RESULT = new ClassDeclSimple(new Identifier(id), vls, mls); :}
+							RESULT = new ClassDeclSimple(new Identifier(id, getReducedRow()), vls, mls); :}
 					| CLASS IDENTIFIER:id LCURLY var_decls:vls RCURLY
 						{:	MethodDeclList mls = new MethodDeclList();
-							RESULT = new ClassDeclSimple(new Identifier(id), vls, mls); :}	
+							RESULT = new ClassDeclSimple(new Identifier(id, getReducedRow()), vls, mls); :}	
 					| CLASS IDENTIFIER:id LCURLY method_decls:mls RCURLY
 						{:	VarDeclList vls = new VarDeclList();
-							RESULT = new ClassDeclSimple(new Identifier(id), vls, mls); :}
+							RESULT = new ClassDeclSimple(new Identifier(id, getReducedRow()), vls, mls); :}
 					| CLASS IDENTIFIER:id LCURLY var_decls:vls method_decls:mls RCURLY
-						{:	RESULT = new ClassDeclSimple(new Identifier(id), vls, mls); :}
+						{:	RESULT = new ClassDeclSimple(new Identifier(id, getReducedRow()), vls, mls); :}
 					;
 					
 var_decl 		::= type:t IDENTIFIER:id SEMI
-						{: RESULT = new VarDecl(t, new Identifier(id)); :}
+						{: RESULT = new VarDecl(t, new Identifier(id, getReducedRow())); :}
 					;
 
 
@@ -247,9 +251,9 @@ stmt 			::=	LCURLY stmt_list_opt:sl RCURLY
 					| SYSOUT LPAREN expr:e RPAREN SEMI
 						{: RESULT = new Print(e); :}
 					| IDENTIFIER:id ASSIGN expr:e SEMI
-						{: RESULT = new Assign(new Identifier(id), e); :}
+						{: RESULT = new Assign(new Identifier(id, getReducedRow()), e); :}
 					| IDENTIFIER:id LBRACKET expr:e1 RBRACKET ASSIGN expr:e2 SEMI
-						{: RESULT = new ArrayAssign(new Identifier(id), e1, e2); :}
+						{: RESULT = new ArrayAssign(new Identifier(id, getReducedRow()), e1, e2); :}
 					;
 				
 expr 			::= expr:e1 PLUS expr:e2 
@@ -267,7 +271,7 @@ expr 			::= expr:e1 PLUS expr:e2
 					| expr:e1 DOT LENGTH
 						{: RESULT = new ArrayLength(e1); :}
 					| expr:e1 DOT IDENTIFIER:id LPAREN expr_list_opt:el RPAREN
-						{: RESULT = new Call(e1, new Identifier(id), el); :}
+						{: RESULT = new Call(e1, new Identifier(id, getReducedRow()), el); :}
 					| INTEGER:i
 						{: RESULT = new IntegerLiteral((String) i); :}
 					| TRUE
@@ -281,7 +285,7 @@ expr 			::= expr:e1 PLUS expr:e2
 					| NEW INT LBRACKET expr:e1 RBRACKET
 						{: RESULT = new NewArray(e1); :}
 					| NEW IDENTIFIER:id LPAREN RPAREN
-						{: RESULT = new NewObject(new Identifier(id)); :}
+						{: RESULT = new NewObject(new Identifier(id, getReducedRow())); :}
 					| BANG expr:e1
 						{: RESULT = new Not(e1); :}
 					| LPAREN expr:e RPAREN
@@ -289,7 +293,7 @@ expr 			::= expr:e1 PLUS expr:e2
 					;
 				
 formal 			::= type:t IDENTIFIER:id
-						{: RESULT = new Formal(t, new Identifier(id)); :}
+						{: RESULT = new Formal(t, new Identifier(id, getReducedRow())); :}
 					;
 
 type 			::= INT
