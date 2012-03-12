@@ -2,7 +2,7 @@ package se.cortado.syntaxtree;
 import se.cortado.syntax.visitor.*;
 
 public class ClassDeclExtends extends ClassDecl {
-	public Identifier i;
+	
 	public Identifier j;
 	public VarDeclList vl;  
 	public MethodDeclList ml;
