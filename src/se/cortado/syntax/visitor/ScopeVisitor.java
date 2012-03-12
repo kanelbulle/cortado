@@ -39,13 +39,13 @@ public class ScopeVisitor implements Visitor {
 	
 	@Override
 	public void visit(MainClass node) {
-		System.out.println("-- MAIN CLASS: " + node.i1.s);
-		if (classTable.containsKey(node.i1.s)) {
+		System.out.println("-- MAIN CLASS: " + node.i.s);
+		if (classTable.containsKey(node.i.s)) {
 			errors.add("Redeclaration of class");
 		} else {
 			CUR_CLASS = node;
 			CUR_METHOD = node.md;
-			classTable.put(node.i1.s, new ClassScope());
+			classTable.put(node.i.s, new ClassScope());
 			node.md.accept(this);
 		}
 	}
