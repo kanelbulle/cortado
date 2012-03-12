@@ -17,18 +17,7 @@ public class ScopeVisitor implements Visitor {
 	private ClassDecl CUR_CLASS;
 	private MethodDecl CUR_METHOD;
 	
-//	private HashMap<String, ClassDecl> superClassScope;	
-//	private HashMap<String, LinkedList<VarDecl>> superVarScope;
-//	private HashMap<String, LinkedList<MethodDecl>> superMethodScope;
-	
-	
-	
-	public ScopeVisitor() {
-		
-//		superClassScope = new HashMap<String, ClassDecl>();
-//		superVarScope = new HashMap<String, LinkedList<VarDecl>>();
-//		superMethodScope = new HashMap<String, LinkedList<MethodDecl>>();
-		
+	public ScopeVisitor() {		
 		classTable = new HashMap<String, ClassScope>();
 		errors = new LinkedList<String>();
 	}
@@ -37,7 +26,7 @@ public class ScopeVisitor implements Visitor {
 	public void visit(Program node) {
 //		node.mainClass.accept(this);
 		
-		System.out.println("-- Adding class declarations");		
+		System.out.println("-- Adding class declarations");	
 		node.classDeclList.accept(this);
 
 		/* Last: print ALL errors encounterd during type/scope check */
@@ -57,7 +46,7 @@ public class ScopeVisitor implements Visitor {
 	@Override
 	public void visit(ClassDeclList node) {
 		/* Let each class handle its own scope */
-		for (int i = 0; i < node.size(); ++i) { 
+		for (int i = 0; i < node.size(); ++i) {
 			node.elementAt(i).accept(this);
 		}
 	}
@@ -84,6 +73,7 @@ public class ScopeVisitor implements Visitor {
 	
 	@Override
 	public void visit(VarDeclList node) {
+		System.out.println("-- Adding variable declarations for class: " + CUR_CLASS.i.s);
 		for (int i = 0; i < node.size(); ++i) {
 			node.elementAt(i).accept(this);
 		}
@@ -92,7 +82,8 @@ public class ScopeVisitor implements Visitor {
 	@Override
 	public void visit(VarDecl node) {
 		try {
-			classTable.get(CUR_CLASS.i.s).addVariable(node.identifier.s, node.type);
+			System.out.println("\t" + node.identifier.s);
+			classTable.get(CUR_CLASS.i.s).addVariable(node, node.type);
 		} catch (Exception e) {
 			errors.add(e.getMessage());
 		}
@@ -100,6 +91,7 @@ public class ScopeVisitor implements Visitor {
 	
 	@Override
 	public void visit(MethodDeclList node) {
+		System.out.println("-- Adding method declarations for class: " + CUR_CLASS.i.s);
 		for (int i = 0; i < node.size(); ++i) {
 			CUR_METHOD = node.elementAt(i);
 			CUR_METHOD.accept(this);
@@ -110,25 +102,36 @@ public class ScopeVisitor implements Visitor {
 	@Override
 	public void visit(MethodDecl node) {
 		MethodScope ms = new MethodScope();
+		System.out.println("\tMethod: " + node.identifier.s);
 		
 		/* Add method parameters */
+		System.out.println("-- Adding parameter declarations for class: " + CUR_CLASS.i.s + " and method: " + CUR_METHOD.identifier.s);
 		for (int i = 0; i < node.formalList.size(); ++i) {
 			Formal curParameter = node.formalList.elementAt(i);
 			try {
-				ms.addParameter(curParameter.i.s, curParameter.t);
+				System.out.println("\tParameter: " + curParameter.i.s);
+				ms.addParameter(curParameter, curParameter.t);
 			} catch (Exception e) {
 				errors.add(e.getMessage());
 			}
 		}
 		
 		/* Add local variables */
+		System.out.println("-- Adding local variables for class: " + CUR_CLASS.i.s + " and method: " + CUR_METHOD.identifier.s);
 		for (int i = 0; i < node.varDeclList.size(); ++i) {
 			VarDecl curVar = node.varDeclList.elementAt(i);
 			try {
-				ms.addVariable(curVar.identifier.s, curVar.type);
+				System.out.println("\tVariable: " + curVar.identifier.s);
+				ms.addVariable(curVar, curVar.type);
 			} catch (Exception e) {
 				errors.add(e.getMessage());
 			}
+		}
+		
+		try {
+			classTable.get(CUR_CLASS.i.s).addMethod(node, ms);
+		} catch (Exception e) {
+			errors.add(e.getMessage());
 		}
 	}
 	

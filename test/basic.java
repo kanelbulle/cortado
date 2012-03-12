@@ -7,6 +7,10 @@ class Halvklasse {
 	int a;
 	int j;
 	int a;
+	public int fnurf(int p) {
+		return 0;
+	}
+
 	public int fnurf() {
 		return 1;
 	}
