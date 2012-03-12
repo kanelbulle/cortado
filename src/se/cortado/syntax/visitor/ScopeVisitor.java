@@ -24,7 +24,8 @@ public class ScopeVisitor implements Visitor {
 	
 	@Override
 	public void visit(Program node) {
-		System.out.println("-- Adding class declarations");	
+
+		node.mainClass.accept(this);
 		node.classDeclList.accept(this);
 
 		/* Last: print ALL errors encounterd during type/scope check */
@@ -33,6 +34,19 @@ public class ScopeVisitor implements Visitor {
 			for (String error : errors) {
 				System.out.println("ERROR: " + error);
 			}
+		}
+	}
+	
+	@Override
+	public void visit(MainClass node) {
+		System.out.println("-- MAIN CLASS: " + node.i1.s);
+		if (classTable.containsKey(node.i1.s)) {
+			errors.add("Redeclaration of class");
+		} else {
+			CUR_CLASS = node;
+			CUR_METHOD = node.md;
+			classTable.put(node.i1.s, new ClassScope());
+			node.md.accept(this);
 		}
 	}
 	
@@ -52,7 +66,7 @@ public class ScopeVisitor implements Visitor {
 	@Override
 	public void visit(ClassDeclSimple node) {
 		if (classTable.containsKey(node.i.s)) {
-			errors.add("Redeclaration of class");
+			errors.add("Redeclaration of class \"" + node.i.s + "\" on line: " + node.i.row);
 		} else {
 			CUR_CLASS = node;
 			classTable.put(node.i.s, new ClassScope());
@@ -63,7 +77,7 @@ public class ScopeVisitor implements Visitor {
 	
 	@Override
 	public void visit(VarDeclList node) {
-		System.out.println("-- Adding variable declarations for class: " + CUR_CLASS.i.s);
+		System.out.println("-- " + CUR_CLASS.i.s);
 		for (int i = 0; i < node.size(); ++i) {
 			node.elementAt(i).accept(this);
 		}
@@ -72,7 +86,7 @@ public class ScopeVisitor implements Visitor {
 	@Override
 	public void visit(VarDecl node) {
 		try {
-			System.out.println("\t" + node.identifier.s);
+			System.out.println("\tClass variable: " + node.identifier.s);
 			classTable.get(CUR_CLASS.i.s).addVariable(node, node.type);
 		} catch (Exception e) {
 			errors.add(e.getMessage());
@@ -81,7 +95,6 @@ public class ScopeVisitor implements Visitor {
 	
 	@Override
 	public void visit(MethodDeclList node) {
-		System.out.println("-- Adding method declarations for class: " + CUR_CLASS.i.s);
 		for (int i = 0; i < node.size(); ++i) {
 			CUR_METHOD = node.elementAt(i);
 			CUR_METHOD.accept(this);
@@ -95,11 +108,10 @@ public class ScopeVisitor implements Visitor {
 		System.out.println("\tMethod: " + node.identifier.s);
 		
 		/* Add method parameters */
-		System.out.println("-- Adding parameter declarations for class: " + CUR_CLASS.i.s + " and method: " + CUR_METHOD.identifier.s);
 		for (int i = 0; i < node.formalList.size(); ++i) {
 			Formal curParameter = node.formalList.elementAt(i);
 			try {
-				System.out.println("\tParameter: " + curParameter.i.s);
+				System.out.println("\t\tParameter: " + curParameter.i.s);
 				ms.addParameter(curParameter, curParameter.t);
 			} catch (Exception e) {
 				errors.add(e.getMessage());
@@ -107,11 +119,10 @@ public class ScopeVisitor implements Visitor {
 		}
 		
 		/* Add local variables */
-		System.out.println("-- Adding local variables for class: " + CUR_CLASS.i.s + " and method: " + CUR_METHOD.identifier.s);
 		for (int i = 0; i < node.varDeclList.size(); ++i) {
 			VarDecl curVar = node.varDeclList.elementAt(i);
 			try {
-				System.out.println("\tVariable: " + curVar.identifier.s);
+				System.out.println("\t\tLocal variable: " + curVar.identifier.s);
 				ms.addVariable(curVar, curVar.type);
 			} catch (Exception e) {
 				errors.add(e.getMessage());
@@ -144,11 +155,6 @@ public class ScopeVisitor implements Visitor {
 	
 	
 	/* ------------------------------------------------------------------- */
-	
-	@Override
-	public void visit(MainClass node) {
-		
-	}
 	
 	@Override
 	public void visit(And node) {

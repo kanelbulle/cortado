@@ -10,11 +10,11 @@ import se.cortado.syntaxtree.VarDecl;
 
 public class MethodScope {
 	private FormalList parameters;
-	private HashMap<String, String> variables;
+	private HashMap<String, Type> variables;
 	
 	public MethodScope() {
 		parameters = new FormalList();
-		variables = new HashMap<String, String>();
+		variables = new HashMap<String, Type>();
 	}
 	
 	public void addParameter(Formal param, Type type) throws Exception {
@@ -28,11 +28,11 @@ public class MethodScope {
 	public void addVariable(VarDecl variable, Type type) throws Exception {
 		if (parameters.contains(variable.identifier.s)) {
 			throw new Exception("Redeclaration of method parameter");
-		} else if (variables.containsKey(variable.identifier)) {
+		} else if (variables.containsKey(variable.identifier.s)) {
 			throw new Exception("Redeclaration of local variable \"" + variable.identifier + "\" on line: " + variable.identifier.row);
 		} else {
 			//FIXME
-			variables.put(variable.identifier.s, type.toString());
+			variables.put(variable.identifier.s, type);
 		}
 	}
 	

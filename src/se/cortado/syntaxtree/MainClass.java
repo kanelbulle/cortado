@@ -1,8 +1,8 @@
 package se.cortado.syntaxtree;
 import se.cortado.syntax.visitor.*;
 
-public class MainClass {
-	public Identifier i1,i2;
+public class MainClass extends ClassDecl {
+	public Identifier i1, i2;
 	public MethodDecl md;
 
 	public MainClass(Identifier ai1, MethodDecl md) {

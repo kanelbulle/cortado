@@ -6,15 +6,16 @@ class Superklasse {
 class Halvklasse {
 	int a;
 	int j;
-	int a;
-	public int fnurf(int p) {
+	public int fnurf(int ss) {
 		return 0;
 	}
 
-	public int fnurf() {
+	public int fnurf(int ss, int a) {
+		int j;
 		return 1;
 	}
 }
+
 
 class IfAnd
 {
