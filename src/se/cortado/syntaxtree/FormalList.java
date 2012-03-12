@@ -10,6 +10,15 @@ public class FormalList {
       list = new Vector<Formal>();
    }
 
+   public boolean contains(String identifier) {
+	   for (Formal e : list) {
+		   if (e.i.s.equals(identifier)) {
+			   return true;
+		   }
+	   }
+	   return false;
+   }
+   
    public FormalList(Formal n) {
       list = new Vector<Formal>();
       addElement(n);

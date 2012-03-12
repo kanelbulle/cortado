@@ -24,8 +24,6 @@ public class ScopeVisitor implements Visitor {
 	
 	@Override
 	public void visit(Program node) {
-//		node.mainClass.accept(this);
-		
 		System.out.println("-- Adding class declarations");	
 		node.classDeclList.accept(this);
 
@@ -36,11 +34,6 @@ public class ScopeVisitor implements Visitor {
 				System.out.println("ERROR: " + error);
 			}
 		}
-	}
-	
-	@Override
-	public void visit(MainClass node) {
-		
 	}
 	
 	@Override
@@ -56,9 +49,6 @@ public class ScopeVisitor implements Visitor {
 		// TODO
 	}
 	
-	// public Identifier i;
-	// public VarDeclList vl;  
-	// public MethodDeclList ml;
 	@Override
 	public void visit(ClassDeclSimple node) {
 		if (classTable.containsKey(node.i.s)) {
@@ -135,29 +125,11 @@ public class ScopeVisitor implements Visitor {
 		}
 	}
 	
+	
 	@Override
 	public void visit(Block node) {
 		
 	}
-	
-	/** HELPER */
-	private boolean inScope(ClassDecl method) {
-		// TODO
-		return false;
-	}
-	
-	/** HELPER */
-	private boolean inScope(MethodDecl method) {
-		// TODO
-		return false;
-	}
-	
-	/** HELPER */
-	private boolean inScope(VarDecl method) {
-		// TODO
-		return false;
-	}
-	
 	
 	@Override
 	public void visit(Statement node) {
@@ -170,8 +142,13 @@ public class ScopeVisitor implements Visitor {
 		
 	}
 	
+	
 	/* ------------------------------------------------------------------- */
 	
+	@Override
+	public void visit(MainClass node) {
+		
+	}
 	
 	@Override
 	public void visit(And node) {
