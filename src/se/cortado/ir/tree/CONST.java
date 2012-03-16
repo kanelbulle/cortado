@@ -1,6 +1,6 @@
 package se.cortado.ir.tree;
 
-public class CONST extends Exp {
+public class CONST extends IR_Exp {
 	
 	public int value;
 	
@@ -8,11 +8,11 @@ public class CONST extends Exp {
 		value = v;
 	}
 	
-	public ExpList kids() {
+	public IR_ExpList kids() {
 		return null;
 	}
 	
-	public Exp build(ExpList kids) {
+	public IR_Exp build(IR_ExpList kids) {
 		return this;
 	}
 }

@@ -1,4 +1,4 @@
-package se.cortado.syntax.visitor;
+package se.cortado.visitors;
 
 import se.cortado.syntaxtree.*;
 

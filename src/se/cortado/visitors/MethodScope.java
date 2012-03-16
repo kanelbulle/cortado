@@ -1,4 +1,4 @@
-package se.cortado.syntax.visitor;
+package se.cortado.visitors;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -8,6 +8,7 @@ import se.cortado.syntaxtree.FormalList;
 import se.cortado.syntaxtree.Type;
 import se.cortado.syntaxtree.VarDecl;
 
+/** @author Samuel Wejeus */
 public class MethodScope {
 	private FormalList parameters;
 	private HashMap<String, Type> variables;

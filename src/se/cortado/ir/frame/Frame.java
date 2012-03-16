@@ -72,7 +72,7 @@ public interface Frame
 
        @return Tree code that calls the external function.
     */
-    public Exp externalCall(String func, ExpList args);
+    public IR_Exp externalCall(String func, IR_ExpList args);
 
     /**
        Appends tree code to move incoming arguments into the
@@ -85,7 +85,7 @@ public interface Frame
        to their correct places and then executes the function
        body.
     */
-    public Stm procEntryExit1(Stm body);
+    public IR_Stm procEntryExit1(IR_Stm body);
 
     /**
        Appends a "sink" Assem instruction that "uses" special registers
@@ -135,7 +135,7 @@ public interface Frame
     /**
        @return The translation of a tree.Stm into a list of assem.Instr.
     */
-    public abstract List<se.cortado.ir.assem.Instr> codegen(se.cortado.ir.tree.Stm stm);
+    public abstract List<se.cortado.ir.assem.Instr> codegen(se.cortado.ir.tree.IR_Stm stm);
 
     /**
        @return A TempMap mapping Temp:s corresponding to hardware 

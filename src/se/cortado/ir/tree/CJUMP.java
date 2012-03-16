@@ -2,11 +2,11 @@ package se.cortado.ir.tree;
 
 import se.cortado.ir.temp.Label;
 
-public class CJUMP extends Stm {
+public class CJUMP extends IR_Stm {
 	public int relop;
-	public Exp left, right;
+	public IR_Exp left, right;
 	public Label iftrue, iffalse;
-	public CJUMP(int rel, Exp l, Exp r, Label t, Label f) {
+	public CJUMP(int rel, IR_Exp l, IR_Exp r, Label t, Label f) {
 		relop=rel; left=l; right=r; iftrue=t; iffalse=f;
 	}
 
@@ -22,10 +22,14 @@ public class CJUMP extends Stm {
 	UGT =8, 
 	UGE =9;
 
-	public ExpList kids() {return new ExpList(left, new ExpList(right));}
-	public Stm build(ExpList kids) {
-		return new CJUMP(relop,kids.head,kids.tail.head,iftrue,iffalse);
+	public IR_ExpList kids() {
+		return new IR_ExpList(left, new IR_ExpList(right, null));
 	}
+	
+	public IR_Stm build(IR_ExpList kids) {
+		return new CJUMP(relop, kids.head, kids.tail.head, iftrue, iffalse);
+	}
+	
 	public static int notRel(int relop) {
 		switch (relop) {
 		case EQ:  return NE;

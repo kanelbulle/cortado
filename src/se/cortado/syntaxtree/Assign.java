@@ -1,5 +1,5 @@
 package se.cortado.syntaxtree;
-import se.cortado.syntax.visitor.*;
+import se.cortado.visitors.*;
 
 public class Assign extends Statement {
 	public Identifier i;

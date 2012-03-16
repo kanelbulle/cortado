@@ -1,6 +1,6 @@
 /** Author: Samuel Wejeus */ 
 
-package se.cortado.syntax.visitor;
+package se.cortado.visitors;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,6 +9,7 @@ import java.util.Stack;
 
 import se.cortado.syntaxtree.*;
 
+/** @author Samuel Wejeus */
 public class ScopeVisitor implements Visitor {
 	
 	private HashMap<String, ClassScope> classTable;

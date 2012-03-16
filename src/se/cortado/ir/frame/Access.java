@@ -27,5 +27,5 @@ public interface Access
        @return A Tree expression that can be used to load or store the
        variable.
     */
-    public Exp exp(Exp basePointer);
+    public IR_Exp exp(IR_Exp basePointer);
 }

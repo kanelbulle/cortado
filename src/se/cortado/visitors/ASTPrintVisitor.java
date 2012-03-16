@@ -6,7 +6,7 @@
  *
  * Author: Todd Neller, Gettysburg College 1/29/04 */ 
 
-package se.cortado.syntax.visitor;
+package se.cortado.visitors;
 
 import se.cortado.syntaxtree.*;
 

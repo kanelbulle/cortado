@@ -1,4 +1,4 @@
-package se.cortado.syntax.visitor;
+package se.cortado.visitors;
 
 import java.util.HashMap;
 
@@ -7,6 +7,7 @@ import se.cortado.syntaxtree.MethodDecl;
 import se.cortado.syntaxtree.Type;
 import se.cortado.syntaxtree.VarDecl;
 
+/** @author Samuel Wejeus */
 public class ClassScope {
 	private HashMap<String, Type> variables;
 	private HashMap<String, MethodScope> methods;

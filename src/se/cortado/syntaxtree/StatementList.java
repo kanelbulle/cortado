@@ -1,6 +1,7 @@
 package se.cortado.syntaxtree;
 
-import se.cortado.syntax.visitor.*;
+import se.cortado.visitors.*;
+
 import java.util.Vector;
 
 public class StatementList {

@@ -1,7 +1,6 @@
 package se.cortado.ir.tree;
 
-import se.cortado.ir.temp.DefaultMap;
-import se.cortado.ir.temp.TempMap;
+import se.cortado.ir.temp.*;
 
 public class Print {
 
@@ -65,17 +64,17 @@ public class Print {
 		prExp(s.src,d+1); say(")");
 	}
 
-	void prStm(Exp s, int d) {
+	void prStm(EXP s, int d) {
 		indent(d); sayln("EXP("); prExp(s.exp,d+1); say(")"); 
 	}
 
-	void prStm(Stm s, int d) {
+	void prStm(IR_Stm s, int d) {
 		if (s instanceof SEQ) prStm((SEQ)s, d);
 		else if (s instanceof LABEL) prStm((LABEL)s, d);
 		else if (s instanceof JUMP) prStm((JUMP)s, d);
 		else if (s instanceof CJUMP) prStm((CJUMP)s, d);
 		else if (s instanceof MOVE) prStm((MOVE)s, d);
-		else if (s instanceof Exp) prStm((Exp)s, d);
+		else if (s instanceof EXP) prStm((EXP)s, d);
 		else throw new Error("Print.prStm");
 	}
 
@@ -126,13 +125,13 @@ public class Print {
 	void prExp(CALL e, int d) {
 		indent(d); sayln("CALL(");
 		prExp(e.func,d+1);
-		for(ExpList a = e.args; a!=null; a=a.tail) {
+		for(IR_ExpList a = e.args; a!=null; a=a.tail) {
 			sayln(","); prExp(a.head,d+2); 
 		}
 		say(")");
 	}
 
-	void prExp(Exp e, int d) {
+	void prExp(IR_Exp e, int d) {
 		if (e instanceof BINOP) prExp((BINOP)e, d);
 		else if (e instanceof MEM) prExp((MEM)e, d);
 		else if (e instanceof TEMP) prExp((TEMP)e, d);
@@ -143,7 +142,7 @@ public class Print {
 		else throw new Error("Print.prExp");
 	}
 
-	public void prStm(Stm s) {prStm(s,0); say("\n");}
-	public void prExp(Exp e) {prExp(e,0); say("\n");}
+	public void prStm(IR_Stm s) {prStm(s,0); say("\n");}
+	public void prExp(IR_Exp e) {prExp(e,0); say("\n");}
 
 }

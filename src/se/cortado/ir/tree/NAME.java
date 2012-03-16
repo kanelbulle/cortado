@@ -2,10 +2,10 @@ package se.cortado.ir.tree;
 
 import se.cortado.ir.temp.Label;
 
-public class NAME extends Exp {
+public class NAME extends IR_Exp {
 	public Label label;
 	public NAME(Label l) {label=l;}
-	public ExpList kids() {return null;}
-	public Exp build(ExpList kids) {return this;}
+	public IR_ExpList kids() {return null;}
+	public IR_Exp build(IR_ExpList kids) {return this;}
 }
 

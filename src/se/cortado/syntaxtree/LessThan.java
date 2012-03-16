@@ -1,5 +1,5 @@
 package se.cortado.syntaxtree;
-import se.cortado.syntax.visitor.*;
+import se.cortado.visitors.*;
 
 public class LessThan extends Exp {
 	public Exp e1,e2;

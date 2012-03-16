@@ -2,11 +2,11 @@ package se.cortado.ir.tree;
 
 import se.cortado.ir.temp.Label;
 
-public class LABEL extends Stm { 
+public class LABEL extends IR_Stm { 
 	public Label label;
 	public LABEL(Label l) {label=l;}
-	public ExpList kids() {return null;}
-	public Stm build(ExpList kids) {
+	public IR_ExpList kids() {return null;}
+	public IR_Stm build(IR_ExpList kids) {
 		return this;
 	}
 }

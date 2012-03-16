@@ -2,9 +2,9 @@ package se.cortado;
 
 import java.io.*;
 
-import se.cortado.syntax.visitor.ASTPrintVisitor;
-import se.cortado.syntax.visitor.ScopeVisitor;
 import se.cortado.syntaxtree.Program;
+import se.cortado.visitors.ASTPrintVisitor;
+import se.cortado.visitors.ScopeVisitor;
 
 import java_cup.runtime.Symbol;
 

@@ -1,22 +1,24 @@
 package se.cortado.ir.tree;
 
-public abstract class Exp extends Stm {
-	public Exp exp;
+public class EXP extends IR_Stm {
 	
-//	public Exp(Exp e) {
-//		exp = e;
-//	}
+	public IR_Exp exp;
 	
-	public abstract ExpList kids();
+	public EXP(IR_Exp e) {
+		exp = e;
+	}
 	
-	public abstract Stm build(ExpList kids);
+//	public abstract ExpList kids();
 	
-//	public ExpList kids() {
-//		return new ExpList(exp);
-//	}
-//	
-//	public Stm build(ExpList kids) {
-//		return new ExpList(kids.head);
-//	}
+//	public abstract Stm build(ExpList kids);
+	
+	public IR_ExpList kids() {
+		return new IR_ExpList(exp, null);
+	}
+	
+	public IR_Stm build(IR_ExpList kids) {
+		return new EXP(kids.head);
+	}
 }
+
 

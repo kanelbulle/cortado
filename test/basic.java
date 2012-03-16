@@ -16,7 +16,6 @@ class Halvklasse {
 	}
 }
 
-class Superklasse {}
 class IfAnd
 {
     public int main(int a){
