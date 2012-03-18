@@ -17,27 +17,15 @@ public class ScopeVisitor implements Visitor {
 	private ClassDecl CUR_CLASS;
 	private MethodDecl CUR_METHOD;
 	
-//	private HashMap<String, ClassDecl> superClassScope;	
-//	private HashMap<String, LinkedList<VarDecl>> superVarScope;
-//	private HashMap<String, LinkedList<MethodDecl>> superMethodScope;
-	
-	
-	
-	public ScopeVisitor() {
-		
-//		superClassScope = new HashMap<String, ClassDecl>();
-//		superVarScope = new HashMap<String, LinkedList<VarDecl>>();
-//		superMethodScope = new HashMap<String, LinkedList<MethodDecl>>();
-		
+	public ScopeVisitor() {		
 		classTable = new HashMap<String, ClassScope>();
 		errors = new LinkedList<String>();
 	}
 	
 	@Override
 	public void visit(Program node) {
-//		node.mainClass.accept(this);
-		
-		System.out.println("-- Adding class declarations");		
+
+		node.mainClass.accept(this);
 		node.classDeclList.accept(this);
 
 		/* Last: print ALL errors encounterd during type/scope check */
@@ -51,13 +39,21 @@ public class ScopeVisitor implements Visitor {
 	
 	@Override
 	public void visit(MainClass node) {
-		
+		System.out.println("-- MAIN CLASS: " + node.i.s);
+		if (classTable.containsKey(node.i.s)) {
+			errors.add("Redeclaration of class");
+		} else {
+			CUR_CLASS = node;
+			CUR_METHOD = node.md;
+			classTable.put(node.i.s, new ClassScope());
+			node.md.accept(this);
+		}
 	}
 	
 	@Override
 	public void visit(ClassDeclList node) {
 		/* Let each class handle its own scope */
-		for (int i = 0; i < node.size(); ++i) { 
+		for (int i = 0; i < node.size(); ++i) {
 			node.elementAt(i).accept(this);
 		}
 	}
@@ -67,13 +63,10 @@ public class ScopeVisitor implements Visitor {
 		// TODO
 	}
 	
-	// public Identifier i;
-	// public VarDeclList vl;  
-	// public MethodDeclList ml;
 	@Override
 	public void visit(ClassDeclSimple node) {
 		if (classTable.containsKey(node.i.s)) {
-			errors.add("Redeclaration of class");
+			errors.add("Redeclaration of class \"" + node.i.s + "\" on line: " + node.i.row);
 		} else {
 			CUR_CLASS = node;
 			classTable.put(node.i.s, new ClassScope());
@@ -84,6 +77,7 @@ public class ScopeVisitor implements Visitor {
 	
 	@Override
 	public void visit(VarDeclList node) {
+		System.out.println("-- " + CUR_CLASS.i.s);
 		for (int i = 0; i < node.size(); ++i) {
 			node.elementAt(i).accept(this);
 		}
@@ -92,7 +86,8 @@ public class ScopeVisitor implements Visitor {
 	@Override
 	public void visit(VarDecl node) {
 		try {
-			classTable.get(CUR_CLASS.i.s).addVariable(node.identifier.s, node.type);
+			System.out.println("\tClass variable: " + node.identifier.s);
+			classTable.get(CUR_CLASS.i.s).addVariable(node, node.type);
 		} catch (Exception e) {
 			errors.add(e.getMessage());
 		}
@@ -110,12 +105,14 @@ public class ScopeVisitor implements Visitor {
 	@Override
 	public void visit(MethodDecl node) {
 		MethodScope ms = new MethodScope();
+		System.out.println("\tMethod: " + node.identifier.s);
 		
 		/* Add method parameters */
 		for (int i = 0; i < node.formalList.size(); ++i) {
 			Formal curParameter = node.formalList.elementAt(i);
 			try {
-				ms.addParameter(curParameter.i.s, curParameter.t);
+				System.out.println("\t\tParameter: " + curParameter.i.s);
+				ms.addParameter(curParameter, curParameter.t);
 			} catch (Exception e) {
 				errors.add(e.getMessage());
 			}
@@ -125,36 +122,25 @@ public class ScopeVisitor implements Visitor {
 		for (int i = 0; i < node.varDeclList.size(); ++i) {
 			VarDecl curVar = node.varDeclList.elementAt(i);
 			try {
-				ms.addVariable(curVar.identifier.s, curVar.type);
+				System.out.println("\t\tLocal variable: " + curVar.identifier.s);
+				ms.addVariable(curVar, curVar.type);
 			} catch (Exception e) {
 				errors.add(e.getMessage());
 			}
 		}
+		
+		try {
+			classTable.get(CUR_CLASS.i.s).addMethod(node, ms);
+		} catch (Exception e) {
+			errors.add(e.getMessage());
+		}
 	}
+	
 	
 	@Override
 	public void visit(Block node) {
 		
 	}
-	
-	/** HELPER */
-	private boolean inScope(ClassDecl method) {
-		// TODO
-		return false;
-	}
-	
-	/** HELPER */
-	private boolean inScope(MethodDecl method) {
-		// TODO
-		return false;
-	}
-	
-	/** HELPER */
-	private boolean inScope(VarDecl method) {
-		// TODO
-		return false;
-	}
-	
 	
 	@Override
 	public void visit(Statement node) {
@@ -167,8 +153,8 @@ public class ScopeVisitor implements Visitor {
 		
 	}
 	
-	/* ------------------------------------------------------------------- */
 	
+	/* ------------------------------------------------------------------- */
 	
 	@Override
 	public void visit(And node) {

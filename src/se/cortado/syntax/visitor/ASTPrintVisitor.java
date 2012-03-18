@@ -43,7 +43,7 @@ public class ASTPrintVisitor implements Visitor {
 		level++;
 		
 		System.out.print(indent());
-		n.i1.accept(this);
+		n.i.accept(this);
 		
 		System.out.println(", ");
 		

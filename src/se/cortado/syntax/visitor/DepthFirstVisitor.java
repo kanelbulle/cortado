@@ -229,10 +229,8 @@ public class DepthFirstVisitor implements Visitor {
 
 	@Override
 	public void visit(MainClass node) {
-		node.i1.accept(this);
 		node.i2.accept(this);
 		node.md.accept(this);
-
 	}
 
 	@Override

@@ -55,13 +55,13 @@ public class SlowTypeVisitor implements TypeVisitor {
 	HashMap<String, ClassScope> symbolTable;
 	ClassDecl currentClass;
 	MethodDecl currentMethod;
-	
+
 	int currentLine;
 
 	public void setSymbolTable(HashMap<String, ClassScope> map) {
 		symbolTable = map;
 	}
-	
+
 	/**
 	 * Checks if this Type can be used as type of a variable.
 	 * 
@@ -175,7 +175,7 @@ public class SlowTypeVisitor implements TypeVisitor {
 	@Override
 	public Type visit(ClassDeclSimple node) {
 		currentClass = node;
-		
+
 		node.i.accept(this);
 		node.ml.accept(this);
 		node.vl.accept(this);
@@ -222,7 +222,7 @@ public class SlowTypeVisitor implements TypeVisitor {
 
 	@Override
 	public Type visit(IdentifierExp node) {
-		
+
 		return null;
 	}
 
@@ -263,7 +263,6 @@ public class SlowTypeVisitor implements TypeVisitor {
 
 	@Override
 	public Type visit(MainClass node) {
-		node.i1.accept(this);
 		node.i2.accept(this);
 		node.md.accept(this);
 		return null;
@@ -272,7 +271,7 @@ public class SlowTypeVisitor implements TypeVisitor {
 	@Override
 	public Type visit(MethodDecl node) {
 		currentMethod = node;
-		
+
 		node.identifier.accept(this);
 		node.type.accept(this);
 		node.formalList.accept(this);
@@ -364,9 +363,9 @@ public class SlowTypeVisitor implements TypeVisitor {
 			errors.add("Line  Left side of '*' must be of type integer.");
 		}
 		if (!(node.e2.accept(this) instanceof IntegerType)) {
-			
+
 		}
-		
+
 		return new IntegerType();
 	}
 
