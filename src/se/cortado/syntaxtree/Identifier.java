@@ -1,12 +1,13 @@
 package se.cortado.syntaxtree;
+
 import se.cortado.syntax.visitor.*;
 
 public class Identifier {
 	public String s;
 	public int row;
 
-	public Identifier(String as, int row) { 
-		s=as;
+	public Identifier(String as, int row) {
+		s = as;
 		this.row = row;
 	}
 
@@ -14,7 +15,11 @@ public class Identifier {
 		v.visit(this);
 	}
 
-	public String toString(){
+	public String toString() {
 		return s;
+	}
+
+	public Type accept(TypeVisitor v) {
+		return v.visit(this);
 	}
 }

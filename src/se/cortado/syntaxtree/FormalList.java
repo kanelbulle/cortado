@@ -4,30 +4,34 @@ import se.cortado.syntax.visitor.*;
 import java.util.Vector;
 
 public class FormalList {
-   private Vector<Formal> list;
+	private Vector<Formal> list;
 
-   public FormalList() {
-      list = new Vector<Formal>();
-   }
+	public FormalList() {
+		list = new Vector<Formal>();
+	}
 
-   public FormalList(Formal n) {
-      list = new Vector<Formal>();
-      addElement(n);
-   }
+	public FormalList(Formal n) {
+		list = new Vector<Formal>();
+		addElement(n);
+	}
 
-   public void addElement(Formal n) {
-      list.addElement(n);
-   }
+	public void addElement(Formal n) {
+		list.addElement(n);
+	}
 
-   public Formal elementAt(int i)  { 
-      return (Formal)list.elementAt(i); 
-   }
+	public Formal elementAt(int i) {
+		return (Formal) list.elementAt(i);
+	}
 
-   public int size() { 
-      return list.size(); 
-   }
-   
-   public void accept(Visitor v) {
-      v.visit(this);
-   }
+	public int size() {
+		return list.size();
+	}
+
+	public void accept(Visitor v) {
+		v.visit(this);
+	}
+
+	public Type accept(TypeVisitor v) {
+		return v.visit(this);
+	}
 }

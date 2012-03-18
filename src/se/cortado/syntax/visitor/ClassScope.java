@@ -29,4 +29,16 @@ public class ClassScope {
 			methods.put(identifier, methodScope);
 		}
 	}
+	
+	public MethodScope getMethod(String identifier) {
+		return methods.get(identifier);
+	}
+	
+	public boolean hasVariable(String variableName) {
+		return variables.get(variableName) != null;
+	}
+	
+	public boolean hasMethod(String methodName) {
+		return methods.get(methodName) != null;
+	}
 }

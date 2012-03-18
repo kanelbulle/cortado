@@ -11,7 +11,7 @@ import se.cortado.syntaxtree.*;
 
 public class ScopeVisitor implements Visitor {
 	
-	private HashMap<String, ClassScope> classTable;
+	public HashMap<String, ClassScope> classTable;
 	private LinkedList<String> errors;
 	
 	private ClassDecl CUR_CLASS;
