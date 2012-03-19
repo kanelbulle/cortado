@@ -3,16 +3,60 @@
 package se.cortado.syntax.visitor;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Stack;
 
-import se.cortado.syntaxtree.*;
+import se.cortado.syntaxtree.And;
+import se.cortado.syntaxtree.ArrayAssign;
+import se.cortado.syntaxtree.ArrayLength;
+import se.cortado.syntaxtree.ArrayLookup;
+import se.cortado.syntaxtree.Assign;
+import se.cortado.syntaxtree.Block;
+import se.cortado.syntaxtree.BooleanType;
+import se.cortado.syntaxtree.Call;
+import se.cortado.syntaxtree.ClassDecl;
+import se.cortado.syntaxtree.ClassDeclExtends;
+import se.cortado.syntaxtree.ClassDeclList;
+import se.cortado.syntaxtree.ClassDeclSimple;
+import se.cortado.syntaxtree.Exp;
+import se.cortado.syntaxtree.ExpList;
+import se.cortado.syntaxtree.False;
+import se.cortado.syntaxtree.Formal;
+import se.cortado.syntaxtree.FormalList;
+import se.cortado.syntaxtree.Identifier;
+import se.cortado.syntaxtree.IdentifierExp;
+import se.cortado.syntaxtree.IdentifierType;
+import se.cortado.syntaxtree.If;
+import se.cortado.syntaxtree.IntArrayType;
+import se.cortado.syntaxtree.IntegerLiteral;
+import se.cortado.syntaxtree.IntegerType;
+import se.cortado.syntaxtree.LessThan;
+import se.cortado.syntaxtree.MainClass;
+import se.cortado.syntaxtree.MethodDecl;
+import se.cortado.syntaxtree.MethodDeclList;
+import se.cortado.syntaxtree.Minus;
+import se.cortado.syntaxtree.NewArray;
+import se.cortado.syntaxtree.NewObject;
+import se.cortado.syntaxtree.Not;
+import se.cortado.syntaxtree.Plus;
+import se.cortado.syntaxtree.Print;
+import se.cortado.syntaxtree.Program;
+import se.cortado.syntaxtree.Statement;
+import se.cortado.syntaxtree.StatementList;
+import se.cortado.syntaxtree.StringArrayType;
+import se.cortado.syntaxtree.This;
+import se.cortado.syntaxtree.Times;
+import se.cortado.syntaxtree.True;
+import se.cortado.syntaxtree.Type;
+import se.cortado.syntaxtree.VarDecl;
+import se.cortado.syntaxtree.VarDeclList;
+import se.cortado.syntaxtree.VoidType;
+import se.cortado.syntaxtree.While;
 
 public class ScopeVisitor implements Visitor {
-	
 	public HashMap<String, ClassScope> classTable;
 	private LinkedList<String> errors;
+	
+	public boolean errorOccurred = false;
 	
 	private ClassDecl CUR_CLASS;
 	private MethodDecl CUR_METHOD;
@@ -34,6 +78,8 @@ public class ScopeVisitor implements Visitor {
 			for (String error : errors) {
 				System.out.println("ERROR: " + error);
 			}
+			
+			errorOccurred = true;
 		}
 	}
 	
@@ -101,10 +147,9 @@ public class ScopeVisitor implements Visitor {
 		}
 	}
 
-	// public Type id ( FormalList ) { VarDecl* Stmt* return Exp ; }
 	@Override
 	public void visit(MethodDecl node) {
-		MethodScope ms = new MethodScope();
+		MethodScope ms = new MethodScope(node.type);
 		System.out.println("\tMethod: " + node.identifier.s);
 		
 		/* Add method parameters */

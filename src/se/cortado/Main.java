@@ -25,10 +25,17 @@ public class Main {
 		try  {
 			Symbol s = p.parse();
 			Program prog = (Program) s.value;
-			printVisitor.visit(prog);
+			//printVisitor.visit(prog);
+			
 			scopeVisitor.visit(prog);
+			if (scopeVisitor.errorOccurred) return;
+			
 			typeVisitor.setSymbolTable(scopeVisitor.classTable);
 			typeVisitor.visit(prog);
+			if (typeVisitor.errorOccurred) {
+				System.out.println("Type check failed with errors.");
+				return;
+			}
 			
 		} catch (Exception e) {
 			System.out.println("NO PARSE FOR YOU!");
