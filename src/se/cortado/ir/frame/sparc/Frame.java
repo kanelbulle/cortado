@@ -16,7 +16,7 @@ public class Frame implements se.cortado.ir.frame.Frame
 	// There is always room for six outgoing parameters in the frame.
 	private int maxOutgoing = 6;
 	private Label name;
-	private Stm moveIncoming = new se.cortado.ir.tree.Exp(new CONST(0)); // NOP
+	private Stm moveIncoming;// TODO fix this: = new se.cortado.ir.tree.Exp(new CONST(0)); // NOP
 
 	public Frame(Label n, List<Boolean> escapes) {
 		name = n;
