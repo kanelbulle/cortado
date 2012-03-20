@@ -53,17 +53,16 @@ import se.cortado.syntaxtree.VoidType;
 import se.cortado.syntaxtree.While;
 
 public class ScopeVisitor implements Visitor {
-	public HashMap<String, ClassScope> classTable;
+	private SymbolTable symbolTable;
 	private LinkedList<String> errors;
 	
 	public boolean errorOccurred = false;
 	
 	private ClassDecl CUR_CLASS;
 	private MethodDecl CUR_METHOD;
-	//private int CUR_STMT_BLOCK = 0;
 	
-	public ScopeVisitor() {		
-		classTable = new HashMap<String, ClassScope>();
+	public ScopeVisitor(SymbolTable symbolTable) {		
+		this.symbolTable = symbolTable;
 		errors = new LinkedList<String>();
 	}
 	
@@ -87,12 +86,12 @@ public class ScopeVisitor implements Visitor {
 	@Override
 	public void visit(MainClass node) {
 		System.out.println("-- MAIN CLASS: " + node.i.s);
-		if (classTable.containsKey(node.i.s)) {
+		if (symbolTable.containsKey(node.i.s)) {
 			errors.add("Redeclaration of class");
 		} else {
 			CUR_CLASS = node;
 			CUR_METHOD = node.md;
-			classTable.put(node.i.s, new ClassScope());
+			symbolTable.put(node.i.s, new ClassScope());
 			node.md.accept(this);
 		}
 	}
@@ -107,11 +106,11 @@ public class ScopeVisitor implements Visitor {
 	
 	@Override
 	public void visit(ClassDeclSimple node) {
-		if (classTable.containsKey(node.i.s)) {
+		if (symbolTable.containsKey(node.i.s)) {
 			errors.add("Redeclaration of class \"" + node.i.s + "\" on line: " + node.i.row);
 		} else {
 			CUR_CLASS = node;
-			classTable.put(node.i.s, new ClassScope());
+			symbolTable.put(node.i.s, new ClassScope());
 			node.vl.accept(this);
 			node.ml.accept(this);
 		}
@@ -129,7 +128,7 @@ public class ScopeVisitor implements Visitor {
 	public void visit(VarDecl node) {
 		try {
 			System.out.println("\tClass variable: " + node.identifier.s);
-			classTable.get(CUR_CLASS.i.s).addVariable(node, node.type);
+			symbolTable.get(CUR_CLASS.i.s).addVariable(node, node.type);
 		} catch (Exception e) {
 			errors.add(e.getMessage());
 		}
@@ -174,7 +173,7 @@ public class ScopeVisitor implements Visitor {
 		node.statementList.accept(this);
 		
 		try {
-			classTable.get(CUR_CLASS.i.s).addMethod(node, ms);
+			symbolTable.get(CUR_CLASS.i.s).addMethod(node, ms);
 		} catch (Exception e) {
 			errors.add(e.getMessage());
 		}

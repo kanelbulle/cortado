@@ -1,7 +1,6 @@
 package se.cortado.syntax.visitor;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import se.cortado.syntaxtree.And;
 import se.cortado.syntaxtree.ArrayAssign;
@@ -62,15 +61,15 @@ public class SlowTypeVisitor implements TypeVisitor {
 	private static final String ASSIGN_TYPE_ERROR = "Type of left hand side '%s' does not match type of right hand side '%s'.";
 
 	ArrayList<String> errors = new ArrayList<String>();
-	HashMap<String, ClassScope> symbolTable;
 	ClassDecl currentClass;
 	MethodDecl currentMethod;
+	private SymbolTable symbolTable;
 	public boolean errorOccurred;
 
 	int currentLine;
 
-	public void setSymbolTable(HashMap<String, ClassScope> map) {
-		symbolTable = map;
+	public void setSymbolTable(SymbolTable symbolTable) {
+		this.symbolTable = symbolTable;
 	}
 
 	private void addError(String s, String... format) {
