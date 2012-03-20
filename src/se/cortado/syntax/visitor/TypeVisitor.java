@@ -44,6 +44,7 @@ import se.cortado.syntaxtree.True;
 import se.cortado.syntaxtree.Type;
 import se.cortado.syntaxtree.VarDecl;
 import se.cortado.syntaxtree.VarDeclList;
+import se.cortado.syntaxtree.VoidExp;
 import se.cortado.syntaxtree.VoidType;
 import se.cortado.syntaxtree.While;
 
@@ -93,5 +94,6 @@ public interface TypeVisitor {
 	public Type visit(VarDecl node);
 	public Type visit(VarDeclList node);
 	public Type visit(VoidType node);
+	public Type visit(VoidExp node);
 	public Type visit(While node);
 }

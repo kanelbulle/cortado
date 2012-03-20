@@ -7,7 +7,7 @@ class Halvklasse {
 	int a;
 	int j;
 	public int fnurf(int ss) {
-		return 0;
+		return 1;
 	}
 
 	public int fnurf(int ss, int a) {
@@ -16,12 +16,15 @@ class Halvklasse {
 	}
 }
 
-class Superklasse {}
 class IfAnd
 {
     public int main(int a){
 		System.out.println(new Test().go());
 		return 1;
+    }
+    
+    public int main(int a, int b) {
+    	return 1;
     }
 }
 
@@ -42,6 +45,6 @@ class Test {
 		}
 	
 		a = 4711;
-		return true;
+		return 1;
     }
 }

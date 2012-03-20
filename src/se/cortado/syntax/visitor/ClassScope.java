@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import se.cortado.syntaxtree.Formal;
 import se.cortado.syntaxtree.FormalList;
 import se.cortado.syntaxtree.MethodDecl;
 import se.cortado.syntaxtree.Type;
@@ -88,12 +89,37 @@ public class ClassScope {
 	public boolean hasMethod(String methodName) {
 		return methods.get(methodName) != null;
 	}
-	
+
 	public MethodScope getMethodMatching(String methodName, List<Type> types) {
-		// TODO
+		List<MethodScope> scopes = methods.get(methodName);
+
+		// loop through all methodscopes for the given methodname and compare
+		// them to the list of types that was given as input. return the method
+		// that matches all of the types. return null if no such method is
+		// found.
+		for (MethodScope ms : scopes) {
+			FormalList fl = ms.getParameterList();
+			if (fl.size() != types.size()) {
+				continue;
+			}
+
+			boolean allEqual = true;
+			for (int i = 0; i < fl.size(); i++) {
+				Formal f = fl.elementAt(i);
+				if (f.t.getClass() != types.get(i).getClass()) {
+					allEqual = false;
+					break;
+				}
+			}
+
+			if (allEqual) {
+				return ms;
+			}
+		}
+
 		return null;
 	}
-	
+
 	public MethodScope getMethodMatching(MethodDecl mdecl) {
 		return methods2.get(mdecl);
 	}

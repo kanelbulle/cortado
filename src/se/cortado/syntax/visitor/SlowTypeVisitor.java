@@ -47,6 +47,7 @@ import se.cortado.syntaxtree.True;
 import se.cortado.syntaxtree.Type;
 import se.cortado.syntaxtree.VarDecl;
 import se.cortado.syntaxtree.VarDeclList;
+import se.cortado.syntaxtree.VoidExp;
 import se.cortado.syntaxtree.VoidType;
 import se.cortado.syntaxtree.While;
 
@@ -57,7 +58,7 @@ public class SlowTypeVisitor implements TypeVisitor {
 	private static final String EXPRESSION_INSIDE_ERROR = "Expression inside of '%s' must be of type %s.";
 	private static final String NO_MATCHING_METHOD = "No method with signature %s found in %s.";
 	private static final String EXPECTED_TYPE_CLASS = "Expected expression of type class here.";
-	private static final String EXPECTED_TYPE = "Expected expresseion of type %s here.";
+	private static final String EXPECTED_EXPRESSION_OF_TYPE = "Expected expression of type %s here.";
 	private static final String ASSIGN_TYPE_ERROR = "Left hand side (%s) does not match type of right hand side (%s).";
 
 	ArrayList<String> errors = new ArrayList<String>();
@@ -73,6 +74,7 @@ public class SlowTypeVisitor implements TypeVisitor {
 	}
 
 	private void addError(String s, String... format) {
+		new Exception().printStackTrace();
 		errors.add("Line " + currentLine + ": "
 				+ String.format(s, (Object[]) format));
 	}
@@ -127,8 +129,8 @@ public class SlowTypeVisitor implements TypeVisitor {
 		return false;
 	}
 
-	private boolean isClassDeclared(Identifier id) {
-		return symbolTable.get(id.s) != null;
+	private boolean isClassDeclared(String id) {
+		return symbolTable.get(id) != null;
 	}
 
 	@Override
@@ -146,10 +148,10 @@ public class SlowTypeVisitor implements TypeVisitor {
 	@Override
 	public Type visit(ArrayAssign node) {
 		node.i.accept(this);
-		
+
 		Type idType = typeOfIdentifier(node.i);
 		if (!(idType instanceof IntArrayType)) {
-			addError(EXPECTED_TYPE, "IntegerArrayType");
+			addError(EXPECTED_EXPRESSION_OF_TYPE, "IntegerArrayType");
 		}
 		if (!(node.e1.accept(this) instanceof IntegerType)) {
 			addError(EXPRESSION_INSIDE_ERROR, "[]", "IntegerType");
@@ -157,28 +159,28 @@ public class SlowTypeVisitor implements TypeVisitor {
 		if (!(node.e2.accept(this) instanceof IntegerType)) {
 			addError(RIGHT_SIDE_ERROR, "=", "IntegerType");
 		}
-		
+
 		return null;
 	}
 
 	@Override
 	public Type visit(ArrayLength node) {
 		if (!(node.e.accept(this) instanceof IntArrayType)) {
-			addError(EXPECTED_TYPE, "IntegerArrayType");
+			addError(EXPECTED_EXPRESSION_OF_TYPE, "IntegerArrayType");
 		}
-		
+
 		return null;
 	}
 
 	@Override
 	public Type visit(ArrayLookup node) {
 		if (!(node.e1.accept(this) instanceof IntArrayType)) {
-			addError(EXPECTED_TYPE, "IntegerArrayType");
+			addError(EXPECTED_EXPRESSION_OF_TYPE, "IntegerArrayType");
 		}
 		if (!(node.e2.accept(this) instanceof IntegerType)) {
 			addError(EXPRESSION_INSIDE_ERROR, "[]", "IntegerType");
 		}
-		
+
 		return new IntegerType();
 	}
 
@@ -223,7 +225,7 @@ public class SlowTypeVisitor implements TypeVisitor {
 
 		// evaluate the Exp to find on what class the call is
 		Type classType = node.e.accept(this);
-		if (!(classType instanceof IdentifierType)) {
+		if (classType instanceof IdentifierType) {
 			IdentifierType classId = (IdentifierType) classType;
 			ClassScope cs = symbolTable.get(classId.s);
 
@@ -249,10 +251,12 @@ public class SlowTypeVisitor implements TypeVisitor {
 				// there is no method in the specified class that fits the types
 				// print error
 				String types = "(";
-				for (Type t : methodTypes) {
-					types += t.getClass().getSimpleName() + ", ";
+				for (int i = 0; i < methodTypes.size(); i++) {
+					types += methodTypes.get(i).getClass().getSimpleName();
+					if (i < methodTypes.size() - 1)
+						types += ", ";
 				}
-				types = types.substring(0, types.length() - 2) + ")";
+				types += ")";
 
 				addError(NO_MATCHING_METHOD, types, classId.s);
 
@@ -352,7 +356,7 @@ public class SlowTypeVisitor implements TypeVisitor {
 			addError(UNDECLARED_ERROR, i.s);
 		} else {
 			// it's defined somewhere alright, return its type
-			typeOfIdentifier(i);
+			return typeOfIdentifier(i);
 		}
 
 		return null;
@@ -403,7 +407,7 @@ public class SlowTypeVisitor implements TypeVisitor {
 	@Override
 	public Type visit(MainClass node) {
 		currentClass = node;
-		
+
 		node.i.accept(this);
 		node.md.accept(this);
 		return null;
@@ -414,11 +418,23 @@ public class SlowTypeVisitor implements TypeVisitor {
 		currentMethod = node;
 
 		node.identifier.accept(this);
-		node.type.accept(this);
+
+		Type returnType =node.type.accept(this); 
+		if (returnType instanceof IdentifierType) {
+			IdentifierType it = (IdentifierType) node.type;
+			if (!isClassDeclared(it.s)) {
+				addError(UNDECLARED_ERROR, it.s);
+			}
+		}
+
 		node.formalList.accept(this);
 		node.varDeclList.accept(this);
 		node.statementList.accept(this);
-		node.exp.accept(this);
+		
+		if (node.exp.accept(this).getClass() != returnType.getClass()) {
+			addError(EXPECTED_EXPRESSION_OF_TYPE, returnType.getClass().getSimpleName());
+		}
+		
 		return null;
 	}
 
@@ -455,7 +471,7 @@ public class SlowTypeVisitor implements TypeVisitor {
 	public Type visit(NewObject node) {
 		node.i.accept(this);
 
-		if (!isClassDeclared(node.i)) {
+		if (!isClassDeclared(node.i.s)) {
 			addError(UNDECLARED_ERROR, node.i.s);
 		}
 
@@ -493,15 +509,15 @@ public class SlowTypeVisitor implements TypeVisitor {
 	public Type visit(Program node) {
 		node.mainClass.accept(this);
 		node.classDeclList.accept(this);
-		
+
 		if (errors.size() > 0) {
 			for (String s : errors) {
 				System.out.println(s);
 			}
-			
+
 			errorOccurred = true;
 		}
-		
+
 		return null;
 	}
 
@@ -555,9 +571,15 @@ public class SlowTypeVisitor implements TypeVisitor {
 	public Type visit(VarDecl node) {
 		node.identifier.accept(this);
 
-		// TODO verify identifier
+		// If this is of type IdentifierType we need to confirm that there's a
+		// matching class. if it's not an IdentifierType then we can assume it
+		// is one of the default types.
+		Type t = node.type.accept(this);
+		if (t instanceof IdentifierType) {
+			IdentifierType it = (IdentifierType) t;
+			isClassDeclared(it.s);
+		}
 
-		node.type.accept(this);
 		return null;
 	}
 
@@ -566,6 +588,7 @@ public class SlowTypeVisitor implements TypeVisitor {
 		for (int i = 0; i < node.size(); i++) {
 			node.elementAt(i).accept(this);
 		}
+
 		return null;
 	}
 
@@ -573,10 +596,18 @@ public class SlowTypeVisitor implements TypeVisitor {
 	public Type visit(VoidType node) {
 		return new VoidType();
 	}
+	
+	@Override
+	public Type visit(VoidExp node) {
+		return new VoidType();
+	}
 
 	@Override
 	public Type visit(While node) {
-		node.e.accept(this);
+		if (!(node.e.accept(this) instanceof BooleanType)) {
+			addError(EXPECTED_EXPRESSION_OF_TYPE, "boolean");
+		}
+
 		node.s.accept(this);
 
 		return null;
