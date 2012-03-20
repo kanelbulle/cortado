@@ -60,6 +60,7 @@ public class ScopeVisitor implements Visitor {
 	
 	private ClassDecl CUR_CLASS;
 	private MethodDecl CUR_METHOD;
+	//private int CUR_STMT_BLOCK = 0;
 	
 	public ScopeVisitor() {		
 		classTable = new HashMap<String, ClassScope>();
@@ -102,11 +103,6 @@ public class ScopeVisitor implements Visitor {
 		for (int i = 0; i < node.size(); ++i) {
 			node.elementAt(i).accept(this);
 		}
-	}
-	
-	@Override
-	public void visit(ClassDeclExtends node) {
-		// TODO
 	}
 	
 	@Override
@@ -174,6 +170,9 @@ public class ScopeVisitor implements Visitor {
 			}
 		}
 		
+		// ADD STATEMENTS HERE!
+		node.statementList.accept(this);
+		
 		try {
 			classTable.get(CUR_CLASS.i.s).addMethod(node, ms);
 		} catch (Exception e) {
@@ -184,22 +183,23 @@ public class ScopeVisitor implements Visitor {
 	
 	@Override
 	public void visit(Block node) {
-		
 	}
 	
 	@Override
 	public void visit(Statement node) {
-		
 	}
 
 	@Override
 	public void visit(StatementList node) {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	
 	/* ------------------------------------------------------------------- */
+	
+	@Override
+	public void visit(ClassDeclExtends node) {
+		// TODO
+	}
 	
 	@Override
 	public void visit(And node) {
