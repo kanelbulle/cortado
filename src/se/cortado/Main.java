@@ -25,7 +25,7 @@ public class Main {
 		try  {
 			Symbol s = p.parse();
 			Program prog = (Program) s.value;
-			printVisitor.visit(prog);
+			//printVisitor.visit(prog);
 			
 			scopeVisitor.visit(prog);
 			if (scopeVisitor.errorOccurred) return;
