@@ -99,8 +99,8 @@ non terminal 				empty;
 
 /* Precedences */
 precedence left BANG;
-precedence left PLUS, MINUS;
 precedence left MULTIPLY;
+precedence left PLUS, MINUS;
 precedence left AND, LESS, DOT;
 
 /* State to start with */

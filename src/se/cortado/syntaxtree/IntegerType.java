@@ -10,4 +10,9 @@ public class IntegerType extends Type {
 	public Type accept(TypeVisitor v) {
 		return v.visit(this);
 	}
+
+	@Override
+	public String getTypeName() {
+		return "int";
+	}
 }

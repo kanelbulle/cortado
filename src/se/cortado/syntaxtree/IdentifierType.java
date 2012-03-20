@@ -22,4 +22,9 @@ public class IdentifierType extends Type {
 	public Type accept(TypeVisitor v) {
 		return v.visit(this);
 	}
+
+	@Override
+	public String getTypeName() {
+		return s;
+	}
 }

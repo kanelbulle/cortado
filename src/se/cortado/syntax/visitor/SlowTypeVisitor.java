@@ -59,7 +59,7 @@ public class SlowTypeVisitor implements TypeVisitor {
 	private static final String NO_MATCHING_METHOD = "No method with signature %s found in %s.";
 	private static final String EXPECTED_TYPE_CLASS = "Expected expression of type class here.";
 	private static final String EXPECTED_EXPRESSION_OF_TYPE = "Expected expression of type %s here.";
-	private static final String ASSIGN_TYPE_ERROR = "Left hand side (%s) does not match type of right hand side (%s).";
+	private static final String ASSIGN_TYPE_ERROR = "Type of left hand side '%s' does not match type of right hand side '%s'.";
 
 	ArrayList<String> errors = new ArrayList<String>();
 	HashMap<String, ClassScope> symbolTable;
@@ -151,13 +151,13 @@ public class SlowTypeVisitor implements TypeVisitor {
 
 		Type idType = typeOfIdentifier(node.i);
 		if (!(idType instanceof IntArrayType)) {
-			addError(EXPECTED_EXPRESSION_OF_TYPE, "IntegerArrayType");
+			addError(EXPECTED_EXPRESSION_OF_TYPE, "int[]");
 		}
 		if (!(node.e1.accept(this) instanceof IntegerType)) {
-			addError(EXPRESSION_INSIDE_ERROR, "[]", "IntegerType");
+			addError(EXPRESSION_INSIDE_ERROR, "[]", "int");
 		}
 		if (!(node.e2.accept(this) instanceof IntegerType)) {
-			addError(RIGHT_SIDE_ERROR, "=", "IntegerType");
+			addError(RIGHT_SIDE_ERROR, "=", "int");
 		}
 
 		return null;
@@ -166,7 +166,7 @@ public class SlowTypeVisitor implements TypeVisitor {
 	@Override
 	public Type visit(ArrayLength node) {
 		if (!(node.e.accept(this) instanceof IntArrayType)) {
-			addError(EXPECTED_EXPRESSION_OF_TYPE, "IntegerArrayType");
+			addError(EXPECTED_EXPRESSION_OF_TYPE, "int[]");
 		}
 
 		return null;
@@ -175,10 +175,10 @@ public class SlowTypeVisitor implements TypeVisitor {
 	@Override
 	public Type visit(ArrayLookup node) {
 		if (!(node.e1.accept(this) instanceof IntArrayType)) {
-			addError(EXPECTED_EXPRESSION_OF_TYPE, "IntegerArrayType");
+			addError(EXPECTED_EXPRESSION_OF_TYPE, "int[]");
 		}
 		if (!(node.e2.accept(this) instanceof IntegerType)) {
-			addError(EXPRESSION_INSIDE_ERROR, "[]", "IntegerType");
+			addError(EXPRESSION_INSIDE_ERROR, "[]", "int");
 		}
 
 		return new IntegerType();
@@ -189,9 +189,8 @@ public class SlowTypeVisitor implements TypeVisitor {
 		Type lhsType = typeOfIdentifier(node.i);
 		Type rhsType = node.e.accept(this);
 
-		if (lhsType.getClass() != rhsType.getClass()) {
-			addError(ASSIGN_TYPE_ERROR, lhsType.getClass().getSimpleName(),
-					rhsType.getClass().getSimpleName());
+		if (!lhsType.equals(rhsType)) {
+			addError(ASSIGN_TYPE_ERROR, lhsType.toString(), rhsType.toString());
 		}
 
 		return null;
@@ -419,22 +418,31 @@ public class SlowTypeVisitor implements TypeVisitor {
 
 		node.identifier.accept(this);
 
-		Type returnType =node.type.accept(this); 
+		Type returnType = node.type.accept(this);
+		Type expReturnType = node.exp.accept(this);
 		if (returnType instanceof IdentifierType) {
 			IdentifierType it = (IdentifierType) node.type;
 			if (!isClassDeclared(it.s)) {
 				addError(UNDECLARED_ERROR, it.s);
 			}
-		}
 
+			if (expReturnType instanceof IdentifierType) {
+				IdentifierType expIt = (IdentifierType) expReturnType;
+				if (!it.s.equals(expIt.s)) {
+					addError(EXPECTED_EXPRESSION_OF_TYPE, it.s);
+				}
+			} else if (expReturnType.getClass() != returnType.getClass()) {
+				addError(EXPECTED_EXPRESSION_OF_TYPE, returnType.getClass()
+						.getSimpleName());
+			}
+		} else if (expReturnType.getClass() != returnType.getClass()) {
+			addError(EXPECTED_EXPRESSION_OF_TYPE, returnType.getClass()
+					.getSimpleName());
+		}
 		node.formalList.accept(this);
 		node.varDeclList.accept(this);
 		node.statementList.accept(this);
-		
-		if (node.exp.accept(this).getClass() != returnType.getClass()) {
-			addError(EXPECTED_EXPRESSION_OF_TYPE, returnType.getClass().getSimpleName());
-		}
-		
+
 		return null;
 	}
 
@@ -596,7 +604,7 @@ public class SlowTypeVisitor implements TypeVisitor {
 	public Type visit(VoidType node) {
 		return new VoidType();
 	}
-	
+
 	@Override
 	public Type visit(VoidExp node) {
 		return new VoidType();
