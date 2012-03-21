@@ -1,0 +1,19 @@
+// FRAMES FOR LATER! = GLUE
+It is almost possible to give a formal semantics to the Tree language. However, there is no provision in this language for procedure and function definitions – we can specify only the body of each function. The procedure entry and exit sequences will be added later as special “glue” that is different for each target machine.
+
+//TODO: MUST DO?
+The unCx method of class Ex is left as an exercise. It’s helpful to have unCx treat the cases of CONST 0 and CONST 1 specially, since they have particularly simple and efficient translations. Class Nx’s unEx and unCx methods need not be implemented, since these cases should never occur in compiling a well-typed MiniJava program.
+
+
+• exp: constructs that compute some value, possibly with side effects.
+• stm: constructs that perform side effects and control ﬂo
+
+
+mem as left child of move means store,
+otherwise it means load
+
+
+ If address argument has address taken, then it must be written into stack frame.
+– Saving it in “saved registers” area of stack won’t make it consecutive with memory resident arguments
+
+So in the standard calling convention of many modern machines the calling function reserves space for the register arguments in its own frame, next to the place where it writes argument k + 1. But the calling function does not actually write anything there; that space is written into by the called function, and only if the called function needs to write arguments into memory for any reason.

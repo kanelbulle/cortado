@@ -1,4 +1,4 @@
-package se.cortado.ir.frame.sparc;
+package se.cortado.ir.frame.SPARC;
 
 import java.util.List;
 import se.cortado.ir.temp.*;
@@ -16,7 +16,7 @@ public class Frame implements se.cortado.ir.frame.Frame
 	// There is always room for six outgoing parameters in the frame.
 	private int maxOutgoing = 6;
 	private Label name;
-	private Stm moveIncoming = new se.cortado.ir.tree.Exp(new CONST(0)); // NOP
+	private IR_Stm moveIncoming = new EXP(new CONST(0)); // NOP
 
 	public Frame(Label n, List<Boolean> escapes) {
 		name = n;
@@ -33,6 +33,14 @@ public class Frame implements se.cortado.ir.frame.Frame
 
 	public Label name() {
 		return name;
+	}
+
+	public se.cortado.ir.frame.Frame newFrame(se.cortado.ir.temp.Label name, List<Boolean> formals) { 
+		return new Frame(name, formals); 
+	}
+
+	public se.cortado.ir.frame.Record newRecord(String name) { 
+		return new Record(name); 
 	}
 
 	public int size() {
@@ -101,21 +109,13 @@ public class Frame implements se.cortado.ir.frame.Frame
 		}
 	}
 
-	public Exp externalCall(String func, ExpList args) {
+	public IR_Exp externalCall(String func, IR_ExpList args) {
 		return new CALL(new NAME(new Label(func)), args);
 	}
 
-	public Stm procEntryExit1(Stm body) {
+	public IR_Stm procEntryExit1(IR_Stm body) {
 		return new SEQ(moveIncoming, body);
 	}
-
-	/* Must be impemented */
-	public List<se.cortado.ir.assem.Instr> procEntryExit2(List<se.cortado.ir.assem.Instr> inst)
-	{	return null;    }
-
-	/* Must be impemented */
-	public se.cortado.ir.frame.Proc procEntryExit3(List<se.cortado.ir.assem.Instr> body)
-	{	return null;    }
 
 	public Temp RV() {
 		return Hardware.RV;
@@ -129,15 +129,28 @@ public class Frame implements se.cortado.ir.frame.Frame
 		return Hardware.wordSize;
 	}
 
+	/* Must be impemented */
+	public List<se.cortado.ir.assem.Instr> procEntryExit2(List<se.cortado.ir.assem.Instr> inst) {
+		return null; 
+	}
+
+	/* Must be impemented */
+	public se.cortado.ir.frame.Proc procEntryExit3(List<se.cortado.ir.assem.Instr> body){
+		return null; 
+	}
+	
 	/* Must be implemented */
-	public List<se.cortado.ir.assem.Instr> codegen(se.cortado.ir.tree.Stm stm) 
-	{ return null; }
+	public List<se.cortado.ir.assem.Instr> codegen(IR_Stm stm) { 
+		return null;
+	}
 
 	/* Must be implemented */
-	public TempMap initial()
-	{ return null; }
+	public TempMap initial() { 
+		return null; 
+	}
 
 	/* Must be implemented */
-	public TempList registers()
-	{ return null; }    
+	public TempList registers() { 
+		return null; 
+	}    
 }

@@ -1,7 +1,8 @@
-package se.cortado.ir.frame.sparc;
+package se.cortado.ir.frame.SPARC;
 
-import se.cortado.ir.temp.*;
-import se.cortado.ir.tree.*;
+import se.cortado.ir.temp.Temp;
+import se.cortado.ir.tree.IR_Exp;
+import se.cortado.ir.tree.TEMP;
 
 public class InReg implements se.cortado.ir.frame.Access
 {
@@ -15,7 +16,7 @@ public class InReg implements se.cortado.ir.frame.Access
 		return "sparc.InReg(" + reg.toString() + ")";
 	}
 
-	public Exp exp(Exp basePointer) {
+	public IR_Exp exp(IR_Exp basePointer) {
 		return new TEMP(reg);
 	}
 

@@ -1,8 +1,10 @@
 
 package se.cortado.visitors;
+import java.util.List;
 import java.util.LinkedList;
 
 import se.cortado.syntaxtree.*;
+import se.cortado.ir.frame.Frame;
 import se.cortado.ir.translate.*;
 import se.cortado.ir.tree.*;
 import se.cortado.ir.temp.*;
@@ -11,10 +13,18 @@ import se.cortado.ir.temp.*;
 public class IntermediateVisitor implements Visitor {
 
 	private LinkedList fragments;
-	private TR_Exp tmpResult;
 	
-	public IntermediateVisitor() {
-		fragments = new LinkedList();
+	public TR_Exp tmpResult;
+	private Frame curFrame;
+	private Frame parentFrame;
+	
+	//temp
+	se.cortado.ir.tree.Print irPrinter;
+	
+	public IntermediateVisitor(Frame parentFrame) {
+		this.fragments = new LinkedList();
+		this.parentFrame = parentFrame;
+		irPrinter = new se.cortado.ir.tree.Print(System.out);
 	}
 
 	//translateExp(Frame f, Env e, ClassInfo c, MethodInfo m, syntaxtree.Exp node)
@@ -31,8 +41,89 @@ public class IntermediateVisitor implements Visitor {
 		return tmpResult;
     }
 	
+	
+	/* -------------- FRAME BUILDING -------------- */
+	
+	@Override
+	public void visit(MethodDecl node) {
+		
+		System.out.println("IR: Method call, building new frame");
+		/* Determine which variables escape frames */
+		List<Boolean> params = new LinkedList<Boolean>();
+//		for (int i = 0; i < node.formalList.size(); ++i) {
+//			// No var in minijava ever escapes.
+//			params.add(false);
+//		}
+		
+		/* Create new frame and update current pointer */
+//		curFrame = parentFrame.newFrame(new Label("ClassName$MethodName"), params);
+		
+		// TODO: Do something like:
+//        for ( List<Formal> aux = node.formals; aux != null; aux = aux.tail, f = f.tail ) {
+//            VarInfo v = minfo.formalsTable.get(Symbol.symbol(aux.head.name.s));
+//            v.access = f.head;
+//        }
+        
+        // TODO: Handle 'this' pointer
+        
+		/* Add local variables to frame */
+		node.varDeclList.accept(this);
+		//node.exp.accept(this); // TODO: What is exp here?
+		node.statementList.accept(this);
+	}
+
+	@Override
+	public void visit(MethodDeclList node) {
+		System.out.println("IR: Accept MethodDeclList");
+		for (int i = 0; i < node.size(); ++i) {
+			node.elementAt(i).accept(this);
+		}
+	}
+	
+	/** In MiniJava no variables escape. This is due to: 
+		- there is no nesting of classes and methods;
+		- it is not possible to take the address of a variable;
+		- integers and booleans are passed by value
+		- objects, including integer arrays, can be represented as pointers that are also passed by value.
+	 */
+	@Override
+	public void visit(VarDecl node) {
+		/* Minijava does not allow variable initalization (by standard) so we're of the hook here */
+//		curFrame.allocLocal(false);
+	}
+
+	@Override
+	public void visit(VarDeclList node) {
+		for (int i = 0; i < node.size(); ++i) {
+			node.elementAt(i).accept(this);
+		}
+	}
+	/* -------------- /FRAME BUILDING ------------- */
+	
+
+	@Override
+	public void visit(Exp node) {
+		
+	}
+	
+	@Override
+	public void visit(Statement node) {
+		System.out.println("IR: Accept Statement");
+		node.accept(this);
+	}
+
+	@Override
+	public void visit(StatementList node) {
+		System.out.println("IR: Accept StatementList");
+		for (int i = 0; i < node.size(); ++i) {
+			node.elementAt(i).accept(this);
+		}
+	}
+
+	
 	@Override
 	public void visit(While node) {
+		System.out.println("IR: While loop:");
 		Label testLabel = new Label();
 		Label doneLabel = new Label();
 		Label body = new Label();
@@ -52,7 +143,11 @@ public class IntermediateVisitor implements Visitor {
 						)
 					);
 
+		
 		tmpResult = new TR_Nx(r);
+		System.out.println("\tBuilt IR:");
+		System.out.println("\t");
+		irPrinter.prExp(tmpResult.build_EX());
 	}
 	
 	
@@ -63,39 +158,42 @@ public class IntermediateVisitor implements Visitor {
 	 */
 	@Override
 	public void visit(Assign node) {
-
-//		TR_Exp e1 = translate(node.i);
-//		TR_Exp e2 = translate(node.e);
-//		IR_Stm r;
-//		
-//		if (e1.build_EX() instanceof TEMP) {
-//			r = new MOVE(e1.build_EX(), e2.build_EX());
-//		} else {
-//			Temp z = new Temp();
-//			r = new MOVE(
-//					new MEM(
-//						new BINOP(BINOP.PLUS, new TEMP(z), e1.build_EX())
-//					),
-//					e2.build_EX()
-//				);
-//		} 
-
+		node.e.accept(this);
+		TR_Exp e1 = tmpResult;
+		
+		node.i.accept(this);
+		TR_Exp e2 = tmpResult;
+		
+		IR_Stm r;
+		
+		if (e1.build_EX() instanceof TEMP) {
+			r = new MOVE(e1.build_EX(), e2.build_EX());
+		} else {
+			Temp z = new Temp();
+			r = new MOVE(
+					new MEM(
+						new BINOP(BINOP.PLUS, new TEMP(z), e1.build_EX())
+					),
+					e2.build_EX()
+				);
+		} 
+		
+		tmpResult = new TR_Nx(r);
+		System.out.println("\tBuilt IR:");
+		System.out.println("\t");
+		irPrinter.prExp(tmpResult.build_EX());
+		
 	}
 	
 	@Override
 	public void visit(IntegerLiteral node) {
-		//		MEM(new BINOP(BINOP.MINUS, new Temp(), node.i));
+		System.out.println("IR: Accept IntegerLiteral");
+		tmpResult = new TR_Ex(new CONST(node.i));
 	}
 
 	@Override
 	public void visit(IntegerType node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void visit(Exp node) {
-
+		System.out.println("IR: Accept IntegerType");
 	}
 
 	@Override
@@ -107,7 +205,7 @@ public class IntermediateVisitor implements Visitor {
 
 	@Override
 	public void visit(Plus node) {
-
+		System.out.println("IR: Accept );
 	}
 
 
@@ -159,25 +257,49 @@ public class IntermediateVisitor implements Visitor {
 
 	}
 
+	/* -------------- ITERATE PROGRAM/CLASSES -------------- */
 	@Override
-	public void visit(ClassDeclExtends node) {
-		// TODO Auto-generated method stub
-
+	public void visit(Program node) {
+		System.out.println("IR: Accept Program");
+		node.classDeclList.accept(this);
 	}
-
+	
 	@Override
 	public void visit(ClassDeclList node) {
-		// TODO Auto-generated method stub
-
+		System.out.println("IR: Accept ClassDeclList");
+		for (int i = 0; i < node.size(); ++i) {
+			node.elementAt(i).accept(this);
+		}
 	}
 
 	@Override
 	public void visit(ClassDeclSimple node) {
-		// TODO Auto-generated method stub
-
+//		  Symbol name = Symbol.symbol(node.name.s);
+//        ClassInfo info = env.classes.get(name);
+//        this.BuildVTable(info);
+//        
+//        String name = info.name.toString();
+//        String[] indexes = new String[info.vtableIndex.size()];
+//        
+//        for ( int i = 0; i < info.vtableIndex.size(); i++ ) {
+//            MethodInfo m = info.methods.get(info.vtableIndex.get(i));
+//            indexes[i] = m.decorateName();
+//        }
+//        
+//        VtableFrag frag = new VtableFrag(name, indexes);
+//        info.vtable = frag.name;
+//        this.addFrag(frag);
+		
+		System.out.println("IR: Accept ClassDeclSimple: " + node.i.s);
+		node.ml.accept(this);
 	}
 
-
+	@Override
+	public void visit(ClassDeclExtends node) {
+		// TODO Auto-generated method stub
+	}
+	/* -------------- /ITERATE PROGRAM/CLASSES ------------- */
+	
 	@Override
 	public void visit(ExpList node) {
 		// TODO Auto-generated method stub
@@ -201,10 +323,11 @@ public class IntermediateVisitor implements Visitor {
 		// TODO Auto-generated method stub
 
 	}
-
+	
+	/** (Hopefully) Corresponds to IR langugage "simple variable" */
 	@Override
 	public void visit(Identifier node) {
-		// TODO Auto-generated method stub
+//		tmpResult = new MEM(new BINOP(BINOP.PLUS, new TEMP(frame.FP), CONST(frame.K)));
 
 	}
 
@@ -245,18 +368,6 @@ public class IntermediateVisitor implements Visitor {
 	}
 
 	@Override
-	public void visit(MethodDecl node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void visit(MethodDeclList node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void visit(NewArray node) {
 		// TODO Auto-generated method stub
 
@@ -275,25 +386,7 @@ public class IntermediateVisitor implements Visitor {
 	}
 
 	@Override
-	public void visit(Print node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void visit(Program node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void visit(Statement node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void visit(StatementList node) {
+	public void visit(se.cortado.syntaxtree.Print node) {
 		// TODO Auto-generated method stub
 
 	}
@@ -324,18 +417,6 @@ public class IntermediateVisitor implements Visitor {
 
 	@Override
 	public void visit(Type node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void visit(VarDecl node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void visit(VarDeclList node) {
 		// TODO Auto-generated method stub
 
 	}

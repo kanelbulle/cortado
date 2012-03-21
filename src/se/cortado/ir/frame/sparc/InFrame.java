@@ -1,4 +1,4 @@
-package se.cortado.ir.frame.sparc;
+package se.cortado.ir.frame.SPARC;
 
 import se.cortado.ir.tree.*;
 
@@ -14,7 +14,7 @@ class InFrame implements se.cortado.ir.frame.Access
 		return "sparc.InFrame(" + offset + ")";
 	}
 
-	public Exp exp(Exp basePointer) {
+	public IR_Exp exp(IR_Exp basePointer) {
 		// A small optimization for the special case offset == 0.
 		// (This case occurs frequently with heap objects.)
 		if(offset == 0)

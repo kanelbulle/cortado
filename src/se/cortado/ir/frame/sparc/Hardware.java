@@ -1,4 +1,4 @@
-package se.cortado.ir.frame.sparc;
+package se.cortado.ir.frame.SPARC;
 
 import se.cortado.ir.temp.*;
 
@@ -41,13 +41,13 @@ public class Hardware
 
 	static Temp getInReg(int i) {
 		if (i < 0 || i >= inRegs.length) {
-			throw new se.cortado.error.InternalError("Attempt to access non-existent in register #" + i + ".");
+			throw new Error("Attempt to access non-existent in register #" + i + ".");
 		}
 		return inRegs[i];
 	}
 	static Temp getOutReg(int i) {
 		if (i < 0 || i >= outRegs.length) {
-			throw new se.cortado.error.InternalError("Attempt to access non-existent out register #" + i + ".");
+			throw new Error("Attempt to access non-existent out register #" + i + ".");
 		}
 		return outRegs[i];
 	}
@@ -55,7 +55,7 @@ public class Hardware
 
 	static Temp getLocalReg(int i) {
 		if (i < 0 || i >= localRegs.length) {
-			throw new se.cortado.error.InternalError("Attempt to access non-existent local register #" + i + ".");
+			throw new Error("Attempt to access non-existent local register #" + i + ".");
 		}
 		return localRegs[i];
 	}
@@ -63,7 +63,7 @@ public class Hardware
 
 	static Temp getGlobalReg(int i) {
 		if (i < 0 || i >= localRegs.length) {
-			throw new se.cortado.error.InternalError("Attempt to access non-existent global register #" + i + ".");
+			throw new Error("Attempt to access non-existent global register #" + i + ".");
 		}
 		return globalRegs[i];
 	}

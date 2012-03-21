@@ -11,10 +11,21 @@ import java.util.List;
    interface is independent of the target architecture, but it is
    designed for real processors. For virtual machines, use the @see
    VMFrame interface.
+   
+   Basically this is a holder for
+	• the locations of all the formals,
+	• instructions required to implement the “viewshift,”
+	• the number of locals allocated so far,
+	• and the label at which the function’s machine code is to begin
 */
 public interface Frame
 {
 
+	public Frame newFrame(Label name, List<Boolean> formals);
+	
+    public Record newRecord(String name);
+    
+    
     /**
        The label corresponding to the assembler entry point
        for the function using the frame.
@@ -34,7 +45,7 @@ public interface Frame
 
        @return A List of Access objects.
     */
-    public java.util.List<Access> formals();
+    public List<Access> formals();
 
     /**
        Allocates an Access object corresponding to a local
@@ -114,7 +125,7 @@ public interface Frame
 
        @return a Proc object
     */
-    public se.cortado.ir.frame.Proc procEntryExit3(List<se.cortado.ir.assem.Instr> body);
+    public Proc procEntryExit3(List<se.cortado.ir.assem.Instr> body);
     
 
     /**

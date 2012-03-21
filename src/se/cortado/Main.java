@@ -4,6 +4,7 @@ import java.io.*;
 
 import se.cortado.syntaxtree.Program;
 import se.cortado.visitors.ASTPrintVisitor;
+import se.cortado.visitors.IntermediateVisitor;
 import se.cortado.visitors.ScopeVisitor;
 
 import java_cup.runtime.Symbol;
@@ -19,12 +20,15 @@ public class Main {
 		parser p = new parser(new Scanner(new FileReader(fileName)));
 		ASTPrintVisitor v = new ASTPrintVisitor();
 		ScopeVisitor sv = new ScopeVisitor();
+		IntermediateVisitor iv = new IntermediateVisitor(null);
+//		se.cortado.ir.tree.Print pr = new se.cortado.ir.tree.Print(System.out);
 		
 		try  {
 			Symbol s = p.parse();
 			Program prog = (Program) s.value;
 //			v.visit(prog);
-			sv.visit(prog);
+//			sv.visit(prog);
+			iv.visit(prog);
 		} catch (Exception e) {
 			System.out.println("NO PARSE FOR YOU!");
 			e.printStackTrace();

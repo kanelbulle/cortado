@@ -8,7 +8,7 @@ public class TR_Ex extends TR_Exp {
     
 	private IR_Exp exp;
     
-    TR_Ex(IR_Exp e) {
+    public TR_Ex(IR_Exp e) {
         exp = e;
     }
 
