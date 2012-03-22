@@ -5,6 +5,7 @@ import java.util.HashMap;
 import se.cortado.syntaxtree.Formal;
 import se.cortado.syntaxtree.FormalList;
 import se.cortado.syntaxtree.Identifier;
+import se.cortado.syntaxtree.MethodDecl;
 import se.cortado.syntaxtree.Type;
 import se.cortado.syntaxtree.VarDecl;
 
@@ -12,11 +13,13 @@ public class MethodScope {
 	private FormalList parameters;
 	private HashMap<String, Type> variables;
 	private Type returnType;
+	private MethodDecl methodDecl;
 
-	public MethodScope(Type returnType) {
+	public MethodScope(Type returnType, MethodDecl mDecl) {
 		parameters = new FormalList();
 		variables = new HashMap<String, Type>();
 		this.returnType = returnType;
+		this.setMethodDecl(mDecl);
 	}
 
 	public void addParameter(Formal param, Type type) throws Exception {
@@ -58,7 +61,7 @@ public class MethodScope {
 
 		return null;
 	}
-	
+
 	public Type getReturnType() {
 		return returnType;
 	}
@@ -75,6 +78,18 @@ public class MethodScope {
 
 	public boolean hasVariable(String variableName) {
 		return variables.get(variableName) != null;
+	}
+
+	public MethodDecl getMethodDecl() {
+		return methodDecl;
+	}
+
+	public void setMethodDecl(MethodDecl methodDecl) {
+		this.methodDecl = methodDecl;
+	}
+
+	public HashMap<String, Type> getVariables() {
+		return variables;
 	}
 
 }

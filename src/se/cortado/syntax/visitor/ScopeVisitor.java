@@ -2,7 +2,6 @@
 
 package se.cortado.syntax.visitor;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 
 import se.cortado.syntaxtree.And;
@@ -91,7 +90,7 @@ public class ScopeVisitor implements Visitor {
 		} else {
 			CUR_CLASS = node;
 			CUR_METHOD = node.md;
-			symbolTable.put(node.i.s, new ClassScope());
+			symbolTable.put(node.i.s, new ClassScope(node));
 			node.md.accept(this);
 		}
 	}
@@ -110,7 +109,7 @@ public class ScopeVisitor implements Visitor {
 			errors.add("Redeclaration of class \"" + node.i.s + "\" on line: " + node.i.row);
 		} else {
 			CUR_CLASS = node;
-			symbolTable.put(node.i.s, new ClassScope());
+			symbolTable.put(node.i.s, new ClassScope(node));
 			node.vl.accept(this);
 			node.ml.accept(this);
 		}
@@ -144,7 +143,7 @@ public class ScopeVisitor implements Visitor {
 
 	@Override
 	public void visit(MethodDecl node) {
-		MethodScope ms = new MethodScope(node.type);
+		MethodScope ms = new MethodScope(node.type, node);
 		System.out.println("\tMethod: " + node.identifier.s);
 		
 		/* Add method parameters */

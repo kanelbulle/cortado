@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import se.cortado.syntaxtree.ClassDecl;
 import se.cortado.syntaxtree.Formal;
 import se.cortado.syntaxtree.FormalList;
 import se.cortado.syntaxtree.MethodDecl;
@@ -14,8 +15,11 @@ public class ClassScope {
 	private HashMap<String, Type> variables;
 	private HashMap<String, List<MethodScope>> methods;
 	private HashMap<MethodDecl, MethodScope> methods2;
+	private ClassDecl classDecl;
 
-	public ClassScope() {
+	public ClassScope(ClassDecl classDecl) {
+		this.setClassDecl(classDecl);
+		
 		variables = new HashMap<String, Type>();
 		methods = new HashMap<String, List<MethodScope>>();
 		methods2 = new HashMap<MethodDecl, MethodScope>();
@@ -81,6 +85,10 @@ public class ClassScope {
 	public Type getVariableType(String variableName) {
 		return variables.get(variableName);
 	}
+	
+	public HashMap<String, Type> getVariables() {
+		return variables;
+	}
 
 	public boolean hasVariable(String variableName) {
 		return variables.get(variableName) != null;
@@ -88,6 +96,10 @@ public class ClassScope {
 
 	public boolean hasMethod(String methodName) {
 		return methods.get(methodName) != null;
+	}
+	
+	public HashMap<String, List<MethodScope>> getMethods() {
+		return methods;
 	}
 
 	public MethodScope getMethodMatching(String methodName, List<Type> types) {
@@ -123,4 +135,13 @@ public class ClassScope {
 	public MethodScope getMethodMatching(MethodDecl mdecl) {
 		return methods2.get(mdecl);
 	}
+
+	public ClassDecl getClassDecl() {
+		return classDecl;
+	}
+
+	public void setClassDecl(ClassDecl classDecl) {
+		this.classDecl = classDecl;
+	}
+
 }

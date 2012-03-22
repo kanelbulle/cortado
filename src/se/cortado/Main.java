@@ -1,14 +1,12 @@
 package se.cortado;
 
-import java.io.*;
+import java.io.FileReader;
 
-import se.cortado.syntax.visitor.ASTPrintVisitor;
+import java_cup.runtime.Symbol;
 import se.cortado.syntax.visitor.ScopeVisitor;
 import se.cortado.syntax.visitor.SlowTypeVisitor;
 import se.cortado.syntax.visitor.SymbolTable;
 import se.cortado.syntaxtree.Program;
-
-import java_cup.runtime.Symbol;
 
 public class Main {
 
@@ -19,7 +17,7 @@ public class Main {
 
 		String fileName = args[0];
 		parser p = new parser(new Scanner(new FileReader(fileName)));
-		ASTPrintVisitor printVisitor = new ASTPrintVisitor();
+		//ASTPrintVisitor printVisitor = new ASTPrintVisitor();
 		SymbolTable symbolTable = new SymbolTable();
 		ScopeVisitor scopeVisitor = new ScopeVisitor(symbolTable);
 		SlowTypeVisitor typeVisitor = new SlowTypeVisitor();
