@@ -45,6 +45,10 @@ class Test {
 			a = 2;
 		}
 	
+		while (1 < 2) {
+			a = 12;
+		}
+	
 		a = 4711;
 		return 1;
     }
