@@ -5,10 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import se.cortado.ir.frame.Access;
+import se.cortado.ir.frame.Frame;
+import se.cortado.ir.frame.Record;
 import se.cortado.syntaxtree.ClassDecl;
 import se.cortado.syntaxtree.Formal;
 import se.cortado.syntaxtree.FormalList;
+import se.cortado.syntaxtree.Identifier;
 import se.cortado.syntaxtree.MainClass;
+import se.cortado.syntaxtree.MethodDecl;
 import se.cortado.syntaxtree.Type;
 
 public class SymbolTable {
@@ -30,6 +35,27 @@ public class SymbolTable {
 
 	public boolean containsKey(String key) {
 		return get(key) != null;
+	}
+
+	public Record getRecord(ClassDecl classDecl) {
+		ClassScope cs = symbolTable.get(classDecl.i.s);
+
+		return cs.getRecord();
+	}
+
+	public Frame getFrame(ClassDecl classDecl, MethodDecl methodDecl) {
+		ClassScope cs = symbolTable.get(classDecl.i.s);
+		MethodScope ms = cs.getMethodMatching(methodDecl);
+
+		return ms.getFrame();
+	}
+
+	public Access getAccess(ClassDecl classDecl, MethodDecl methodDecl,
+			Identifier variableIdentifier) {
+		ClassScope cs = symbolTable.get(classDecl.i.s);
+		MethodScope ms = cs.getMethodMatching(methodDecl);
+
+		return ms.getAccess(variableIdentifier.s);
 	}
 
 	private void indent(int i) {

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import se.cortado.ir.frame.Record;
 import se.cortado.syntaxtree.ClassDecl;
 import se.cortado.syntaxtree.Formal;
 import se.cortado.syntaxtree.FormalList;
@@ -17,10 +18,13 @@ public class ClassScope {
 	private HashMap<String, List<MethodScope>> methods;
 	private HashMap<MethodDecl, MethodScope> methods2;
 	private ClassDecl classDecl;
+	private Record record;
 
 	public ClassScope(ClassDecl classDecl) {
 		this.setClassDecl(classDecl);
-		
+
+		record = MethodScope.getMotherFrame().newRecord(classDecl.i.s);
+
 		variables = new HashMap<String, Type>();
 		methods = new HashMap<String, List<MethodScope>>();
 		methods2 = new HashMap<MethodDecl, MethodScope>();
@@ -86,7 +90,7 @@ public class ClassScope {
 	public Type getVariableType(String variableName) {
 		return variables.get(variableName);
 	}
-	
+
 	public HashMap<String, Type> getVariables() {
 		return variables;
 	}
@@ -98,7 +102,7 @@ public class ClassScope {
 	public boolean hasMethod(String methodName) {
 		return methods.get(methodName) != null;
 	}
-	
+
 	public HashMap<String, List<MethodScope>> getMethods() {
 		return methods;
 	}
@@ -143,6 +147,10 @@ public class ClassScope {
 
 	public void setClassDecl(ClassDecl classDecl) {
 		this.classDecl = classDecl;
+	}
+
+	public Record getRecord() {
+		return record;
 	}
 
 }
