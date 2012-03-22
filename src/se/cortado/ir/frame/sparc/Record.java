@@ -1,4 +1,4 @@
-package se.cortado.ir.frame.SPARC;
+package se.cortado.ir.frame.sparc;
 
 /**
    An implementation of the Record interface for the Sun

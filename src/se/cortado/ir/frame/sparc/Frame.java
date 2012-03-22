@@ -1,4 +1,4 @@
-package se.cortado.ir.frame.SPARC;
+package se.cortado.ir.frame.sparc;
 
 import java.util.List;
 import se.cortado.ir.temp.*;
