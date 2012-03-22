@@ -99,8 +99,8 @@ non terminal 				empty;
 
 /* Precedences */
 precedence left BANG;
-precedence left PLUS, MINUS;
 precedence left MULTIPLY;
+precedence left PLUS, MINUS;
 precedence left AND, LESS, DOT;
 
 /* State to start with */
@@ -122,24 +122,24 @@ main_method 	::= PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING_ARRAY IDENTIFIE
 						{: 	VarDeclList vd = new VarDeclList();
 							StatementList sl = new StatementList();
 							FormalList fl = new FormalList(new Formal(new StringArrayType(), new Identifier(id2, getReducedRow())));
-							RESULT = new MethodDecl(new VoidType(), new Identifier(id1, getReducedRow()), fl, vd, sl, new IdentifierExp("voidType"));
+							RESULT = new MethodDecl(new VoidType(), new Identifier(id1, getReducedRow()), fl, vd, sl, new VoidExp());
 						:}	
 					| PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING_ARRAY IDENTIFIER:id2 RPAREN LCURLY stmt_list:sl RCURLY
 						{: 	
 							VarDeclList vd = new VarDeclList();
 							FormalList fl = new FormalList(new Formal(new StringArrayType(), new Identifier(id2, getReducedRow())));
-							RESULT = new MethodDecl(new VoidType(), new Identifier(id1, getReducedRow()), fl, vd, sl, new IdentifierExp("voidType"));
+							RESULT = new MethodDecl(new VoidType(), new Identifier(id1, getReducedRow()), fl, vd, sl, new VoidExp());
 						:}	
 					| PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING_ARRAY IDENTIFIER:id2 RPAREN LCURLY var_decls:vd RCURLY
 						{: 	
 							StatementList sl = new StatementList();
 							FormalList fl = new FormalList(new Formal(new StringArrayType(), new Identifier(id2, getReducedRow())));
-							RESULT = new MethodDecl(new VoidType(), new Identifier(id1, getReducedRow()), fl, vd, sl, new IdentifierExp("voidType"));
+							RESULT = new MethodDecl(new VoidType(), new Identifier(id1, getReducedRow()), fl, vd, sl, new VoidExp());
 						:}	
 					| PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING_ARRAY IDENTIFIER:id2 RPAREN LCURLY var_decls:vd stmt_list:sl RCURLY
 						{: 	
 							FormalList fl = new FormalList(new Formal(new StringArrayType(), new Identifier(id2, getReducedRow())));
-							RESULT = new MethodDecl(new VoidType(), new Identifier(id1, getReducedRow()), fl, vd, sl, new IdentifierExp("voidType"));
+							RESULT = new MethodDecl(new VoidType(), new Identifier(id1, getReducedRow()), fl, vd, sl, new VoidExp());
 						:}
 					;
 				

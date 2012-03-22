@@ -205,7 +205,7 @@ public class IntermediateVisitor implements Visitor {
 
 	@Override
 	public void visit(Plus node) {
-		System.out.println("IR: Accept );
+		System.out.println("IR: Accept Plus");
 	}
 
 

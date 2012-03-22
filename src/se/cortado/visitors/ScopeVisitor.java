@@ -2,25 +2,67 @@
 
 package se.cortado.visitors;
 
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Stack;
 
-import se.cortado.syntaxtree.*;
+import se.cortado.syntaxtree.And;
+import se.cortado.syntaxtree.ArrayAssign;
+import se.cortado.syntaxtree.ArrayLength;
+import se.cortado.syntaxtree.ArrayLookup;
+import se.cortado.syntaxtree.Assign;
+import se.cortado.syntaxtree.Block;
+import se.cortado.syntaxtree.BooleanType;
+import se.cortado.syntaxtree.Call;
+import se.cortado.syntaxtree.ClassDecl;
+import se.cortado.syntaxtree.ClassDeclExtends;
+import se.cortado.syntaxtree.ClassDeclList;
+import se.cortado.syntaxtree.ClassDeclSimple;
+import se.cortado.syntaxtree.Exp;
+import se.cortado.syntaxtree.ExpList;
+import se.cortado.syntaxtree.False;
+import se.cortado.syntaxtree.Formal;
+import se.cortado.syntaxtree.FormalList;
+import se.cortado.syntaxtree.Identifier;
+import se.cortado.syntaxtree.IdentifierExp;
+import se.cortado.syntaxtree.IdentifierType;
+import se.cortado.syntaxtree.If;
+import se.cortado.syntaxtree.IntArrayType;
+import se.cortado.syntaxtree.IntegerLiteral;
+import se.cortado.syntaxtree.IntegerType;
+import se.cortado.syntaxtree.LessThan;
+import se.cortado.syntaxtree.MainClass;
+import se.cortado.syntaxtree.MethodDecl;
+import se.cortado.syntaxtree.MethodDeclList;
+import se.cortado.syntaxtree.Minus;
+import se.cortado.syntaxtree.NewArray;
+import se.cortado.syntaxtree.NewObject;
+import se.cortado.syntaxtree.Not;
+import se.cortado.syntaxtree.Plus;
+import se.cortado.syntaxtree.Print;
+import se.cortado.syntaxtree.Program;
+import se.cortado.syntaxtree.Statement;
+import se.cortado.syntaxtree.StatementList;
+import se.cortado.syntaxtree.StringArrayType;
+import se.cortado.syntaxtree.This;
+import se.cortado.syntaxtree.Times;
+import se.cortado.syntaxtree.True;
+import se.cortado.syntaxtree.Type;
+import se.cortado.syntaxtree.VarDecl;
+import se.cortado.syntaxtree.VarDeclList;
+import se.cortado.syntaxtree.VoidType;
+import se.cortado.syntaxtree.While;
 
 /** @author Samuel Wejeus */
 public class ScopeVisitor implements Visitor {
-	
-	private HashMap<String, ClassScope> classTable;
+	private SymbolTable symbolTable;
 	private LinkedList<String> errors;
+	
+	public boolean errorOccurred = false;
 	
 	private ClassDecl CUR_CLASS;
 	private MethodDecl CUR_METHOD;
-	//private int CUR_STMT_BLOCK = 0;
 	
-	public ScopeVisitor() {		
-		classTable = new HashMap<String, ClassScope>();
+	public ScopeVisitor(SymbolTable symbolTable) {		
+		this.symbolTable = symbolTable;
 		errors = new LinkedList<String>();
 	}
 	
@@ -36,18 +78,20 @@ public class ScopeVisitor implements Visitor {
 			for (String error : errors) {
 				System.out.println("ERROR: " + error);
 			}
+			
+			errorOccurred = true;
 		}
 	}
 	
 	@Override
 	public void visit(MainClass node) {
 		System.out.println("-- MAIN CLASS: " + node.i.s);
-		if (classTable.containsKey(node.i.s)) {
+		if (symbolTable.containsKey(node.i.s)) {
 			errors.add("Redeclaration of class");
 		} else {
 			CUR_CLASS = node;
 			CUR_METHOD = node.md;
-			classTable.put(node.i.s, new ClassScope());
+			symbolTable.put(node.i.s, new ClassScope(node));
 			node.md.accept(this);
 		}
 	}
@@ -62,11 +106,11 @@ public class ScopeVisitor implements Visitor {
 	
 	@Override
 	public void visit(ClassDeclSimple node) {
-		if (classTable.containsKey(node.i.s)) {
+		if (symbolTable.containsKey(node.i.s)) {
 			errors.add("Redeclaration of class \"" + node.i.s + "\" on line: " + node.i.row);
 		} else {
 			CUR_CLASS = node;
-			classTable.put(node.i.s, new ClassScope());
+			symbolTable.put(node.i.s, new ClassScope(node));
 			node.vl.accept(this);
 			node.ml.accept(this);
 		}
@@ -84,7 +128,7 @@ public class ScopeVisitor implements Visitor {
 	public void visit(VarDecl node) {
 		try {
 			System.out.println("\tClass variable: " + node.identifier.s);
-			classTable.get(CUR_CLASS.i.s).addVariable(node, node.type);
+			symbolTable.get(CUR_CLASS.i.s).addVariable(node, node.type);
 		} catch (Exception e) {
 			errors.add(e.getMessage());
 		}
@@ -100,7 +144,7 @@ public class ScopeVisitor implements Visitor {
 
 	@Override
 	public void visit(MethodDecl node) {
-		MethodScope ms = new MethodScope();
+		MethodScope ms = new MethodScope(node.type, node);
 		System.out.println("\tMethod: " + node.identifier.s);
 		
 		/* Add method parameters */
@@ -129,7 +173,7 @@ public class ScopeVisitor implements Visitor {
 		node.statementList.accept(this);
 		
 		try {
-			classTable.get(CUR_CLASS.i.s).addMethod(node, ms);
+			symbolTable.get(CUR_CLASS.i.s).addMethod(node, ms);
 		} catch (Exception e) {
 			errors.add(e.getMessage());
 		}

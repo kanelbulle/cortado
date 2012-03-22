@@ -1,4 +1,5 @@
 package se.cortado.syntaxtree;
+
 import se.cortado.visitors.*;
 
 public class VarDecl {
@@ -12,5 +13,9 @@ public class VarDecl {
 
 	public void accept(Visitor v) {
 		v.visit(this);
+	}
+
+	public Type accept(TypeVisitor v) {
+		return v.visit(this);
 	}
 }
