@@ -17,6 +17,7 @@ public class IntermediateVisitor implements Visitor {
 	public TR_Exp tmpResult;
 	private Frame curFrame;
 	private Frame parentFrame;
+	public 
 	
 	//temp
 	se.cortado.ir.tree.Print irPrinter;
@@ -155,24 +156,27 @@ public class IntermediateVisitor implements Visitor {
 	 * Assignment can be to a TEMP (temporary or register) or MEM (memory).
 	 * TEMP use MOVE(TEMP t, e) - Evaluate e and move result to temporary t.
 	 * MEM use MOVE(MEM(e1), e2) - Evaluate e1 yielding address a. Evaluate e2 and store wordSize byte result at address a.
-	 */
+	 */	
 	@Override
 	public void visit(Assign node) {
-		node.e.accept(this);
-		TR_Exp e1 = tmpResult;
 		
-		node.i.accept(this);
-		TR_Exp e2 = tmpResult;
+		/* istället för att använda separat symbol table, skapa variable i frame (genom allocLocal) direkt när 
+		 * initiering av variabel besöks i typcheck och spara sedan det Access objektet i AST noden.
+		 */
+		IR_Exp e1 = node.i.getAccess().exp(new TEMP(curFrame.FP()));
+		
+//		TR_Exp e1 = SymbolTable.getVariable(Class, Method, node.i);
+		TR_Exp e2 = translate(node.e);		
 		
 		IR_Stm r;
 		
-		if (e1.build_EX() instanceof TEMP) {
-			r = new MOVE(e1.build_EX(), e2.build_EX());
+		if (e1 instanceof TEMP) {
+			r = new MOVE(e1, e2.build_EX());
 		} else {
 			Temp z = new Temp();
 			r = new MOVE(
 					new MEM(
-						new BINOP(BINOP.PLUS, new TEMP(z), e1.build_EX())
+						new BINOP(BINOP.PLUS, new TEMP(z), e1)
 					),
 					e2.build_EX()
 				);
@@ -182,7 +186,6 @@ public class IntermediateVisitor implements Visitor {
 		System.out.println("\tBuilt IR:");
 		System.out.println("\t");
 		irPrinter.prExp(tmpResult.build_EX());
-		
 	}
 	
 	@Override
@@ -198,9 +201,15 @@ public class IntermediateVisitor implements Visitor {
 
 	@Override
 	public void visit(Minus node) {
-		//		node.e1;
-		//		node.e2;
-		//		MEM(new BINOP(BINOP.MINUS, new Temp(), ))
+		TR_Exp e1 = translate(node.e1);
+		TR_Exp e2 = translate(node.e2);		
+		
+		IR_Stm r = new MOVE(new MEM(new TEMP(new Temp())), new BINOP(BINOP.MINUS, e1.build_EX(), e2.build_EX()));
+		
+		tmpResult = new TR_Nx(r);
+		System.out.println("\tBuilt IR:");
+		System.out.println("\t");
+		irPrinter.prExp(tmpResult.build_EX());
 	}
 
 	@Override
