@@ -4,7 +4,7 @@ run: cortado
 	java -cp bin/:lib/java-cup-11a.jar se.cortado.Main test/basic.java
 	
 cortado: parser lexer
-	javac -d bin/ -classpath "lib/java-cup-11a.jar" gen/se/cortado/*.java src/se/cortado/*.java src/se/cortado/visitors/*.java src/se/cortado/syntaxtree/*.java src/se/cortado/ir/frame/*.java src/se/cortado/ir/assem/*.java src/se/cortado/ir/temp/*.java src/se/cortado/ir/translate/*.java src/se/cortado/ir/tree/*.java
+	javac -d bin/ -classpath "lib/java-cup-11a.jar" gen/se/cortado/*.java src/se/cortado/*.java src/se/cortado/visitors/*.java src/se/cortado/syntaxtree/*.java src/se/cortado/ir/frame/*.java src/se/cortado/ir/assem/*.java src/se/cortado/ir/temp/*.java src/se/cortado/ir/translate/*.java src/se/cortado/ir/tree/*.java src/se/cortado/ir/frame/x86_64/*.java
 
 lexer: res/lexer/minijava.jflex
 	rm -f gen/se/cortado/Scanner.java
