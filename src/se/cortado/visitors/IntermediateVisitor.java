@@ -13,44 +13,43 @@ import se.cortado.ir.temp.*;
 public class IntermediateVisitor implements Visitor {
 
 	private LinkedList fragments;
-	
-	public TR_Exp tmpResult;
 	private Frame curFrame;
 	private Frame parentFrame;
-	public 
+	private SymbolTable symbolTable;
 	
-	//temp
+	/* Temporaries used during construction */
+	private TR_Exp tmpResult;
+	private ClassDecl curClass;
+	private MethodDecl curMethod;
+	
+	//debug
 	se.cortado.ir.tree.Print irPrinter;
 	
-	public IntermediateVisitor(Frame parentFrame) {
+	public IntermediateVisitor(SymbolTable symbolTable) {
 		this.fragments = new LinkedList();
 		this.parentFrame = parentFrame;
 		irPrinter = new se.cortado.ir.tree.Print(System.out);
+		this.symbolTable = symbolTable;
 	}
-
+	
 	//translateExp(Frame f, Env e, ClassInfo c, MethodInfo m, syntaxtree.Exp node)
 	private TR_Exp translate(Exp node) {
-		//ExpHandler h = new ExpHandler(f, e, c, m);
 		node.accept(this);		
 		return tmpResult;
     }
 	
 	//translateExp(Frame f, Env e, ClassInfo c, MethodInfo m, syntaxtree.Exp node)
 	private TR_Exp translate(Statement node) {
-		//ExpHandler h = new ExpHandler(f, e, c, m);
 		node.accept(this);
 		return tmpResult;
     }
 	
-	
-	/* -------------- FRAME BUILDING -------------- */
-	
 	@Override
 	public void visit(MethodDecl node) {
-		
 		System.out.println("IR: Method call, building new frame");
+		
 		/* Determine which variables escape frames */
-		List<Boolean> params = new LinkedList<Boolean>();
+//		List<Boolean> params = new LinkedList<Boolean>();
 //		for (int i = 0; i < node.formalList.size(); ++i) {
 //			// No var in minijava ever escapes.
 //			params.add(false);
@@ -68,7 +67,9 @@ public class IntermediateVisitor implements Visitor {
         // TODO: Handle 'this' pointer
         
 		/* Add local variables to frame */
-		node.varDeclList.accept(this);
+//		node.varDeclList.accept(this);
+		
+		
 		//node.exp.accept(this); // TODO: What is exp here?
 		node.statementList.accept(this);
 	}
@@ -99,8 +100,6 @@ public class IntermediateVisitor implements Visitor {
 			node.elementAt(i).accept(this);
 		}
 	}
-	/* -------------- /FRAME BUILDING ------------- */
-	
 
 	@Override
 	public void visit(Exp node) {
@@ -144,8 +143,9 @@ public class IntermediateVisitor implements Visitor {
 						)
 					);
 
-		
 		tmpResult = new TR_Nx(r);
+		
+		/* DEBUG */
 		System.out.println("\tBuilt IR:");
 		System.out.println("\t");
 		irPrinter.prExp(tmpResult.build_EX());
@@ -159,16 +159,10 @@ public class IntermediateVisitor implements Visitor {
 	 */	
 	@Override
 	public void visit(Assign node) {
-		
-		/* istŠllet fšr att anvŠnda separat symbol table, skapa variable i frame (genom allocLocal) direkt nŠr 
-		 * initiering av variabel besšks i typcheck och spara sedan det Access objektet i AST noden.
-		 */
-		IR_Exp e1 = node.i.getAccess().exp(new TEMP(curFrame.FP()));
-		
-//		TR_Exp e1 = SymbolTable.getVariable(Class, Method, node.i);
-		TR_Exp e2 = translate(node.e);		
-		
+
 		IR_Stm r;
+		IR_Exp e1 = symbolTable.getAccess(curClass, curMethod, node.i).exp(new TEMP(curFrame.FP()));
+		TR_Exp e2 = translate(node.e);		
 		
 		if (e1 instanceof TEMP) {
 			r = new MOVE(e1, e2.build_EX());
@@ -183,6 +177,8 @@ public class IntermediateVisitor implements Visitor {
 		} 
 		
 		tmpResult = new TR_Nx(r);
+		
+		/* DEBUG */
 		System.out.println("\tBuilt IR:");
 		System.out.println("\t");
 		irPrinter.prExp(tmpResult.build_EX());
@@ -197,6 +193,7 @@ public class IntermediateVisitor implements Visitor {
 	@Override
 	public void visit(IntegerType node) {
 		System.out.println("IR: Accept IntegerType");
+//		IR_Exp e1 = symbolTable.getAccess(curClass, curMethod, node.i).exp(new TEMP(curFrame.FP()));
 	}
 
 	@Override
@@ -205,8 +202,9 @@ public class IntermediateVisitor implements Visitor {
 		TR_Exp e2 = translate(node.e2);		
 		
 		IR_Stm r = new MOVE(new MEM(new TEMP(new Temp())), new BINOP(BINOP.MINUS, e1.build_EX(), e2.build_EX()));
-		
 		tmpResult = new TR_Nx(r);
+		
+		/* DEBUG */
 		System.out.println("\tBuilt IR:");
 		System.out.println("\t");
 		irPrinter.prExp(tmpResult.build_EX());
@@ -435,9 +433,6 @@ public class IntermediateVisitor implements Visitor {
 		// TODO Auto-generated method stub
 
 	}
-
-
-
 
 
 }

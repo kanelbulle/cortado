@@ -21,24 +21,33 @@ public class Main {
 		SymbolTable symbolTable = new SymbolTable();
 		ScopeVisitor scopeVisitor = new ScopeVisitor(symbolTable);
 		SlowTypeVisitor typeVisitor = new SlowTypeVisitor();
-
+		IntermediateVisitor irVisitor = new IntermediateVisitor(symbolTable);
+		
 		try {
 			Symbol s = p.parse();
 			Program prog = (Program) s.value;
 			// printVisitor.visit(prog);
 
+			System.out.println("==================== BADASS SCOPE CHECKING! ====================");
 			scopeVisitor.visit(prog);
-			if (scopeVisitor.errorOccurred)
+			if (scopeVisitor.errorOccurred) {
+				System.out.println("Scope check failed with errors.");
 				return;
+			}
 
+			System.out.println("==================== GOT EPIC SYMBOL TABLE ====================");
 			symbolTable.print();
-
+			
+			System.out.println("==================== TYPE CHECKING FO SHIZZLE ====================");
 			typeVisitor.setSymbolTable(symbolTable);
 			typeVisitor.visit(prog);
 			if (typeVisitor.errorOccurred) {
 				System.out.println("Type check failed with errors.");
 				return;
 			}
+			
+			System.out.println("==================== DOING DA IR CONVERSION MAN ====================");
+			irVisitor.visit(prog);
 
 		} catch (Exception e) {
 			System.out.println("NO PARSE FOR YOU!");
