@@ -6,13 +6,6 @@ class Superklasse {
 
 class TestClass {
 	int a;
-<<<<<<< HEAD
-	public int testMethod() {
-		a = a+2;
-		return a;
-	}
-}
-=======
 	int j;
 	public int fnurf(int ss) {
 		return 1;
@@ -52,8 +45,11 @@ class Test {
 			a = 2;
 		}
 	
+		while (1 < 2) {
+			a = 12;
+		}
+	
 		a = 4711;
 		return 1;
     }
 }
->>>>>>> 8176c94cf5264755a67b4bb63744f6f8b16f68d1

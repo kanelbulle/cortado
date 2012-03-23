@@ -1,7 +1,12 @@
 package se.cortado.visitors;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
+import se.cortado.ir.frame.Access;
+import se.cortado.ir.frame.Frame;
+import se.cortado.ir.temp.Label;
 import se.cortado.syntaxtree.Formal;
 import se.cortado.syntaxtree.FormalList;
 import se.cortado.syntaxtree.Identifier;
@@ -11,12 +16,36 @@ import se.cortado.syntaxtree.VarDecl;
 
 /** @author Samuel Wejeus */
 public class MethodScope {
-	private FormalList parameters;
-	private HashMap<String, Type> variables;
-	private Type returnType;
+	private static Frame motherFrame;
+
+	public static Frame getMotherFrame() {
+		if (motherFrame == null) {
+			motherFrame = new se.cortado.ir.frame.x86_64.Frame();
+		}
+
+		return motherFrame;
+	}
+
 	private MethodDecl methodDecl;
+	private HashMap<String, Type> variables;
+	private HashMap<String, Access> accesses;
+	private FormalList parameters;
+	private Type returnType;
+
+	private Frame frame;
 
 	public MethodScope(Type returnType, MethodDecl mDecl) {
+
+		// create a list of "false" to signal that none of the parameters will
+		// escape
+		List<Boolean> escapeList = new ArrayList<Boolean>();
+		for (int i = 0; i < mDecl.formalList.size(); i++) {
+			escapeList.add(false);
+		}
+
+		// create the frame
+		frame = getMotherFrame().newFrame(new Label(), escapeList);
+
 		parameters = new FormalList();
 		variables = new HashMap<String, Type>();
 		this.returnType = returnType;
@@ -40,7 +69,9 @@ public class MethodScope {
 					+ variable.identifier + "\" on line: "
 					+ variable.identifier.row);
 		} else {
-			// FIXME
+			// add local variable to frame
+			frame.allocLocal(false);
+
 			variables.put(variable.identifier.s, type);
 		}
 	}
@@ -91,6 +122,14 @@ public class MethodScope {
 
 	public HashMap<String, Type> getVariables() {
 		return variables;
+	}
+
+	public Frame getFrame() {
+		return frame;
+	}
+
+	public Access getAccess(String variableName) {
+		return accesses.get(variableName);
 	}
 
 }
