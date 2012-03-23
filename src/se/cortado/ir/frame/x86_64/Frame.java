@@ -17,6 +17,10 @@ import se.cortado.ir.tree.IR_Stm;
 public class Frame implements se.cortado.ir.frame.Frame {
 	Label name;
 
+	public Frame() {
+		
+	}
+	
 	private Frame(Label name, List<Boolean> formals) {
 		this.name = name;
 		
