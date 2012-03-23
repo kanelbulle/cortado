@@ -15,23 +15,29 @@ import se.cortado.ir.tree.IR_ExpList;
 import se.cortado.ir.tree.IR_Stm;
 
 public class Frame implements se.cortado.ir.frame.Frame {
+	Label name;
+
+	private Frame(Label name, List<Boolean> formals) {
+		this.name = name;
+		
+		
+	}
 
 	@Override
 	public se.cortado.ir.frame.Frame newFrame(Label name, List<Boolean> formals) {
-		// TODO Auto-generated method stub
-		return null;
+		return new Frame(name, formals);
 	}
 
 	@Override
 	public Record newRecord(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		Record r = new se.cortado.ir.frame.x86_64.Record(name);
+
+		return r;
 	}
 
 	@Override
 	public Label name() {
-		// TODO Auto-generated method stub
-		return null;
+		return name;
 	}
 
 	@Override
@@ -117,6 +123,5 @@ public class Frame implements se.cortado.ir.frame.Frame {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 
 }
