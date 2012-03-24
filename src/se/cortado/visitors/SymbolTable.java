@@ -50,12 +50,11 @@ public class SymbolTable {
 		return ms.getFrame();
 	}
 
-	public Access getAccess(ClassDecl classDecl, MethodDecl methodDecl,
-			Identifier variableIdentifier) {
+	public Access getAccess(ClassDecl classDecl, MethodDecl methodDecl, String variableIdentifier) {
 		ClassScope cs = symbolTable.get(classDecl.i.s);
 		MethodScope ms = cs.getMethodMatching(methodDecl);
 
-		return ms.getAccess(variableIdentifier.s);
+		return ms.getAccess(variableIdentifier);
 	}
 
 	private void indent(int i) {

@@ -1,0 +1,54 @@
+package se.cortado.visitors;
+
+import se.cortado.syntaxtree.*;
+import se.cortado.ir.translate.TR_Exp;
+
+public interface TranslateVisitor {
+	public TR_Exp visit(And node);
+	public TR_Exp visit(ArrayAssign node);
+	public TR_Exp visit(ArrayLength node);
+	public TR_Exp visit(ArrayLookup node);
+	public TR_Exp visit(Assign node);
+	public TR_Exp visit(Block node);
+//	public TR_Exp visit(BooleanType node);
+	public TR_Exp visit(Call node);
+	public TR_Exp visit(ClassDecl node);
+//	public TR_Exp visit(ClassDeclExtends node);
+	public TR_Exp visit(ClassDeclList node);
+	public TR_Exp visit(ClassDeclSimple node);
+	public TR_Exp visit(Exp node);
+	public TR_Exp visit(ExpList node);
+	public TR_Exp visit(False node);
+	public TR_Exp visit(Formal node);
+	public TR_Exp visit(FormalList node);
+	public TR_Exp visit(Identifier node);
+	public TR_Exp visit(IdentifierExp node);
+//	public TR_Exp visit(IdentifierType node);
+	public TR_Exp visit(If node);
+//	public TR_Exp visit(IntArrayType node);
+	public TR_Exp visit(IntegerLiteral node);
+//	public TR_Exp visit(IntegerType node);
+	public TR_Exp visit(LessThan node);
+	public TR_Exp visit(MainClass node);
+	public TR_Exp visit(MethodDecl node);
+	public TR_Exp visit(MethodDeclList node);
+	public TR_Exp visit(Minus node);
+	public TR_Exp visit(NewArray node);
+	public TR_Exp visit(NewObject node);
+	public TR_Exp visit(Not node);
+	public TR_Exp visit(Plus node);
+	public TR_Exp visit(Print node);
+	public TR_Exp visit(Program node);
+	public TR_Exp visit(Statement node);
+	public TR_Exp visit(StatementList node);
+//	public TR_Exp visit(StringArrayType node);
+	public TR_Exp visit(This node);
+	public TR_Exp visit(Times node);
+	public TR_Exp visit(True node);
+//	public TR_Exp visit(Type node);
+//	public TR_Exp visit(VarDecl node);
+//	public TR_Exp visit(VarDeclList node);
+//	public TR_Exp visit(VoidType node);
+	public TR_Exp visit(VoidExp node);
+	public TR_Exp visit(While node);
+}

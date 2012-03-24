@@ -16,8 +16,7 @@ public class TR_Nx extends TR_Exp {
 	/** Should never occur in a well types MiniJava program
 	 * Why you say? How can a non value returning function return a value I say! */
 	public IR_Exp build_EX() {
-		// TODO: Maybe throw error instead?
-		return null;
+		throw new Error("Can't convert TR_Nx to a EX!");
 	}
 
 	public IR_Stm build_NX() {
@@ -27,7 +26,6 @@ public class TR_Nx extends TR_Exp {
 	/** Should never occur in a well types MiniJava program
 	 * Why you say? Not interesting for an action to performed as a conditional I say! */
 	public IR_Stm build_CX(Label t, Label f) {
-		// TODO: Maybe throw error instead?
-		return null;
+		throw new Error("Can't convert TR_Nx to a CX!");
 	}
 }

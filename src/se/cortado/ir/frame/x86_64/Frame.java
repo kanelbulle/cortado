@@ -58,8 +58,8 @@ public class Frame implements se.cortado.ir.frame.Frame {
 
 	@Override
 	public Access allocLocal(boolean escape) {
-		// TODO Auto-generated method stub
-		return null;
+		// FOR DEBUG
+		return new InReg(new Temp());
 	}
 
 	@Override
@@ -100,8 +100,8 @@ public class Frame implements se.cortado.ir.frame.Frame {
 
 	@Override
 	public Temp FP() {
-		// TODO Auto-generated method stub
-		return null;
+		// FOR DEBUG
+		return new Temp();
 	}
 
 	@Override

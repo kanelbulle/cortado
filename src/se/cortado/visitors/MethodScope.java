@@ -28,7 +28,7 @@ public class MethodScope {
 
 	private MethodDecl methodDecl;
 	private HashMap<String, Type> variables;
-	private HashMap<String, Access> accesses;
+	private HashMap<String, Access> accesses = new HashMap<String, Access>();
 	private FormalList parameters;
 	private Type returnType;
 
@@ -70,8 +70,8 @@ public class MethodScope {
 					+ variable.identifier.row);
 		} else {
 			// add local variable to frame
-			frame.allocLocal(false);
-
+			Access f = frame.allocLocal(false);
+			accesses.put(variable.identifier.s, f);
 			variables.put(variable.identifier.s, type);
 		}
 	}

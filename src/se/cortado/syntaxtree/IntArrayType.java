@@ -1,5 +1,6 @@
 package se.cortado.syntaxtree;
 
+import se.cortado.ir.translate.TR_Exp;
 import se.cortado.visitors.*;
 
 public class IntArrayType extends Type {
@@ -15,4 +16,5 @@ public class IntArrayType extends Type {
 	public String getTypeName() {
 		return "int[]";
 	}
+	
 }
