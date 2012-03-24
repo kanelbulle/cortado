@@ -190,7 +190,6 @@ public class IntermediateVisitor implements TranslateVisitor {
 		return new TR_Nx(r);
 	}
 	
-	
 	/** 
 	 * Assignment can be to a TEMP (temporary or register) or MEM (memory).
 	 * TEMP use MOVE(TEMP t, e) - Evaluate e and move result to temporary t.
@@ -248,13 +247,16 @@ public class IntermediateVisitor implements TranslateVisitor {
 		return new TR_Ex(r);
 	}
 
-
 	@Override
-	public TR_Exp visit(And node) {
-		System.out.println("IR: Accept And");
-		throw new Error("Not implemented yet!");
+	public TR_Exp visit(Times node) {
+		System.out.println("IR: Accept Times");
+		TR_Exp e1 = node.e1.accept(this);
+		TR_Exp e2 = node.e2.accept(this);		
+		
+		IR_Exp r = new BINOP(BINOP.MUL, e1.build_EX(), e2.build_EX());
+		return new TR_Ex(r);
 	}
-
+	
 	@Override
 	public TR_Exp visit(ArrayAssign node) {
 		System.out.println("IR: Accept ArrayAssign");
@@ -277,15 +279,6 @@ public class IntermediateVisitor implements TranslateVisitor {
 	public TR_Exp visit(Block node) {
 		System.out.println("IR: Accept Block");
 		return node.sl.accept(this);
-	}
-
-	@Override
-	public TR_Exp visit(Call node) {
-		System.out.println("IR: Accept Call");
-		//CALL(NAME lc$m,[p,e1,e2,...,en])
-
-//		tmpResult = new TR_Ex(new CALL(new NAME(new LABEL(node.c)), node.el));
-		throw new Error("Not implemented yet!");
 	}
 
 	@Override
@@ -312,20 +305,61 @@ public class IntermediateVisitor implements TranslateVisitor {
 	@Override
 	public TR_Exp visit(If node) {
 		System.out.println("IR: Accept If");
-		throw new Error("Not implemented yet!");
+		
+		Label T = new Label();
+		Label F = new Label();
+		Label join = new Label();
+		
+		TR_Exp condition = node.e.accept(this);
+		TR_Exp thenClause = node.s1.accept(this);
+		TR_Exp elseClause = node.s2.accept(this);
+		
+		// If statement is singleton (no else clause)
+		if (elseClause == null) {
+			IR_Stm res = new SEQ(condition.build_CX(T, join), 
+								new SEQ(new LABEL(T),
+									new SEQ(thenClause.build_NX(), new LABEL(join))
+								)
+							);
+			return new TR_Nx(res);
+		} 
+		// If statement is on the form "if c then e1 else e2"
+		else {
+			IR_Stm res = new SEQ(condition.build_CX(T, F),
+							new SEQ(new LABEL(T),
+								new SEQ(thenClause.build_NX(), new SEQ(new JUMP(join),
+							new SEQ(new LABEL(F),
+								new SEQ(elseClause.build_NX(), 
+							new LABEL(join)))))));
+			return new TR_Nx(res);
+		}
 	}
 
 	@Override
 	public TR_Exp visit(LessThan node) {
 		System.out.println("IR: Accept LessThan");
-		// Result should be an TR_CX expression = new TR_CX(CJUMP(LT, x, CONST(5), t, f))
+
 		TR_Exp e1 = node.e1.accept(this);
 		TR_Exp e2 = node.e2.accept(this);
-		
-//		return new TR_Cx(new CJUMP(CJUMP.LT, e1.build_EX(), e2.build_EX(), null, null));
-		throw new Error("Not implemented yet!");
+
+		return new TR_RelCx(CJUMP.LT, e1, e2);
 	}
 
+	@Override
+	public TR_Exp visit(And node) {
+		System.out.println("IR: Accept And");
+		throw new Error("Not implemented yet!");
+	}
+	
+	@Override
+	public TR_Exp visit(Call node) {
+		System.out.println("IR: Accept Call");
+		//CALL(NAME lc$m,[p,e1,e2,...,en])
+
+//		tmpResult = new TR_Ex(new CALL(new NAME(new LABEL(node.c)), node.el));
+		throw new Error("Not implemented yet!");
+	}
+	
 	@Override
 	public TR_Exp visit(NewArray node) {
 		System.out.println("IR: Accept NewArray");
@@ -359,16 +393,6 @@ public class IntermediateVisitor implements TranslateVisitor {
 	public TR_Exp visit(This node) {
 		System.out.println("IR: Accept This");
 		throw new Error("Not implemented yet!");
-	}
-
-	@Override
-	public TR_Exp visit(Times node) {
-		System.out.println("IR: Accept Times");
-		TR_Exp e1 = node.e1.accept(this);
-		TR_Exp e2 = node.e2.accept(this);		
-		
-		IR_Exp r = new BINOP(BINOP.MUL, e1.build_EX(), e2.build_EX());
-		return new TR_Ex(r);
 	}
 
 	@Override

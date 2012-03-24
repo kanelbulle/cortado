@@ -6,17 +6,15 @@ class Superklasse {
 
 class TestClass {
 	public int fnurf(int ss) {
-
 		int j;
-		j = 89;
+		j = 1;
 
-		if(j == 89) {
-			int a;
-			a = 10;
-			j = a;
+		if (j == 1) {
+			j = 10;
 		} else {
 			j = 100;
 		}
-		return 1;
+
+		return j;
 	}
 }
