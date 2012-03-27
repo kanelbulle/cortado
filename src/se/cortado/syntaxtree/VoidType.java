@@ -1,5 +1,6 @@
 package se.cortado.syntaxtree;
 
+import se.cortado.ir.translate.TR_Exp;
 import se.cortado.visitors.*;
 
 
@@ -11,7 +12,7 @@ public class VoidType extends Type {
 	public Type accept(TypeVisitor v) {
 		return v.visit(this);
 	}
-
+	
 	@Override
 	public String getTypeName() {
 		return "void";

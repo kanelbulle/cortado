@@ -4,132 +4,176 @@ import java.util.List;
 import java.util.LinkedList;
 
 import se.cortado.syntaxtree.*;
+import se.cortado.ir.frame.Access;
 import se.cortado.ir.frame.Frame;
 import se.cortado.ir.translate.*;
 import se.cortado.ir.tree.*;
 import se.cortado.ir.temp.*;
 
 /** @author Samuel Wejeus */
-public class IntermediateVisitor implements Visitor {
+public class IntermediateVisitor implements TranslateVisitor {
 
-	private LinkedList fragments;
+	private LinkedList<TR_Exp> fragments = new LinkedList<TR_Exp>();
+	private SymbolTable symbolTable;
 	
-	public TR_Exp tmpResult;
+	/* Temporaries used during construction */
 	private Frame curFrame;
-	private Frame parentFrame;
+	private ClassDecl curClass;
+	private MethodDecl curMethod;
 	
-	//temp
-	se.cortado.ir.tree.Print irPrinter;
+	// for debug
+	se.cortado.ir.tree.Print irPrinter = new se.cortado.ir.tree.Print(System.out);;
 	
-	public IntermediateVisitor(Frame parentFrame) {
-		this.fragments = new LinkedList();
-		this.parentFrame = parentFrame;
-		irPrinter = new se.cortado.ir.tree.Print(System.out);
+	public IntermediateVisitor(SymbolTable symbolTable) {
+		this.symbolTable = symbolTable;
 	}
-
-	//translateExp(Frame f, Env e, ClassInfo c, MethodInfo m, syntaxtree.Exp node)
-	private TR_Exp translate(Exp node) {
-		//ExpHandler h = new ExpHandler(f, e, c, m);
-		node.accept(this);		
-		return tmpResult;
-    }
-	
-	//translateExp(Frame f, Env e, ClassInfo c, MethodInfo m, syntaxtree.Exp node)
-	private TR_Exp translate(Statement node) {
-		//ExpHandler h = new ExpHandler(f, e, c, m);
-		node.accept(this);
-		return tmpResult;
-    }
 	
 	
-	/* -------------- FRAME BUILDING -------------- */
+	/* -------------- ITERATE PROGRAM/CLASSES -------------- */
+	@Override
+	public TR_Exp visit(Program node) {
+		System.out.println("IR: Accept Program");
+		return node.classDeclList.accept(this);
+	}
 	
 	@Override
-	public void visit(MethodDecl node) {
+	public TR_Exp visit(ClassDeclList node) {
+		System.out.println("IR: Accept ClassDeclList");
+		for (int i = 0; i < node.size(); ++i) {
+			node.elementAt(i).accept(this);
+		}
 		
-		System.out.println("IR: Method call, building new frame");
-		/* Determine which variables escape frames */
-		List<Boolean> params = new LinkedList<Boolean>();
-//		for (int i = 0; i < node.formalList.size(); ++i) {
-//			// No var in minijava ever escapes.
-//			params.add(false);
-//		}
-		
-		/* Create new frame and update current pointer */
-//		curFrame = parentFrame.newFrame(new Label("ClassName$MethodName"), params);
-		
-		// TODO: Do something like:
-//        for ( List<Formal> aux = node.formals; aux != null; aux = aux.tail, f = f.tail ) {
-//            VarInfo v = minfo.formalsTable.get(Symbol.symbol(aux.head.name.s));
-//            v.access = f.head;
-//        }
-        
-        // TODO: Handle 'this' pointer
-        
-		/* Add local variables to frame */
-		node.varDeclList.accept(this);
-		//node.exp.accept(this); // TODO: What is exp here?
-		node.statementList.accept(this);
+		throw new Error("Not implemented yet!");
 	}
 
 	@Override
-	public void visit(MethodDeclList node) {
+	public TR_Exp visit(ClassDecl node) {
+//		System.out.println("IR: Accept ClassDecl: " + node.i.s);
+//		node.accept(this);
+		return null;
+	}
+	
+	@Override
+	public TR_Exp visit(MainClass node) {
+		System.out.println("IR: Accept MainClass: " + node.i.s);
+		curClass = node;
+		return node.md.accept(this);
+	}
+	
+	@Override
+	public TR_Exp visit(ClassDeclSimple node) {		
+		System.out.println("IR: Accept ClassDeclSimple: " + node.i.s);
+		curClass = node;
+		return node.ml.accept(this);
+	}
+	
+	@Override
+	public TR_Exp visit(Statement node) {
+		System.out.println("IR: Accept Statement");
+		return node.accept(this);
+	}
+
+	@Override
+	public TR_Exp visit(StatementList node) {
+		System.out.println("IR: Accept StatementList");
+		
+		IR_Stm res = null;
+		for (int i = 0; i < node.size(); ++i) {
+			TR_Exp next = node.elementAt(i).accept(this);
+			
+			if (res == null) {
+				res = next.build_NX();
+			} else {
+				res = new SEQ(next.build_NX(), res);
+			}
+		}
+		
+		return new TR_Nx(res);
+	}
+	
+	@Override
+	public TR_Exp visit(Exp node) {
+		System.out.println("IR: Accept Exp");
+		return node.accept(this);
+	}
+	
+	@Override
+	public TR_Exp visit(ExpList node) {
+		System.out.println("IR: Accept ExpList");
+		
+		IR_Exp res = null;
+		for (int i = 0; i < node.size(); ++i) {
+			TR_Exp next = node.elementAt(i).accept(this);
+			
+			if (res == null) {
+				res = next.build_EX();
+			} else {
+				res = new ESEQ(next.build_NX(), res);
+			}
+		}
+		
+		return new TR_Ex(res);
+	}
+	
+	@Override
+	public TR_Exp visit(Formal node) {
+		System.out.println("IR: Accept Formal");
+		throw new Error("FORMAL: Not implemented yet and/or not used");
+	}
+
+	@Override
+	public TR_Exp visit(FormalList node) {
+		System.out.println("IR: Accept FormalList");
+		for (int i = 0; i < node.size(); ++i) {
+			node.elementAt(i).accept(this);
+		}
+		throw new Error("FORMAL LIST: Not implemented yet and/or not used");
+	}
+	
+	// TODO: What is exp in node here?
+	@Override
+	public TR_Exp visit(MethodDecl node) {
+		System.out.println("IR: Method call: " + node.identifier.s);
+		
+		curMethod = node;
+		curFrame = symbolTable.getFrame(curClass, curMethod);
+		
+        // TODO: Handle 'this' pointer?
+		// TODO: gen prolog?
+		// TODO: gen epilog?
+		
+		TR_Exp fragment = node.statementList.accept(this);
+		
+		// Debug out
+		irPrinter.prStm(fragment.build_NX());
+		
+		return fragment;
+	}
+
+	@Override
+	public TR_Exp visit(MethodDeclList node) {
 		System.out.println("IR: Accept MethodDeclList");
 		for (int i = 0; i < node.size(); ++i) {
 			node.elementAt(i).accept(this);
 		}
-	}
-	
-	/** In MiniJava no variables escape. This is due to: 
-		- there is no nesting of classes and methods;
-		- it is not possible to take the address of a variable;
-		- integers and booleans are passed by value
-		- objects, including integer arrays, can be represented as pointers that are also passed by value.
-	 */
-	@Override
-	public void visit(VarDecl node) {
-		/* Minijava does not allow variable initalization (by standard) so we're of the hook here */
-//		curFrame.allocLocal(false);
-	}
 
-	@Override
-	public void visit(VarDeclList node) {
-		for (int i = 0; i < node.size(); ++i) {
-			node.elementAt(i).accept(this);
-		}
+		// TODO: Add method fragment to list of fragments
+		throw new Error("End of MethodDeclList, fragments not implemented yet.");
 	}
-	/* -------------- /FRAME BUILDING ------------- */
-	
+	/* -------------- /ITERATE PROGRAM/CLASSES ------------- */
 
+	
 	@Override
-	public void visit(Exp node) {
+	public TR_Exp visit(While node) {
+		System.out.println("IR: While");
 		
-	}
-	
-	@Override
-	public void visit(Statement node) {
-		System.out.println("IR: Accept Statement");
-		node.accept(this);
-	}
-
-	@Override
-	public void visit(StatementList node) {
-		System.out.println("IR: Accept StatementList");
-		for (int i = 0; i < node.size(); ++i) {
-			node.elementAt(i).accept(this);
-		}
-	}
-
-	
-	@Override
-	public void visit(While node) {
-		System.out.println("IR: While loop:");
 		Label testLabel = new Label();
 		Label doneLabel = new Label();
 		Label body = new Label();
 		
-		TR_Exp condition = translate(node.e);
-		TR_Exp body2 = translate(node.s);
+		TR_Exp condition = node.e.accept(this);
+		TR_Exp body2 = node.s.accept(this);
+		
 		
 		IR_Stm r = new SEQ(
 					new LABEL(testLabel), 
@@ -143,292 +187,225 @@ public class IntermediateVisitor implements Visitor {
 						)
 					);
 
-		
-		tmpResult = new TR_Nx(r);
-		System.out.println("\tBuilt IR:");
-		System.out.println("\t");
-		irPrinter.prExp(tmpResult.build_EX());
+		return new TR_Nx(r);
 	}
-	
 	
 	/** 
 	 * Assignment can be to a TEMP (temporary or register) or MEM (memory).
 	 * TEMP use MOVE(TEMP t, e) - Evaluate e and move result to temporary t.
 	 * MEM use MOVE(MEM(e1), e2) - Evaluate e1 yielding address a. Evaluate e2 and store wordSize byte result at address a.
-	 */
+	 */	
 	@Override
-	public void visit(Assign node) {
-		node.e.accept(this);
-		TR_Exp e1 = tmpResult;
+	public TR_Exp visit(Assign node) {
+		System.out.println("IR: Accept Assign");
 		
-		node.i.accept(this);
-		TR_Exp e2 = tmpResult;
+		IR_Stm res;
 		
-		IR_Stm r;
+		IR_Exp e1 = symbolTable.getAccess(curClass, curMethod, node.i.s).exp(new TEMP(curFrame.FP()));
+		TR_Exp e2 = node.e.accept(this);
 		
-		if (e1.build_EX() instanceof TEMP) {
-			r = new MOVE(e1.build_EX(), e2.build_EX());
+		if (e1 instanceof TEMP) {
+			res = new MOVE(e1, e2.build_EX());
 		} else {
 			Temp z = new Temp();
-			r = new MOVE(
+			res = new MOVE(
 					new MEM(
-						new BINOP(BINOP.PLUS, new TEMP(z), e1.build_EX())
+						new BINOP(BINOP.PLUS, new TEMP(z), e1)
 					),
 					e2.build_EX()
 				);
 		} 
 		
-		tmpResult = new TR_Nx(r);
-		System.out.println("\tBuilt IR:");
-		System.out.println("\t");
-		irPrinter.prExp(tmpResult.build_EX());
-		
+		return new TR_Nx(res);
 	}
 	
 	@Override
-	public void visit(IntegerLiteral node) {
+	public TR_Exp visit(IntegerLiteral node) {
 		System.out.println("IR: Accept IntegerLiteral");
-		tmpResult = new TR_Ex(new CONST(node.i));
+		return new TR_Ex(new CONST(node.i));
 	}
 
 	@Override
-	public void visit(IntegerType node) {
-		System.out.println("IR: Accept IntegerType");
+	public TR_Exp visit(Minus node) {
+		System.out.println("IR: Accept Minus");
+		
+		TR_Exp e1 = node.e1.accept(this);
+		TR_Exp e2 = node.e2.accept(this);		
+		
+		IR_Exp r = new BINOP(BINOP.MINUS, e1.build_EX(), e2.build_EX());
+		return new TR_Ex(r);
 	}
 
 	@Override
-	public void visit(Minus node) {
-		//		node.e1;
-		//		node.e2;
-		//		MEM(new BINOP(BINOP.MINUS, new Temp(), ))
-	}
-
-	@Override
-	public void visit(Plus node) {
+	public TR_Exp visit(Plus node) {
 		System.out.println("IR: Accept Plus");
-	}
-
-
-	@Override
-	public void visit(And node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void visit(ArrayAssign node) {
-		// TODO Auto-generated method stub
-
+		
+		TR_Exp e1 = node.e1.accept(this);
+		TR_Exp e2 = node.e2.accept(this);		
+		
+		IR_Exp r = new BINOP(BINOP.PLUS, e1.build_EX(), e2.build_EX());
+		return new TR_Ex(r);
 	}
 
 	@Override
-	public void visit(ArrayLength node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void visit(ArrayLookup node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void visit(Block node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void visit(BooleanType node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void visit(Call node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void visit(ClassDecl node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	/* -------------- ITERATE PROGRAM/CLASSES -------------- */
-	@Override
-	public void visit(Program node) {
-		System.out.println("IR: Accept Program");
-		node.classDeclList.accept(this);
+	public TR_Exp visit(Times node) {
+		System.out.println("IR: Accept Times");
+		TR_Exp e1 = node.e1.accept(this);
+		TR_Exp e2 = node.e2.accept(this);		
+		
+		IR_Exp r = new BINOP(BINOP.MUL, e1.build_EX(), e2.build_EX());
+		return new TR_Ex(r);
 	}
 	
 	@Override
-	public void visit(ClassDeclList node) {
-		System.out.println("IR: Accept ClassDeclList");
-		for (int i = 0; i < node.size(); ++i) {
-			node.elementAt(i).accept(this);
+	public TR_Exp visit(ArrayAssign node) {
+		System.out.println("IR: Accept ArrayAssign");
+		throw new Error("Not implemented yet!");
+	}
+
+	@Override
+	public TR_Exp visit(ArrayLength node) {
+		System.out.println("IR: Accept ArrayLength");
+		throw new Error("Not implemented yet!");
+	}
+
+	@Override
+	public TR_Exp visit(ArrayLookup node) {
+		System.out.println("IR: Accept ArrayLookup");
+		throw new Error("Not implemented yet!");
+	}
+
+	@Override
+	public TR_Exp visit(Block node) {
+		System.out.println("IR: Accept Block");
+		return node.sl.accept(this);
+	}
+
+	@Override
+	public TR_Exp visit(False node) {
+		System.out.println("IR: Accept False");
+		return new TR_Ex(new CONST(0));
+	}
+	
+	@Override
+	public TR_Exp visit(Identifier node) {
+		System.out.println("IR: Accept Identifier");
+		IR_Exp res = symbolTable.getAccess(curClass, curMethod, node.s).exp(new TEMP(curFrame.FP()));
+		return new TR_Ex(res);
+	}
+
+	// TODO: There is a BIG chance this is wrong.. IdentifierExp could be a function? Then we cant look it up in symbol table.
+	@Override
+	public TR_Exp visit(IdentifierExp node) {
+		System.out.println("IR: Accept IdentifierExp");
+		IR_Exp res = symbolTable.getAccess(curClass, curMethod, node.s).exp(new TEMP(curFrame.FP()));
+		return new TR_Ex(res);
+	}
+
+	@Override
+	public TR_Exp visit(If node) {
+		System.out.println("IR: Accept If");
+		
+		Label T = new Label();
+		Label F = new Label();
+		Label join = new Label();
+		
+		TR_Exp condition = node.e.accept(this);
+		TR_Exp thenClause = node.s1.accept(this);
+		TR_Exp elseClause = node.s2.accept(this);
+		
+		// If statement is singleton (no else clause)
+		if (elseClause == null) {
+			IR_Stm res = new SEQ(condition.build_CX(T, join), 
+								new SEQ(new LABEL(T),
+									new SEQ(thenClause.build_NX(), new LABEL(join))
+								)
+							);
+			return new TR_Nx(res);
+		} 
+		// If statement is on the form "if c then e1 else e2"
+		else {
+			IR_Stm res = new SEQ(condition.build_CX(T, F),
+							new SEQ(new LABEL(T),
+								new SEQ(thenClause.build_NX(), new SEQ(new JUMP(join),
+							new SEQ(new LABEL(F),
+								new SEQ(elseClause.build_NX(), 
+							new LABEL(join)))))));
+			return new TR_Nx(res);
 		}
 	}
 
 	@Override
-	public void visit(ClassDeclSimple node) {
-//		  Symbol name = Symbol.symbol(node.name.s);
-//        ClassInfo info = env.classes.get(name);
-//        this.BuildVTable(info);
-//        
-//        String name = info.name.toString();
-//        String[] indexes = new String[info.vtableIndex.size()];
-//        
-//        for ( int i = 0; i < info.vtableIndex.size(); i++ ) {
-//            MethodInfo m = info.methods.get(info.vtableIndex.get(i));
-//            indexes[i] = m.decorateName();
-//        }
-//        
-//        VtableFrag frag = new VtableFrag(name, indexes);
-//        info.vtable = frag.name;
-//        this.addFrag(frag);
+	public TR_Exp visit(LessThan node) {
+		System.out.println("IR: Accept LessThan");
+
+		TR_Exp e1 = node.e1.accept(this);
+		TR_Exp e2 = node.e2.accept(this);
+
+		return new TR_RelCx(CJUMP.LT, e1, e2);
+	}
+
+	@Override
+	public TR_Exp visit(And node) {
+		System.out.println("IR: Accept And");
+		throw new Error("Not implemented yet!");
+	}
+	
+	@Override
+	public TR_Exp visit(Call node) {
+		System.out.println("IR: Accept Call");
+		//CALL(NAME lc$m,[p,e1,e2,...,en])
+
+//		tmpResult = new TR_Ex(new CALL(new NAME(new LABEL(node.c)), node.el));
+		throw new Error("Not implemented yet!");
+	}
+	
+	@Override
+	public TR_Exp visit(NewArray node) {
+		System.out.println("IR: Accept NewArray");
+		throw new Error("Not implemented yet!");
+	}
+
+	@Override
+	public TR_Exp visit(NewObject node) {
+		System.out.println("IR: Accept NewObject");
+		throw new Error("Not implemented yet!");
+	}
+
+	@Override
+	public TR_Exp visit(Not node) {
+		System.out.println("IR: Accept Not");
 		
-		System.out.println("IR: Accept ClassDeclSimple: " + node.i.s);
-		node.ml.accept(this);
+		// If node is boolean -> XOR with all 1 else subtract from 0
+		// TODO: What does the Java semantics say about !object ?
+		
+		TR_Exp value = node.accept(this);
+		throw new Error("Not implemented yet!");
 	}
 
 	@Override
-	public void visit(ClassDeclExtends node) {
-		// TODO Auto-generated method stub
-	}
-	/* -------------- /ITERATE PROGRAM/CLASSES ------------- */
-	
-	@Override
-	public void visit(ExpList node) {
-		// TODO Auto-generated method stub
-
+	public TR_Exp visit(se.cortado.syntaxtree.Print node) {
+		System.out.println("IR: Accept Print");
+		throw new Error("Not implemented yet!");
 	}
 
 	@Override
-	public void visit(False node) {
-		// TODO Auto-generated method stub
-
+	public TR_Exp visit(This node) {
+		System.out.println("IR: Accept This");
+		throw new Error("Not implemented yet!");
 	}
 
 	@Override
-	public void visit(Formal node) {
-		// TODO Auto-generated method stub
-
+	public TR_Exp visit(True node) {
+		System.out.println("IR: Accept True");
+		return new TR_Ex(new CONST(1));
 	}
 
 	@Override
-	public void visit(FormalList node) {
-		// TODO Auto-generated method stub
-
+	public TR_Exp visit(VoidExp node) {
+		System.out.println("IR: Accept VoidExp");
+		throw new Error("Not implemented yet!");
 	}
-	
-	/** (Hopefully) Corresponds to IR langugage "simple variable" */
-	@Override
-	public void visit(Identifier node) {
-//		tmpResult = new MEM(new BINOP(BINOP.PLUS, new TEMP(frame.FP), CONST(frame.K)));
-
-	}
-
-	@Override
-	public void visit(IdentifierExp node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void visit(IdentifierType node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void visit(If node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void visit(IntArrayType node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void visit(LessThan node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void visit(MainClass node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void visit(NewArray node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void visit(NewObject node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void visit(Not node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void visit(se.cortado.syntaxtree.Print node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void visit(StringArrayType node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void visit(This node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void visit(Times node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void visit(True node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void visit(Type node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void visit(VoidType node) {
-		// TODO Auto-generated method stub
-
-	}
-
-
-
 
 
 }

@@ -1,5 +1,6 @@
 package se.cortado.syntaxtree;
 
+import se.cortado.ir.translate.TR_Exp;
 import se.cortado.visitors.*;
 
 public class VarDecl {
@@ -18,4 +19,5 @@ public class VarDecl {
 	public Type accept(TypeVisitor v) {
 		return v.visit(this);
 	}
+	
 }
