@@ -3,22 +3,33 @@ package se.cortado.ir.frame.x86_64;
 import se.cortado.ir.frame.Access;
 
 public class Record implements se.cortado.ir.frame.Record {
+	private int offset;
 	private String name;
 
-	public Record(String name) {
+	public Record(String name, int offset) {
 		this.name = name;
+		this.offset = offset;
+	}
+
+	public Record(String name) {
+		this(name, 0);
+	}
+
+	@Override
+	public String toString() {
+		return "x86_64.Record(" + name + "; " + offset + ")";
 	}
 
 	@Override
 	public Access allocField() {
-		// TODO Auto-generated method stub
-		return null;
+		Access a = new InFrame(offset);
+		offset += Hardware.wordSize;
+		return a;
 	}
 
 	@Override
 	public int size() {
-		// TODO Auto-generated method stub
-		return 0;
+		return offset;
 	}
 
 	public String getName() {
