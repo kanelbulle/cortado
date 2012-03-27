@@ -76,6 +76,12 @@ public class MethodScope {
 		}
 	}
 
+	@Override
+	public String toString() {
+		return "MethodScope(" + methodDecl.identifier.s + ", formalCount: "
+				+ parameters.size();
+	}
+
 	public FormalList getParameterList() {
 		return parameters;
 	}
@@ -100,7 +106,7 @@ public class MethodScope {
 
 	public boolean hasFormal(String formalName) {
 		for (int i = 0; i < parameters.size(); i++) {
-			if (formalName.equals(parameters.elementAt(i))) {
+			if (formalName.equals(parameters.elementAt(i).i.s)) {
 				return true;
 			}
 		}
