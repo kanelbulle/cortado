@@ -141,7 +141,7 @@ public class SlowTypeVisitor implements TypeVisitor {
 			addError(RIGHT_SIDE_ERROR, "&&", "boolean");
 		}
 
-		return null;
+		return new BooleanType();
 	}
 
 	@Override
@@ -168,7 +168,7 @@ public class SlowTypeVisitor implements TypeVisitor {
 			addError(EXPECTED_EXPRESSION_OF_TYPE, "int[]");
 		}
 
-		return null;
+		return new IntegerType();
 	}
 
 	@Override
@@ -187,7 +187,7 @@ public class SlowTypeVisitor implements TypeVisitor {
 	public Type visit(Assign node) {
 		Type lhsType = typeOfIdentifier(node.i);
 		Type rhsType = node.e.accept(this);
-
+		
 		if (!lhsType.equals(rhsType)) {
 			addError(ASSIGN_TYPE_ERROR, lhsType.toString(), rhsType.toString());
 		}
@@ -491,7 +491,7 @@ public class SlowTypeVisitor implements TypeVisitor {
 			addError(RIGHT_SIDE_ERROR, "!", "boolean");
 		}
 
-		return null;
+		return new BooleanType();
 	}
 
 	@Override
@@ -612,7 +612,7 @@ public class SlowTypeVisitor implements TypeVisitor {
 	@Override
 	public Type visit(While node) {
 		if (!(node.e.accept(this) instanceof BooleanType)) {
-			addError(EXPECTED_EXPRESSION_OF_TYPE, "boolean");
+			addError(EXPRESSION_INSIDE_ERROR, "while()", "boolean");
 		}
 
 		node.s.accept(this);
