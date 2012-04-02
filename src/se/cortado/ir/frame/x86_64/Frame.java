@@ -1,5 +1,6 @@
 package se.cortado.ir.frame.x86_64;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import se.cortado.ir.assem.Instr;
@@ -15,16 +16,37 @@ import se.cortado.ir.tree.IR_ExpList;
 import se.cortado.ir.tree.IR_Stm;
 
 public class Frame implements se.cortado.ir.frame.Frame {
+	List<Access> formals = new ArrayList<Access>();
+
 	Label name;
+	int numFormals;
+	int numLocals;
+
+	final int maxInRegArgs = 6;
+	int maxOutgoing = 6;
 
 	public Frame() {
-		
+
 	}
-	
-	private Frame(Label name, List<Boolean> formals) {
+
+	private Frame(Label name, List<Boolean> escapes) {
 		this.name = name;
-		
-		
+
+		// allocate the access objects for the formals
+		for (int i = 0; i < escapes.size(); i++) {
+			Access a;
+			// first six formals get InRegs since that is how many registers
+			// that are available for parameter passing
+			if (i < maxInRegArgs) {
+				a = new InReg(Hardware.getArgReg(i));
+			} else {
+				// first overflowed arg at +16, second at +24, third at +32...
+				a = new InFrame(wordSize() * (i - maxInRegArgs) + 2
+						* wordSize());
+			}
+
+			formals.add(a);
+		}
 	}
 
 	@Override
@@ -34,9 +56,7 @@ public class Frame implements se.cortado.ir.frame.Frame {
 
 	@Override
 	public Record newRecord(String name) {
-		Record r = new se.cortado.ir.frame.x86_64.Record(name);
-
-		return r;
+		return new se.cortado.ir.frame.x86_64.Record(name);
 	}
 
 	@Override
@@ -46,26 +66,54 @@ public class Frame implements se.cortado.ir.frame.Frame {
 
 	@Override
 	public int size() {
-		// TODO Auto-generated method stub
-		return 0;
+		// the size of this frame depends on the number of outgoing parameters
+		// and the number of local variables
+
+		// return address + previous rbp value + maxOutgoing + numLocal
+		int sz = wordSize() * (1 + 1 + maxOutgoing + numLocals);
+		return sz;
 	}
 
 	@Override
 	public List<Access> formals() {
-		// TODO Auto-generated method stub
-		return null;
+		return formals;
 	}
 
 	@Override
 	public Access allocLocal(boolean escape) {
-		// FOR DEBUG
-		return new InReg(new Temp());
+		return new InFrame(-wordSize() * (++numLocals));
 	}
 
 	@Override
 	public Access accessOutgoing(int index) {
-		// TODO Auto-generated method stub
-		return null;
+		// convert the zero-based index to one-based
+		index++;
+
+		if (index > maxOutgoing) {
+			maxOutgoing = index;
+		}
+
+		if (index <= maxInRegArgs) {
+			return new InReg(Hardware.getArgReg(index - 1));
+		} else {
+			// offset = -8, -16, -24 ...
+			return new InFrame(-wordSize() * (index - maxInRegArgs));
+		}
+	}
+
+	@Override
+	public Temp RV() {
+		return Hardware.RV;
+	}
+
+	@Override
+	public Temp FP() {
+		return Hardware.FP;
+	}
+
+	@Override
+	public int wordSize() {
+		return Hardware.wordSize;
 	}
 
 	@Override
@@ -90,24 +138,6 @@ public class Frame implements se.cortado.ir.frame.Frame {
 	public Proc procEntryExit3(List<Instr> body) {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	@Override
-	public Temp RV() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Temp FP() {
-		// FOR DEBUG
-		return new Temp();
-	}
-
-	@Override
-	public int wordSize() {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 
 	@Override

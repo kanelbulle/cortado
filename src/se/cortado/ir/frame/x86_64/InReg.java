@@ -5,18 +5,19 @@ import se.cortado.ir.tree.IR_Exp;
 import se.cortado.ir.tree.TEMP;
 
 public class InReg implements se.cortado.ir.frame.Access {
+	private Temp register;
 
-	private Temp reg;
-
-	public InReg(Temp r) {
-		reg = r;
+	public InReg(Temp register) {
+		this.register = register;
 	}
 
+	@Override
 	public String toString() {
-		return "AMD64.InReg(" + reg.toString() + ")";
+		return "x86_64.InReg(" + register + ")";
 	}
 
+	@Override
 	public IR_Exp exp(IR_Exp basePointer) {
-		return new TEMP(reg);
+		return new TEMP(register);
 	}
 }

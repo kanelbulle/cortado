@@ -98,10 +98,11 @@ non terminal Exp			returnExp;
 non terminal 				empty;
 
 /* Precedences */
-precedence left BANG;
-precedence left MULTIPLY;
+precedence left AND, LESS;
 precedence left PLUS, MINUS;
-precedence left AND, LESS, DOT;
+precedence left MULTIPLY;
+precedence left BANG;
+precedence left DOT;
 
 /* State to start with */
 start with program;

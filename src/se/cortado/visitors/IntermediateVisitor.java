@@ -361,10 +361,14 @@ public class IntermediateVisitor implements TranslateVisitor {
 	public TR_Exp visit(Call node) {
 		System.out.println("IR: Accept Call");
 
-		node.
-		IR_Exp res = new CALL(new NAME(new Label(node.c)), null);
+		//node.
+		//IR_Exp res = new CALL(new NAME(new Label(node.c)), null);
 
-		return new TR_Ex(res);
+		//return new TR_Ex(res);
+		//CALL(NAME lc$m,[p,e1,e2,...,en])
+
+//		tmpResult = new TR_Ex(new CALL(new NAME(new LABEL(node.c)), node.el));
+		throw new Error("Not implemented yet!");
 	}
 	
 	@Override
