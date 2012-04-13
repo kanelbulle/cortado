@@ -11,7 +11,6 @@ import se.cortado.ir.frame.Record;
 import se.cortado.syntaxtree.ClassDecl;
 import se.cortado.syntaxtree.Formal;
 import se.cortado.syntaxtree.FormalList;
-import se.cortado.syntaxtree.Identifier;
 import se.cortado.syntaxtree.MainClass;
 import se.cortado.syntaxtree.MethodDecl;
 import se.cortado.syntaxtree.Type;

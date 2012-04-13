@@ -1,6 +1,7 @@
 package se.cortado.syntaxtree;
 
-import se.cortado.visitors.*;
+import se.cortado.visitors.TypeVisitor;
+import se.cortado.visitors.Visitor;
 
 public abstract class Type {
 	@Override

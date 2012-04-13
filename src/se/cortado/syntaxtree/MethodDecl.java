@@ -1,7 +1,9 @@
 package se.cortado.syntaxtree;
 
 import se.cortado.ir.translate.Translate;
-import se.cortado.visitors.*;
+import se.cortado.visitors.TranslateVisitor;
+import se.cortado.visitors.TypeVisitor;
+import se.cortado.visitors.Visitor;
 
 public class MethodDecl {
 	public Type type;
