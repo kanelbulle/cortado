@@ -46,6 +46,10 @@ public class MethodScope {
 		// create the frame
 		frame = getMotherFrame().newFrame(new Label(), escapeList);
 
+		// add "this" access
+		Access thisAccess = frame.allocLocal(false);
+		accesses.put("this", thisAccess);
+
 		parameters = new FormalList();
 		variables = new HashMap<String, Type>();
 		this.returnType = returnType;
@@ -57,6 +61,9 @@ public class MethodScope {
 			throw new Exception("Duplicate parameter \"" + param.i
 					+ "\" on line: " + param.i.row);
 		} else {
+			// add local variable to frame
+			Access f = frame.allocLocal(false);
+			accesses.put(param.i.s, f);
 			parameters.addElement(param);
 		}
 	}
