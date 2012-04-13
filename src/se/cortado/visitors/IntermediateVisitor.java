@@ -1,8 +1,8 @@
-
 package se.cortado.visitors;
-import java.util.LinkedList;
 
+import se.cortado.ir.frame.Access;
 import se.cortado.ir.frame.Frame;
+import se.cortado.ir.frame.x86_64.Hardware;
 import se.cortado.ir.temp.Label;
 import se.cortado.ir.temp.Temp;
 import se.cortado.ir.translate.TR_Ex;
@@ -61,58 +61,58 @@ import se.cortado.syntaxtree.While;
 /** @author Samuel Wejeus */
 public class IntermediateVisitor implements TranslateVisitor {
 	private SymbolTable symbolTable;
-	
+
 	/* Temporaries used during construction */
 	private Frame curFrame;
 	private ClassDecl curClass;
 	private MethodDecl curMethod;
-	
+
 	// for debug
-	se.cortado.ir.tree.Print irPrinter = new se.cortado.ir.tree.Print(System.out);;
-	
+	se.cortado.ir.tree.Print irPrinter = new se.cortado.ir.tree.Print(
+			System.out);;
+
 	public IntermediateVisitor(SymbolTable symbolTable) {
 		this.symbolTable = symbolTable;
 	}
-	
-	
+
 	/* -------------- ITERATE PROGRAM/CLASSES -------------- */
 	@Override
 	public Translate visit(Program node) {
 		System.out.println("IR: Accept Program");
 		return node.classDeclList.accept(this);
 	}
-	
+
 	@Override
 	public Translate visit(ClassDeclList node) {
 		System.out.println("IR: Accept ClassDeclList");
 		for (int i = 0; i < node.size(); ++i) {
 			node.elementAt(i).accept(this);
 		}
-		
+
 		throw new Error("Not implemented yet!");
 	}
 
 	@Override
 	public Translate visit(ClassDecl node) {
-//		System.out.println("IR: Accept ClassDecl: " + node.i.s);
-//		node.accept(this);
+		// System.out.println("IR: Accept ClassDecl: " + node.i.s);
+		// node.accept(this);
 		return null;
 	}
-	
+
 	@Override
 	public Translate visit(MainClass node) {
 		System.out.println("IR: Accept MainClass: " + node.i.s);
 		curClass = node;
 		return node.md.accept(this);
 	}
-	
+
 	@Override
-	public Translate visit(ClassDeclSimple node) {		
+	public Translate visit(ClassDeclSimple node) {
 		System.out.println("IR: Accept ClassDeclSimple: " + node.i.s);
 		curClass = node;
 		return node.ml.accept(this);
 	}
-	
+
 	@Override
 	public Translate visit(Statement node) {
 		System.out.println("IR: Accept Statement");
@@ -122,45 +122,45 @@ public class IntermediateVisitor implements TranslateVisitor {
 	@Override
 	public Translate visit(StatementList node) {
 		System.out.println("IR: Accept StatementList");
-		
+
 		IR_Stm res = null;
 		for (int i = 0; i < node.size(); ++i) {
 			Translate next = node.elementAt(i).accept(this);
-			
+
 			if (res == null) {
 				res = next.getNoValue();
 			} else {
 				res = new SEQ(res, next.getNoValue());
 			}
 		}
-		
+
 		return new TR_Nx(res);
 	}
-	
+
 	@Override
 	public Translate visit(Exp node) {
 		System.out.println("IR: Accept Exp");
 		return node.accept(this);
 	}
-	
+
 	@Override
 	public Translate visit(ExpList node) {
 		System.out.println("IR: Accept ExpList");
-		
+
 		IR_Exp res = null;
 		for (int i = 0; i < node.size(); ++i) {
 			Translate next = node.elementAt(i).accept(this);
-			
+
 			if (res == null) {
 				res = next.getValue();
 			} else {
 				res = new ESEQ(next.getNoValue(), res);
 			}
 		}
-		
+
 		return new TR_Ex(res);
 	}
-	
+
 	@Override
 	public Translate visit(Formal node) {
 		System.out.println("IR: Accept Formal");
@@ -175,24 +175,24 @@ public class IntermediateVisitor implements TranslateVisitor {
 		}
 		throw new Error("FORMAL LIST: Not implemented yet and/or not used");
 	}
-	
+
 	// TODO: What is exp in node here?
 	@Override
 	public Translate visit(MethodDecl node) {
 		System.out.println("IR: Method call: " + node.identifier.s);
-		
+
 		curMethod = node;
 		curFrame = symbolTable.getFrame(curClass, curMethod);
-		
-        // TODO: Handle 'this' pointer?
+
+		// TODO: Handle 'this' pointer?
 		// TODO: gen prolog?
 		// TODO: gen epilog?
-		
+
 		Translate fragment = node.statementList.accept(this);
-		
+
 		// Debug out
 		irPrinter.prStm(fragment.getNoValue());
-		
+
 		return fragment;
 	}
 
@@ -206,65 +206,55 @@ public class IntermediateVisitor implements TranslateVisitor {
 		// TODO: Add method fragment to list of fragments
 		throw new Error("End of MethodDeclList, fragments not implemented yet.");
 	}
+
 	/* -------------- /ITERATE PROGRAM/CLASSES ------------- */
 
-	
 	@Override
 	public Translate visit(While node) {
 		System.out.println("IR: While");
-		
+
 		Label testLabel = new Label();
 		Label doneLabel = new Label();
 		Label body = new Label();
-		
+
 		Translate condition = node.e.accept(this);
 		Translate body2 = node.s.accept(this);
-		
-		
-		IR_Stm r = new SEQ(
-					new LABEL(testLabel), 
-						new SEQ(condition.getConditional(body, doneLabel),
-							new SEQ(
-								new LABEL(body),
-									new SEQ(body2.getNoValue(),
-										new SEQ(new JUMP(testLabel), new LABEL(doneLabel))
-									)
-							)
-						)
-					);
+
+		IR_Stm r = new SEQ(new LABEL(testLabel), new SEQ(
+				condition.getConditional(body, doneLabel), new SEQ(new LABEL(
+						body), new SEQ(body2.getNoValue(), new SEQ(new JUMP(
+						testLabel), new LABEL(doneLabel))))));
 
 		return new TR_Nx(r);
 	}
-	
-	/** 
-	 * Assignment can be to a TEMP (temporary or register) or MEM (memory).
-	 * TEMP use MOVE(TEMP t, e) - Evaluate e and move result to temporary t.
-	 * MEM use MOVE(MEM(e1), e2) - Evaluate e1 yielding address a. Evaluate e2 and store wordSize byte result at address a.
-	 */	
+
+	/**
+	 * Assignment can be to a TEMP (temporary or register) or MEM (memory). TEMP
+	 * use MOVE(TEMP t, e) - Evaluate e and move result to temporary t. MEM use
+	 * MOVE(MEM(e1), e2) - Evaluate e1 yielding address a. Evaluate e2 and store
+	 * wordSize byte result at address a.
+	 */
 	@Override
 	public Translate visit(Assign node) {
 		System.out.println("IR: Accept Assign");
-		
+
 		IR_Stm res;
-		
-		IR_Exp e1 = symbolTable.getAccess(curClass, curMethod, node.i.s).exp(new TEMP(curFrame.FP()));
+
+		IR_Exp e1 = symbolTable.getAccess(curClass, curMethod, node.i.s).exp(
+				new TEMP(curFrame.FP()));
 		Translate e2 = node.e.accept(this);
-		
+
 		if (e1 instanceof TEMP) {
 			res = new MOVE(e1, e2.getValue());
 		} else {
 			Temp z = new Temp();
-			res = new MOVE(
-					new MEM(
-						new BINOP(BINOP.PLUS, new TEMP(z), e1)
-					),
-					e2.getValue()
-				);
-		} 
-		
+			res = new MOVE(new MEM(new BINOP(BINOP.PLUS, new TEMP(z), e1)),
+					e2.getValue());
+		}
+
 		return new TR_Nx(res);
 	}
-	
+
 	@Override
 	public Translate visit(IntegerLiteral node) {
 		System.out.println("IR: Accept IntegerLiteral");
@@ -274,10 +264,10 @@ public class IntermediateVisitor implements TranslateVisitor {
 	@Override
 	public Translate visit(Minus node) {
 		System.out.println("IR: Accept Minus");
-		
+
 		Translate e1 = node.e1.accept(this);
-		Translate e2 = node.e2.accept(this);		
-		
+		Translate e2 = node.e2.accept(this);
+
 		IR_Exp r = new BINOP(BINOP.MINUS, e1.getValue(), e2.getValue());
 		return new TR_Ex(r);
 	}
@@ -285,10 +275,10 @@ public class IntermediateVisitor implements TranslateVisitor {
 	@Override
 	public Translate visit(Plus node) {
 		System.out.println("IR: Accept Plus");
-		
+
 		Translate e1 = node.e1.accept(this);
-		Translate e2 = node.e2.accept(this);		
-		
+		Translate e2 = node.e2.accept(this);
+
 		IR_Exp r = new BINOP(BINOP.PLUS, e1.getValue(), e2.getValue());
 		return new TR_Ex(r);
 	}
@@ -297,28 +287,60 @@ public class IntermediateVisitor implements TranslateVisitor {
 	public Translate visit(Times node) {
 		System.out.println("IR: Accept Times");
 		Translate e1 = node.e1.accept(this);
-		Translate e2 = node.e2.accept(this);		
-		
+		Translate e2 = node.e2.accept(this);
+
 		IR_Exp r = new BINOP(BINOP.MUL, e1.getValue(), e2.getValue());
 		return new TR_Ex(r);
 	}
-	
+
 	@Override
 	public Translate visit(ArrayAssign node) {
 		System.out.println("IR: Accept ArrayAssign");
-		throw new Error("Not implemented yet!");
+
+		Translate index = node.e1.accept(this);
+		Translate array = node.i.accept(this);
+		Translate assignValue = node.e2.accept(this);
+
+		// first 'element' of array is the length
+		// so address of element relative to base is 1 + wordSize * index
+		IR_Exp offset = new BINOP(BINOP.MUL, index.getValue(), new CONST(
+				MethodScope.getMotherFrame().wordSize()));
+		offset = new BINOP(BINOP.PLUS, new CONST(1), offset);
+		IR_Exp address = new BINOP(BINOP.PLUS, array.getValue(), offset);
+
+		// store rhs value at address
+		MOVE move = new MOVE(new MEM(address), assignValue.getValue());
+
+		return new TR_Nx(move);
 	}
 
 	@Override
 	public Translate visit(ArrayLength node) {
 		System.out.println("IR: Accept ArrayLength");
-		throw new Error("Not implemented yet!");
+
+		Translate array = node.e.accept(this);
+
+		IR_Exp length = new MEM(array.getValue());
+
+		return new TR_Ex(length);
 	}
 
 	@Override
 	public Translate visit(ArrayLookup node) {
 		System.out.println("IR: Accept ArrayLookup");
-		throw new Error("Not implemented yet!");
+		Translate array = node.e1.accept(this);
+		Translate index = node.e2.accept(this);
+
+		// TODO array bounds check here maybe?
+
+		// first 'element' of array is the length
+		// so address of element relative to base is 1 + wordSize * index
+		IR_Exp offset = new BINOP(BINOP.MUL, index.getValue(), new CONST(
+				MethodScope.getMotherFrame().wordSize()));
+		offset = new BINOP(BINOP.PLUS, new CONST(1), offset);
+		IR_Exp address = new BINOP(BINOP.PLUS, array.getValue(), offset);
+
+		return new TR_Ex(new MEM(address));
 	}
 
 	@Override
@@ -332,51 +354,51 @@ public class IntermediateVisitor implements TranslateVisitor {
 		System.out.println("IR: Accept False");
 		return new TR_Ex(new CONST(0));
 	}
-	
+
 	@Override
 	public Translate visit(Identifier node) {
 		System.out.println("IR: Accept Identifier");
-		IR_Exp res = symbolTable.getAccess(curClass, curMethod, node.s).exp(new TEMP(curFrame.FP()));
+		IR_Exp res = symbolTable.getAccess(curClass, curMethod, node.s).exp(
+				new TEMP(curFrame.FP()));
 		return new TR_Ex(res);
 	}
 
-	// TODO: There is a BIG chance this is wrong.. IdentifierExp could be a function? Then we cant look it up in symbol table.
+	// TODO: There is a BIG chance this is wrong.. IdentifierExp could be a
+	// function? Then we cant look it up in symbol table.
 	@Override
 	public Translate visit(IdentifierExp node) {
 		System.out.println("IR: Accept IdentifierExp");
-		IR_Exp res = symbolTable.getAccess(curClass, curMethod, node.s).exp(new TEMP(curFrame.FP()));
+		IR_Exp res = symbolTable.getAccess(curClass, curMethod, node.s).exp(
+				new TEMP(curFrame.FP()));
 		return new TR_Ex(res);
 	}
 
 	@Override
 	public Translate visit(If node) {
 		System.out.println("IR: Accept If");
-		
+
 		Label T = new Label();
 		Label F = new Label();
 		Label join = new Label();
-		
+
 		Translate condition = node.e.accept(this);
 		Translate thenClause = node.s1.accept(this);
 		Translate elseClause = node.s2.accept(this);
-		
+
 		// If statement is singleton (no else clause)
 		if (elseClause == null) {
-			IR_Stm res = new SEQ(condition.getConditional(T, join), 
-								new SEQ(new LABEL(T),
-									new SEQ(thenClause.getNoValue(), new LABEL(join))
-								)
-							);
+			IR_Stm res = new SEQ(condition.getConditional(T, join), new SEQ(
+					new LABEL(T), new SEQ(thenClause.getNoValue(), new LABEL(
+							join))));
 			return new TR_Nx(res);
-		} 
+		}
 		// If statement is on the form "if c then e1 else e2"
 		else {
-			IR_Stm res = new SEQ(condition.getConditional(T, F),
-							new SEQ(new LABEL(T),
-								new SEQ(thenClause.getNoValue(), new SEQ(new JUMP(join),
-							new SEQ(new LABEL(F),
-								new SEQ(elseClause.getNoValue(), 
-							new LABEL(join)))))));
+			IR_Stm res = new SEQ(condition.getConditional(T, F), new SEQ(
+					new LABEL(T),
+					new SEQ(thenClause.getNoValue(), new SEQ(new JUMP(join),
+							new SEQ(new LABEL(F), new SEQ(elseClause
+									.getNoValue(), new LABEL(join)))))));
 			return new TR_Nx(res);
 		}
 	}
@@ -396,35 +418,35 @@ public class IntermediateVisitor implements TranslateVisitor {
 		System.out.println("IR: Accept True");
 		return new TR_Ex(new CONST(1));
 	}
-	
+
 	@Override
 	public Translate visit(And node) {
 		System.out.println("IR: Accept And");
 		throw new Error("Not implemented yet!");
 	}
-	
+
 	@Override
 	public Translate visit(Call node) {
 		System.out.println("IR: Accept Call");
-		
+
 		Translate exp = node.e.accept(this);
 		Translate expList = node.el.accept(this);
-		
-		//CALL call = new CALL(exp.getValue(), expList.getValue());
-		
-		
-		//new CALL(new IR_E, a)
 
-		//node.
-		//IR_Exp res = new CALL(new NAME(new Label(node.c)), null);
+		// CALL call = new CALL(exp.getValue(), expList.getValue());
 
-		//return new TR_Ex(res);
-		//CALL(NAME lc$m,[p,e1,e2,...,en])
+		// new CALL(new IR_E, a)
 
-//		tmpResult = new TR_Ex(new CALL(new NAME(new LABEL(node.c)), node.el));
+		// node.
+		// IR_Exp res = new CALL(new NAME(new Label(node.c)), null);
+
+		// return new TR_Ex(res);
+		// CALL(NAME lc$m,[p,e1,e2,...,en])
+
+		// tmpResult = new TR_Ex(new CALL(new NAME(new LABEL(node.c)),
+		// node.el));
 		throw new Error("Not implemented yet!");
 	}
-	
+
 	@Override
 	public Translate visit(NewArray node) {
 		System.out.println("IR: Accept NewArray");
@@ -440,10 +462,10 @@ public class IntermediateVisitor implements TranslateVisitor {
 	@Override
 	public Translate visit(Not node) {
 		System.out.println("IR: Accept Not");
-		
+
 		// If node is boolean -> XOR with all 1 else subtract from 0
 		// TODO: What does the Java semantics say about !object ?
-		
+
 		Translate value = node.accept(this);
 		throw new Error("Not implemented yet!");
 	}
@@ -457,9 +479,12 @@ public class IntermediateVisitor implements TranslateVisitor {
 	@Override
 	public Translate visit(This node) {
 		System.out.println("IR: Accept This");
-		
-		
-		throw new Error("Not implemented yet!");
+
+		Access thisAccess = symbolTable.getAccess(curClass, curMethod, "this");
+		// TODO returns the address of 'this', relative to what? what is the
+		// basepointer?
+		// this assumes that 'this' is in the heap with 0 as basepointer..
+		return new TR_Ex(thisAccess.exp(new CONST(0)));
 	}
 
 	@Override
@@ -467,6 +492,5 @@ public class IntermediateVisitor implements TranslateVisitor {
 		System.out.println("IR: Accept VoidExp");
 		throw new Error("Not implemented yet!");
 	}
-
 
 }

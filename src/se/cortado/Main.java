@@ -17,7 +17,7 @@ public class Main {
 		String fileName = args[0];
 		parser p = new parser(new Scanner(new FileReader(fileName)));
 		
-		//ASTPrintVisitor printVisitor = new ASTPrintVisitor();
+		ASTPrintVisitor printVisitor = new ASTPrintVisitor();
 		SymbolTable symbolTable = new SymbolTable();
 		ScopeVisitor scopeVisitor = new ScopeVisitor(symbolTable);
 		SlowTypeVisitor typeVisitor = new SlowTypeVisitor();
@@ -26,7 +26,7 @@ public class Main {
 		try {
 			Symbol s = p.parse();
 			Program prog = (Program) s.value;
-			// printVisitor.visit(prog);
+			printVisitor.visit(prog);
 
 			System.out.println("==================== BADASS SCOPE CHECKING! ====================");
 			scopeVisitor.visit(prog);
