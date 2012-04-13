@@ -4,7 +4,7 @@ import se.cortado.ir.temp.*;
 import se.cortado.ir.tree.*;
 
 /** @author Samuel Wejeus */
-public abstract class TR_Cx extends TR_Exp {
+public abstract class TR_Cx extends Translate {
 	
 	/** FROM APPEL:
 	 * To convert a “conditional” into a “value expression,” we invent a 
@@ -15,7 +15,7 @@ public abstract class TR_Cx extends TR_Exp {
 	 * t and the second move is skipped. The result of the whole thing 
 	 * is just the temporary r containing zero or one.
 	 */
-	public IR_Exp build_EX() {
+	public IR_Exp getValue() {
 		Label t = new Label();
 		Label f = new Label();
 		Temp r = new Temp();
@@ -24,13 +24,13 @@ public abstract class TR_Cx extends TR_Exp {
 		MOVE move0 = new MOVE( new TEMP(r),new CONST(0) );
 		SEQ tail = new SEQ( move0, new LABEL(t) );
 		SEQ mid = new SEQ(new LABEL(f), tail);
-		SEQ before = new SEQ(build_CX(t,f), mid);
+		SEQ before = new SEQ(getConditional(t,f), mid);
 		SEQ retval = new SEQ(move1, before);
 
 		return new ESEQ(retval, new TEMP(r));
 	}
 
-	public IR_Stm build_NX() {
+	public IR_Stm getNoValue() {
 		Label t = new Label();
 		Label f = new Label();
 		/*---------------------------------------
@@ -44,8 +44,8 @@ public abstract class TR_Cx extends TR_Exp {
         SEQ retval = new SEQ(move1, before);
         ---------------------------------------*/
 
-		return build_CX(t,f);
+		return getConditional(t,f);
 	}
 
-	public abstract IR_Stm build_CX(Label t, Label f);
+	public abstract IR_Stm getConditional(Label t, Label f);
 }

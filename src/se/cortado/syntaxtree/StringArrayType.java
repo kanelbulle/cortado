@@ -1,6 +1,6 @@
 package se.cortado.syntaxtree;
 
-import se.cortado.ir.translate.TR_Exp;
+import se.cortado.ir.translate.Translate;
 import se.cortado.visitors.*;
 
 public class StringArrayType extends Type {

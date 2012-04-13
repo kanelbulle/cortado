@@ -13,17 +13,17 @@ import se.cortado.ir.tree.IR_Stm;
  * */
 public class TR_RelCx extends TR_Cx {
 	
-    private TR_Exp left;
-    private TR_Exp right;
+    private Translate left;
+    private Translate right;
     private int op;
     
-    public TR_RelCx(int o, TR_Exp l, TR_Exp r) {
+    public TR_RelCx(int o, Translate l, Translate r) {
         op = o;
         left = l;
         right = r;
     }
 
-    public IR_Stm build_CX(Label t, Label f) {
-        return new CJUMP(op, left.build_EX(), right.build_EX(), t, f);
+    public IR_Stm getConditional(Label t, Label f) {
+        return new CJUMP(op, left.getValue(), right.getValue(), t, f);
     }
 }

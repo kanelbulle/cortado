@@ -2,7 +2,7 @@ package se.cortado.syntaxtree;
 
 import java.util.Vector;
 
-import se.cortado.ir.translate.TR_Exp;
+import se.cortado.ir.translate.Translate;
 import se.cortado.visitors.TranslateVisitor;
 import se.cortado.visitors.TypeVisitor;
 import se.cortado.visitors.Visitor;
@@ -39,7 +39,7 @@ public class StatementList {
 		return v.visit(this);
 	}
 	
-	public TR_Exp accept(TranslateVisitor v) {
+	public Translate accept(TranslateVisitor v) {
 		return v.visit(this);
 	}
 }

@@ -1,6 +1,6 @@
 package se.cortado.syntaxtree;
 
-import se.cortado.ir.translate.TR_Exp;
+import se.cortado.ir.translate.Translate;
 import se.cortado.visitors.*;
 public class ArrayAssign extends Statement {
 	public Identifier i;
@@ -20,7 +20,7 @@ public class ArrayAssign extends Statement {
 		return v.visit(this);
 	}
 	
-	public TR_Exp accept(TranslateVisitor v) {
+	public Translate accept(TranslateVisitor v) {
 		return v.visit(this);
 	}
 }

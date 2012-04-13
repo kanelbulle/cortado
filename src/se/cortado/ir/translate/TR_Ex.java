@@ -4,7 +4,7 @@ import se.cortado.ir.temp.Label;
 import se.cortado.ir.tree.*;
 
 /** @author Samuel Wejeus */
-public class TR_Ex extends TR_Exp {
+public class TR_Ex extends Translate {
     
 	private IR_Exp exp;
     
@@ -12,11 +12,11 @@ public class TR_Ex extends TR_Exp {
         exp = e;
     }
 
-    public IR_Exp build_EX() {    
+    public IR_Exp getValue() {    
         return exp;
     }
 
-    public IR_Stm build_NX() {
+    public IR_Stm getNoValue() {
         return new EXP(exp);
     }
     
@@ -25,7 +25,7 @@ public class TR_Ex extends TR_Exp {
      * to have unCx treat the cases of CONST 0 and CONST 1 specially, 
      * since they have particularly simple and efficient translations." 
      */
-    public IR_Stm build_CX(Label t, Label f) {
+    public IR_Stm getConditional(Label t, Label f) {
         return new CJUMP(CJUMP.EQ, exp, new CONST(0), f, t);
     }
 
