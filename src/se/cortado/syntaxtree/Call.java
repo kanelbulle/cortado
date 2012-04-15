@@ -1,6 +1,8 @@
 package se.cortado.syntaxtree;
 
 import se.cortado.ir.translate.Translate;
+import se.cortado.visitors.ClassScope;
+import se.cortado.visitors.MethodScope;
 import se.cortado.visitors.TranslateVisitor;
 import se.cortado.visitors.TypeVisitor;
 import se.cortado.visitors.Visitor;
@@ -11,6 +13,9 @@ public class Call extends Exp {
 
 	public Identifier i;
 	public ExpList el;
+	
+	public ClassScope cs;
+	public MethodScope ms;
 
 	public Call(Exp ae, Identifier ai, ExpList ael) {
 		e = ae;

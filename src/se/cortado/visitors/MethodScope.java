@@ -31,6 +31,7 @@ public class MethodScope {
 	private HashMap<String, Access> accesses = new HashMap<String, Access>();
 	private FormalList parameters;
 	private Type returnType;
+	private String labelName;
 
 	private Frame frame;
 
@@ -143,6 +144,14 @@ public class MethodScope {
 
 	public Access getAccess(String variableName) {
 		return accesses.get(variableName);
+	}
+
+	public String getLabelName() {
+		return labelName;
+	}
+
+	public void setLabelName(String labelName) {
+		this.labelName = labelName;
 	}
 
 }

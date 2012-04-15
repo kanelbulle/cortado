@@ -260,6 +260,10 @@ public class SlowTypeVisitor implements TypeVisitor {
 
 				return null;
 			}
+			
+			node.c = cs.getClassDecl().i.s;
+			node.cs = cs;
+			node.ms = callMethod;
 
 			// if we get here, a method that matches was found the type of this
 			// expression is then the return type of the method
