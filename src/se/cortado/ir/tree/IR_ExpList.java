@@ -10,10 +10,10 @@ public class IR_ExpList {
 		tail = t;
 	}
 	
-//	public IR_ExpList(IR_Exp h) {
-//		head = h;
-//		tail = null;
-//	}
+	public IR_ExpList(IR_Exp h) {
+		head = h;
+		tail = null;
+	}
 }
 
 

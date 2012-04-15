@@ -9,15 +9,18 @@ import se.cortado.ir.translate.TR_Nx;
 import se.cortado.ir.translate.TR_RelCx;
 import se.cortado.ir.translate.Translate;
 import se.cortado.ir.tree.BINOP;
+import se.cortado.ir.tree.CALL;
 import se.cortado.ir.tree.CJUMP;
 import se.cortado.ir.tree.CONST;
 import se.cortado.ir.tree.ESEQ;
 import se.cortado.ir.tree.IR_Exp;
+import se.cortado.ir.tree.IR_ExpList;
 import se.cortado.ir.tree.IR_Stm;
 import se.cortado.ir.tree.JUMP;
 import se.cortado.ir.tree.LABEL;
 import se.cortado.ir.tree.MEM;
 import se.cortado.ir.tree.MOVE;
+import se.cortado.ir.tree.NAME;
 import se.cortado.ir.tree.SEQ;
 import se.cortado.ir.tree.TEMP;
 import se.cortado.syntaxtree.And;
@@ -498,7 +501,14 @@ public class IntermediateVisitor implements TranslateVisitor {
 	@Override
 	public Translate visit(se.cortado.syntaxtree.Print node) {
 		System.out.println("IR: Accept Print");
-		throw new Error("Not implemented yet!");
+		
+		Translate tr = node.e.accept(this);
+		
+		NAME printName = new NAME(new Label("_minijavalib_println"));
+		IR_ExpList args = new IR_ExpList(tr.getValue());
+		CALL printCall = new CALL(printName, args);
+		
+		return new TR_Ex(printCall);
 	}
 
 	@Override
