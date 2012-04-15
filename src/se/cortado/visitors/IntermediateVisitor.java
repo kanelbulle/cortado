@@ -487,14 +487,11 @@ public class IntermediateVisitor implements TranslateVisitor {
 	public Translate visit(Not node) {
 		System.out.println("IR: Accept Not");
 
-		// If node is boolean -> XOR with all 1 else subtract from 0
-		// TODO: What does the Java semantics say about !object ?
+		// this assumes that booleans are exactly 0 (false) or exactly 1 (true)
+		Translate t = node.e.accept(this);
+		BINOP b = new BINOP(BINOP.XOR, new CONST(1), t.getValue());
 
-		//Translate t = node.e.accept(this);
-
-		// return new TR_Ex(new BINOP(BINOP., l, r))
-		//Translate value = node.accept(this);
-		throw new Error("Not implemented yet!");
+		return new TR_Ex(b);
 	}
 
 	@Override
