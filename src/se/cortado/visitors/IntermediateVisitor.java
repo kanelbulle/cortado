@@ -2,7 +2,6 @@ package se.cortado.visitors;
 
 import se.cortado.ir.frame.Access;
 import se.cortado.ir.frame.Frame;
-import se.cortado.ir.frame.x86_64.Hardware;
 import se.cortado.ir.temp.Label;
 import se.cortado.ir.temp.Temp;
 import se.cortado.ir.translate.TR_Ex;
@@ -66,6 +65,8 @@ public class IntermediateVisitor implements TranslateVisitor {
 	private Frame curFrame;
 	private ClassDecl curClass;
 	private MethodDecl curMethod;
+
+	private final int wordSize = MethodScope.getMotherFrame().wordSize();
 
 	// for debug
 	se.cortado.ir.tree.Print irPrinter = new se.cortado.ir.tree.Print(
@@ -304,7 +305,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 		// first 'element' of array is the length
 		// so address of element relative to base is 1 + wordSize * index
 		IR_Exp offset = new BINOP(BINOP.MUL, index.getValue(), new CONST(
-				MethodScope.getMotherFrame().wordSize()));
+				wordSize));
 		offset = new BINOP(BINOP.PLUS, new CONST(1), offset);
 		IR_Exp address = new BINOP(BINOP.PLUS, array.getValue(), offset);
 
@@ -358,8 +359,32 @@ public class IntermediateVisitor implements TranslateVisitor {
 	@Override
 	public Translate visit(Identifier node) {
 		System.out.println("IR: Accept Identifier");
-		IR_Exp res = symbolTable.getAccess(curClass, curMethod, node.s).exp(
-				new TEMP(curFrame.FP()));
+
+		/*
+		 * If the identifier is a local variable in a method, return the value
+		 * of the variable If the identifier is a class field, return the value
+		 * (address) of the variable
+		 */
+
+		// try to find access among local variables in method
+		Access a = symbolTable.getAccess(curClass, curMethod, node.s);
+		IR_Exp res = null;
+		if (a == null) {
+			// no local variable matching, check class fields
+			a = symbolTable.getAccess(curClass, node.s);
+
+			if (a == null) {
+				throw new Error(
+						"Did not find identifier in method or class, something is b0rked");
+			}
+			
+			Access thisAccess = symbolTable.getAccess(curClass, curMethod, "this");
+			// referencing 'this' relative to address 0, is this correct?
+			res = a.exp(thisAccess.exp(new CONST(0)));
+		} else {
+			res = a.exp(new TEMP(curFrame.FP()));
+		}
+
 		return new TR_Ex(res);
 	}
 
@@ -483,7 +508,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 		Access thisAccess = symbolTable.getAccess(curClass, curMethod, "this");
 		// TODO returns the address of 'this', relative to what? what is the
 		// basepointer?
-		// this assumes that 'this' is in the heap with 0 as basepointer..
+		// this assumes that 'this' is in the heap with 0 as basepointer..?
 		return new TR_Ex(thisAccess.exp(new CONST(0)));
 	}
 

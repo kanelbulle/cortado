@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import se.cortado.ir.frame.Access;
 import se.cortado.ir.frame.Record;
 import se.cortado.syntaxtree.ClassDecl;
 import se.cortado.syntaxtree.Formal;
@@ -15,6 +16,7 @@ import se.cortado.syntaxtree.VarDecl;
 /** @author Samuel Wejeus */
 public class ClassScope {
 	private HashMap<String, Type> variables;
+	private HashMap<String, Access> accesses;
 	private HashMap<String, List<MethodScope>> methods;
 	private HashMap<MethodDecl, MethodScope> methods2;
 	private ClassDecl classDecl;
@@ -26,6 +28,7 @@ public class ClassScope {
 		record = MethodScope.getMotherFrame().newRecord(classDecl.i.s);
 
 		variables = new HashMap<String, Type>();
+		accesses = new HashMap<String, Access>();
 		methods = new HashMap<String, List<MethodScope>>();
 		methods2 = new HashMap<MethodDecl, MethodScope>();
 	}
@@ -36,6 +39,8 @@ public class ClassScope {
 					+ variable.identifier + "\" on line: "
 					+ variable.identifier.row);
 		} else {
+			Access access = record.allocField();
+			accesses.put(variable.identifier.s, access);
 			variables.put(variable.identifier.s, type);
 		}
 	}
@@ -89,6 +94,10 @@ public class ClassScope {
 
 	public Type getVariableType(String variableName) {
 		return variables.get(variableName);
+	}
+	
+	public Access getAccess(String variabelName) {
+		return accesses.get(variabelName);
 	}
 
 	public HashMap<String, Type> getVariables() {
