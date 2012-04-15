@@ -451,7 +451,12 @@ public class IntermediateVisitor implements TranslateVisitor {
 	@Override
 	public Translate visit(And node) {
 		System.out.println("IR: Accept And");
-		throw new Error("Not implemented yet!");
+
+		Translate e1 = node.e1.accept(this);
+		Translate e2 = node.e2.accept(this);
+
+		IR_Exp r = new BINOP(BINOP.AND, e1.getValue(), e2.getValue());
+		return new TR_Ex(r);
 	}
 
 	@Override
