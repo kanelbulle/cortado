@@ -489,10 +489,35 @@ public class IntermediateVisitor implements TranslateVisitor {
 		return new TR_Ex(curFrame.externalCall("_minijavalib_initarray", args));
 	}
 
+	/*
+	 * 1.Generate code for allocating heap space for all the instance variables
+	 * (i.e. class variable).
+	 * 
+	 * 2. Iterate through the memory locations for those variables and
+	 * initialize them.
+	 */
 	@Override
 	public Translate visit(NewObject node) {
 		System.out.println("IR: Accept NewObject");
-		throw new Error("Not implemented yet!");
+
+		ClassScope c = symbolTable.get(node.i.s);
+		int heapSize = (c.getVariables().size() + 1) * curFrame.wordSize();
+		IR_ExpList params = new IR_ExpList(new CONST(heapSize));
+		IR_Exp allocatedHeap = curFrame.externalCall(
+				"externalNewObjectFunction", params);
+
+		/* iterate and set to 0/null */
+		IR_Stm it = null;
+		for (int i = 0; i < (c.getVariables().size() + 1); ++i) {
+			IR_Exp memLocation = new MEM(new BINOP(BINOP.PLUS, allocatedHeap,
+					new CONST(i * curFrame.wordSize())));
+			IR_Stm init = new MOVE(memLocation, new CONST(0));
+			it = new SEQ(init, it);
+
+		}
+
+		IR_Exp e = new ESEQ(it, allocatedHeap);
+		return new TR_Ex(e);
 	}
 
 	@Override
