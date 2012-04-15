@@ -11,9 +11,11 @@ import se.cortado.ir.temp.Label;
 import se.cortado.ir.temp.Temp;
 import se.cortado.ir.temp.TempList;
 import se.cortado.ir.temp.TempMap;
+import se.cortado.ir.tree.CALL;
 import se.cortado.ir.tree.IR_Exp;
 import se.cortado.ir.tree.IR_ExpList;
 import se.cortado.ir.tree.IR_Stm;
+import se.cortado.ir.tree.NAME;
 
 public class Frame implements se.cortado.ir.frame.Frame {
 	List<Access> formals = new ArrayList<Access>();
@@ -118,8 +120,7 @@ public class Frame implements se.cortado.ir.frame.Frame {
 
 	@Override
 	public IR_Exp externalCall(String func, IR_ExpList args) {
-		// TODO Auto-generated method stub
-		return null;
+		return new CALL(new NAME(new Label(func)), args);
 	}
 
 	@Override
