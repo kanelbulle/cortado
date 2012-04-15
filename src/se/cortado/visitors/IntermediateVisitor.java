@@ -474,7 +474,14 @@ public class IntermediateVisitor implements TranslateVisitor {
 	@Override
 	public Translate visit(NewArray node) {
 		System.out.println("IR: Accept NewArray");
-		throw new Error("Not implemented yet!");
+
+		Translate l = node.e.accept(this);
+		IR_Exp numElem = new BINOP(BINOP.MUL, l.getValue(), new CONST(
+				wordSize / 4));
+
+		IR_ExpList args = new IR_ExpList(numElem);
+
+		return new TR_Ex(curFrame.externalCall("_minijavalib_initarray", args));
 	}
 
 	@Override
