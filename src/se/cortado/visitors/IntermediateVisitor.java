@@ -380,8 +380,9 @@ public class IntermediateVisitor implements TranslateVisitor {
 				throw new Error(
 						"Did not find identifier in method or class, something is b0rked");
 			}
-			
-			Access thisAccess = symbolTable.getAccess(curClass, curMethod, "this");
+
+			Access thisAccess = symbolTable.getAccess(curClass, curMethod,
+					"this");
 			// referencing 'this' relative to address 0, is this correct?
 			res = a.exp(thisAccess.exp(new CONST(0)));
 		} else {
@@ -460,19 +461,14 @@ public class IntermediateVisitor implements TranslateVisitor {
 		Translate exp = node.e.accept(this);
 		Translate expList = node.el.accept(this);
 
-		// CALL call = new CALL(exp.getValue(), expList.getValue());
+		String s = node.cs.getClassDecl().i.s + "$" + node.ms.getLabelName();
+		IR_Exp thisPointer = exp.getValue();
+		IR_ExpList params = new IR_ExpList(thisPointer, expList.getValue()
+				.kids());
 
-		// new CALL(new IR_E, a)
+		IR_Exp call = new CALL(new NAME(new Label(s)), params);
 
-		// node.
-		// IR_Exp res = new CALL(new NAME(new Label(node.c)), null);
-
-		// return new TR_Ex(res);
-		// CALL(NAME lc$m,[p,e1,e2,...,en])
-
-		// tmpResult = new TR_Ex(new CALL(new NAME(new LABEL(node.c)),
-		// node.el));
-		throw new Error("Not implemented yet!");
+		return new TR_Ex(call);
 	}
 
 	@Override
@@ -494,20 +490,23 @@ public class IntermediateVisitor implements TranslateVisitor {
 		// If node is boolean -> XOR with all 1 else subtract from 0
 		// TODO: What does the Java semantics say about !object ?
 
-		Translate value = node.accept(this);
+		//Translate t = node.e.accept(this);
+
+		// return new TR_Ex(new BINOP(BINOP., l, r))
+		//Translate value = node.accept(this);
 		throw new Error("Not implemented yet!");
 	}
 
 	@Override
 	public Translate visit(se.cortado.syntaxtree.Print node) {
 		System.out.println("IR: Accept Print");
-		
+
 		Translate tr = node.e.accept(this);
-		
+
 		NAME printName = new NAME(new Label("_minijavalib_println"));
 		IR_ExpList args = new IR_ExpList(tr.getValue());
 		CALL printCall = new CALL(printName, args);
-		
+
 		return new TR_Ex(printCall);
 	}
 
