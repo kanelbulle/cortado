@@ -1,11 +1,11 @@
-package se.cortado.ir.frame.x86_64;
+package se.cortado.frame.x86_64;
 
 import se.cortado.ir.tree.BINOP;
 import se.cortado.ir.tree.CONST;
 import se.cortado.ir.tree.IR_Exp;
 import se.cortado.ir.tree.MEM;
 
-class InFrame implements se.cortado.ir.frame.Access {
+class InFrame implements se.cortado.frame.Access {
 	private int offset;
 
 	public InFrame(int offset) {

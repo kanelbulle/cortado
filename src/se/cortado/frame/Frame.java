@@ -1,4 +1,4 @@
-package se.cortado.ir.frame;
+package se.cortado.frame;
 
 import se.cortado.ir.temp.*;
 import se.cortado.ir.tree.*;
@@ -107,7 +107,7 @@ public interface Frame
 
        @return The modified List with the sink instruction.
     */
-    public List<se.cortado.ir.assem.Instr> procEntryExit2(List<se.cortado.ir.assem.Instr> inst);
+    public List<se.cortado.assem.Instr> procEntryExit2(List<se.cortado.assem.Instr> inst);
 
     /**
        Produces first part of prologue:
@@ -125,7 +125,7 @@ public interface Frame
 
        @return a Proc object
     */
-    public Proc procEntryExit3(List<se.cortado.ir.assem.Instr> body);
+    public Proc procEntryExit3(List<se.cortado.assem.Instr> body);
     
 
     /**
@@ -146,7 +146,7 @@ public interface Frame
     /**
        @return The translation of a tree.Stm into a list of assem.Instr.
     */
-    public abstract List<se.cortado.ir.assem.Instr> codegen(se.cortado.ir.tree.IR_Stm stm);
+    public abstract List<se.cortado.assem.Instr> codegen(se.cortado.ir.tree.IR_Stm stm);
 
     /**
        @return A TempMap mapping Temp:s corresponding to hardware 

@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import se.cortado.ir.frame.Access;
-import se.cortado.ir.frame.Record;
+import se.cortado.frame.Access;
+import se.cortado.frame.Record;
 import se.cortado.syntaxtree.ClassDecl;
 import se.cortado.syntaxtree.Formal;
 import se.cortado.syntaxtree.FormalList;

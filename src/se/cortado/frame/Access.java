@@ -1,4 +1,4 @@
-package se.cortado.ir.frame;
+package se.cortado.frame;
 
 import se.cortado.ir.tree.*;
 

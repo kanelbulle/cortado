@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import se.cortado.ir.frame.Access;
-import se.cortado.ir.frame.Frame;
+import se.cortado.frame.Access;
+import se.cortado.frame.Frame;
 import se.cortado.ir.temp.Label;
 import se.cortado.syntaxtree.Formal;
 import se.cortado.syntaxtree.FormalList;
@@ -20,7 +20,7 @@ public class MethodScope {
 
 	public static Frame getMotherFrame() {
 		if (motherFrame == null) {
-			motherFrame = new se.cortado.ir.frame.x86_64.Frame();
+			motherFrame = new se.cortado.frame.x86_64.Frame();
 		}
 
 		return motherFrame;

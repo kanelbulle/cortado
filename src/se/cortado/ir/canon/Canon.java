@@ -4,8 +4,9 @@ import se.cortado.ir.temp.*;
 import se.cortado.ir.tree.*;
 
 class MoveCall extends IR_Stm {
-	TEMP dst;
-	CALL src;
+	
+	private TEMP dst;
+	private CALL src;
 
 	public MoveCall(TEMP d, CALL s) {
 		dst=d; src=s;
@@ -36,7 +37,7 @@ class ExpCall extends IR_Stm {
 	}
 }   
 
-class StmExpList {
+final class StmExpList {
 	IR_Stm stm;
 	IR_ExpList exps;
 
@@ -46,16 +47,22 @@ class StmExpList {
 }
 
 public class Canon {
-
+	
+	/* Local variables used */
+	static StmExpList nopNull = new StmExpList(new EXP(new CONST(0)),null);
+	
 	static boolean isNop(IR_Stm a) {
-		return a instanceof EXP
-				&& ((EXP)a).exp instanceof CONST;
+		return a instanceof EXP && ((EXP) a).exp instanceof CONST;
 	}
 
 	static IR_Stm seq(IR_Stm a, IR_Stm b) {
-		if (isNop(a)) return b;
-		else if (isNop(b)) return a;
-		else return new SEQ(a,b);
+		if (isNop(a)) {
+			return b;
+		} else if (isNop(b)) {
+			return a;
+		} else {
+			return new SEQ(a,b);
+		}
 	}
 
 	static boolean commute(IR_Stm a, IR_Exp b) {
@@ -67,29 +74,33 @@ public class Canon {
 	}
 
 	static IR_Stm do_stm(MOVE s) { 
-		if (s.dst instanceof TEMP && s.src instanceof CALL) 
+		if (s.dst instanceof TEMP && s.src instanceof CALL) {
 			return reorder_stm(new MoveCall((TEMP)s.dst, (CALL)s.src));
-		else if (s.dst instanceof ESEQ)
+		} else if (s.dst instanceof ESEQ) {
 			return do_stm(new SEQ(((ESEQ)s.dst).stm, new MOVE(((ESEQ)s.dst).exp, s.src)));
-		else return reorder_stm(s);
+		} else {
+			return reorder_stm(s);
+		}
 	}
 
 	static IR_Stm do_stm(EXP s) { 
-		if (s.exp instanceof CALL)
+		if (s.exp instanceof CALL) {
 			return reorder_stm(new ExpCall((CALL)s.exp));
-		else return reorder_stm(s);
+		} else {
+			return reorder_stm(s);
+		}
 	}
 
 	static IR_Stm do_stm(IR_Stm s) {
-		if (s instanceof SEQ) return do_stm((SEQ) s);
-		else if (s instanceof MOVE) return do_stm((MOVE)s);
-		else if (s instanceof EXP) return do_stm((EXP)s);
-		else return reorder_stm(s);
-	}
-
-	static IR_Stm reorder_stm(IR_Stm s) {
-		StmExpList x = reorder(s.kids());
-		return seq(x.stm, s.build(x.exps));
+		if (s instanceof SEQ) {
+			return do_stm((SEQ) s);
+		} else if (s instanceof MOVE) {
+			return do_stm((MOVE) s);
+		} else if (s instanceof EXP) {
+			return do_stm((EXP) s);
+		} else {
+			return reorder_stm(s);
+		}
 	}
 
 	static ESEQ do_exp(ESEQ e) {
@@ -98,38 +109,46 @@ public class Canon {
 		return new ESEQ(seq(stms,b.stm), b.exp);
 	}
 
-	static ESEQ do_exp (IR_Exp e) {
-		if (e instanceof ESEQ) return do_exp((ESEQ)e);
-		else return reorder_exp(e);
+	static ESEQ do_exp(IR_Exp e) {
+		if (e instanceof ESEQ) {
+			return do_exp((ESEQ)e);
+		} else {
+			return reorder_exp(e);
+		}
 	}
 
+	static IR_Stm reorder_stm(IR_Stm s) {
+		StmExpList x = reorder(s.kids());
+		return seq(x.stm, s.build(x.exps));
+	}
+	
 	static ESEQ reorder_exp(IR_Exp e) {
 		StmExpList x = reorder(e.kids());
 		return new ESEQ(x.stm, e.build(x.exps));
 	}
 
-	static StmExpList nopNull = new StmExpList(new EXP(new CONST(0)),null);
-
 	static StmExpList reorder(IR_ExpList exps) {
-		if (exps==null) return nopNull;
-		else {
+		if (exps == null) {
+			return nopNull;
+		} else {
 			IR_Exp a = exps.head;
+			
 			if (a instanceof CALL) {
 				Temp t = new Temp();
 				IR_Exp e = new ESEQ(new MOVE(new TEMP(t), a), new TEMP(t));
+			
 				return reorder(new IR_ExpList(e, exps.tail));
 			} else {
 				ESEQ aa = do_exp(a);
 				StmExpList bb = reorder(exps.tail);
-				if (commute(bb.stm, aa.exp))
+				if (commute(bb.stm, aa.exp)) {
 					return new StmExpList(seq(aa.stm,bb.stm), new IR_ExpList(aa.exp,bb.exps));
-				else {
+				} else {
 					Temp t = new Temp();
-					return new StmExpList(
-							seq(aa.stm, 
-									seq(new MOVE(new TEMP(t),aa.exp),
-											bb.stm)),
-											new IR_ExpList(new TEMP(t), bb.exps));
+					IR_ExpList expList = new IR_ExpList(new TEMP(t), bb.exps);
+					IR_Stm s = seq(aa.stm, seq(new MOVE(new TEMP(t),aa.exp), bb.stm));
+					
+					return new StmExpList(s, expList);
 				}
 			}
 		}

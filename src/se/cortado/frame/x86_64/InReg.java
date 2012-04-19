@@ -1,10 +1,10 @@
-package se.cortado.ir.frame.x86_64;
+package se.cortado.frame.x86_64;
 
 import se.cortado.ir.temp.Temp;
 import se.cortado.ir.tree.IR_Exp;
 import se.cortado.ir.tree.TEMP;
 
-public class InReg implements se.cortado.ir.frame.Access {
+public class InReg implements se.cortado.frame.Access {
 	private Temp register;
 
 	public InReg(Temp register) {
