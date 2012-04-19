@@ -4,6 +4,8 @@ import se.cortado.ir.frame.Access;
 import se.cortado.ir.frame.Frame;
 import se.cortado.ir.temp.Label;
 import se.cortado.ir.temp.Temp;
+import se.cortado.ir.translate.Fragment;
+import se.cortado.ir.translate.ProcFragment;
 import se.cortado.ir.translate.TR_Ex;
 import se.cortado.ir.translate.TR_Nx;
 import se.cortado.ir.translate.TR_RelCx;
@@ -63,6 +65,9 @@ import se.cortado.syntaxtree.While;
 /** @author Samuel Wejeus */
 public class IntermediateVisitor implements TranslateVisitor {
 	private SymbolTable symbolTable;
+	
+	/* Stored fragments */
+	private Fragment fragments;
 
 	/* Temporaries used during construction */
 	private Frame curFrame;
@@ -77,6 +82,10 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 	public IntermediateVisitor(SymbolTable symbolTable) {
 		this.symbolTable = symbolTable;
+	}
+	
+	public Fragment getResult() {
+		return fragments;
 	}
 
 	/* -------------- ITERATE PROGRAM/CLASSES -------------- */
@@ -93,7 +102,9 @@ public class IntermediateVisitor implements TranslateVisitor {
 			node.elementAt(i).accept(this);
 		}
 
-		throw new Error("Not implemented yet!");
+		return null;
+
+		// throw new Error("Not implemented yet!");
 	}
 
 	@Override
@@ -177,27 +188,39 @@ public class IntermediateVisitor implements TranslateVisitor {
 		for (int i = 0; i < node.size(); ++i) {
 			node.elementAt(i).accept(this);
 		}
-		throw new Error("FORMAL LIST: Not implemented yet and/or not used");
+
+		return null;
 	}
 
-	// TODO: What is exp in node here?
 	@Override
 	public Translate visit(MethodDecl node) {
 		System.out.println("IR: Method call: " + node.identifier.s);
 
 		curMethod = node;
 		curFrame = symbolTable.getFrame(curClass, curMethod);
+		ClassScope cs = symbolTable.get(curClass.i.s);
+		MethodScope ms = cs.getMethodMatching(node);
 
-		// TODO: Handle 'this' pointer?
-		// TODO: gen prolog?
-		// TODO: gen epilog?
+		// get method body
+		Translate body = node.statementList.accept(this);
+		
+		IR_Stm bodyStm = curFrame.procEntryExit1(body.getNoValue());
+		
+		// move return value to register
+		Translate returnTranslation = node.exp.accept(this);
+		MOVE returnValue = new MOVE(new TEMP(curFrame.RV()), returnTranslation.getValue()); 
+		
+		bodyStm = new SEQ(bodyStm, returnValue);
 
-		Translate fragment = node.statementList.accept(this);
-
+		ProcFragment fragment = new ProcFragment(bodyStm, curFrame);
+		
+		fragment.next = fragments;
+		fragments = fragment;
+		
 		// Debug out
-		irPrinter.prStm(fragment.getNoValue());
+		irPrinter.prStm(body.getNoValue());
 
-		return fragment;
+		return body;
 	}
 
 	@Override
@@ -207,8 +230,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 			node.elementAt(i).accept(this);
 		}
 
-		// TODO: Add method fragment to list of fragments
-		throw new Error("End of MethodDeclList, fragments not implemented yet.");
+		return null;
 	}
 
 	/* -------------- /ITERATE PROGRAM/CLASSES ------------- */

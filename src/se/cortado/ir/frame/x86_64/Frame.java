@@ -137,7 +137,12 @@ public class Frame implements se.cortado.ir.frame.Frame {
 
 	@Override
 	public Proc procEntryExit3(List<Instr> body) {
-		// TODO Auto-generated method stub
+		// generate method label
+//		String labelName = curClass.i.s + "$" + ms.getLabelName();
+//		LABEL methodLabel = new LABEL(new Label(labelName));
+		
+		
+		
 		return null;
 	}
 
