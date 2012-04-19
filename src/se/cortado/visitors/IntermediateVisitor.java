@@ -468,8 +468,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 		String s = node.cs.getClassDecl().i.s + "$" + node.ms.getLabelName();
 		IR_Exp thisPointer = exp.getValue();
-		IR_ExpList params = new IR_ExpList(thisPointer, expList.getValue()
-				.kids());
+		IR_ExpList params = new IR_ExpList(thisPointer, expList.getValue().kids());
 
 		IR_Exp call = new CALL(new NAME(new Label(s)), params);
 
