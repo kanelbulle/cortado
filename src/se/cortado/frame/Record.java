@@ -1,4 +1,4 @@
-package se.cortado.ir.frame;
+package se.cortado.frame;
 
 /**
    Interface for handling of heap objects. The interface is

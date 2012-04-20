@@ -1,4 +1,4 @@
-package se.cortado.ir.assem;
+package se.cortado.assem;
 
 public class InstrList {
   public Instr head;

@@ -1,8 +1,8 @@
-package se.cortado.ir.frame.x86_64;
+package se.cortado.frame.x86_64;
 
-import se.cortado.ir.frame.Access;
+import se.cortado.frame.Access;
 
-public class Record implements se.cortado.ir.frame.Record {
+public class Record implements se.cortado.frame.Record {
 	private int offset;
 	private String name;
 

@@ -15,7 +15,7 @@ public class BasicBlocks {
 	}
 
 	private void doStms(IR_StmList l) {
-		if (l==null) 
+		if (l == null) 
 			doStms(new IR_StmList(new JUMP(done), null));
 		else if (l.head instanceof JUMP || l.head instanceof CJUMP) {
 			addStm(l.head);

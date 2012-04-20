@@ -1,4 +1,4 @@
-package se.cortado.ir.assem;
+package se.cortado.assem;
 
 import se.cortado.ir.temp.*;
 

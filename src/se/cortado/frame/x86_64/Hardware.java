@@ -1,4 +1,4 @@
-package se.cortado.ir.frame.x86_64;
+package se.cortado.frame.x86_64;
 
 import se.cortado.ir.temp.Temp;
 

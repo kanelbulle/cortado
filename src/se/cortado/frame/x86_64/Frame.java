@@ -1,12 +1,12 @@
-package se.cortado.ir.frame.x86_64;
+package se.cortado.frame.x86_64;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import se.cortado.ir.assem.Instr;
-import se.cortado.ir.frame.Access;
-import se.cortado.ir.frame.Proc;
-import se.cortado.ir.frame.Record;
+import se.cortado.assem.Instr;
+import se.cortado.frame.Access;
+import se.cortado.frame.Proc;
+import se.cortado.frame.Record;
 import se.cortado.ir.temp.Label;
 import se.cortado.ir.temp.Temp;
 import se.cortado.ir.temp.TempList;
@@ -17,7 +17,7 @@ import se.cortado.ir.tree.IR_ExpList;
 import se.cortado.ir.tree.IR_Stm;
 import se.cortado.ir.tree.NAME;
 
-public class Frame implements se.cortado.ir.frame.Frame {
+public class Frame implements se.cortado.frame.Frame {
 	List<Access> formals = new ArrayList<Access>();
 
 	Label name;
@@ -52,13 +52,13 @@ public class Frame implements se.cortado.ir.frame.Frame {
 	}
 
 	@Override
-	public se.cortado.ir.frame.Frame newFrame(Label name, List<Boolean> formals) {
+	public se.cortado.frame.Frame newFrame(Label name, List<Boolean> formals) {
 		return new Frame(name, formals);
 	}
 
 	@Override
 	public Record newRecord(String name) {
-		return new se.cortado.ir.frame.x86_64.Record(name);
+		return new se.cortado.frame.x86_64.Record(name);
 	}
 
 	@Override
