@@ -75,7 +75,7 @@ public class Print {
 		else if (s instanceof CJUMP) prStm((CJUMP)s, d);
 		else if (s instanceof MOVE) prStm((MOVE)s, d);
 		else if (s instanceof EXP) prStm((EXP)s, d);
-		else throw new Error("Print.prStm");
+		else throw new Error("Print.prStm: " + s.getClass().getCanonicalName());
 	}
 
 	void prExp(BINOP e, int d) {

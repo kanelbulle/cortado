@@ -126,7 +126,7 @@ public class Frame implements se.cortado.ir.frame.Frame {
 	@Override
 	public IR_Stm procEntryExit1(IR_Stm body) {
 		// TODO Auto-generated method stub
-		return null;
+		return body;
 	}
 
 	@Override
