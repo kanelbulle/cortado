@@ -1,0 +1,59 @@
+\documentclass[11pt]{amsart}
+%\documentclass[a4paper,12pt,oneside]{article}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{url}
+\usepackage{verbatim}
+
+
+\title{DD2488 - Compiler Construction - Project Report}
+\author{Samuel Wejeus Emil Arfvidsson}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+A compiler is a complicated piece of machinery, a computer program, designed to transform high level source code written in some programming language into some lower level language understandable, and runnable on various target architectures i.e. different types of processors.
+
+This report presents the construction, and inner workings, of a compiler for the high level programming language \textit{MiniJava} (which is a subset of the Java programming language) created as a project int the course \textit{DD2488 - Compiler Construction}\cite{appel}. 
+
+The report will present the various tools used to facilitate the construction of the compiler and explain the how the different stages of compilation have been implemented. The intended reader is a person who has rudimentary understanding of the workings of a compiler and our goal is to give the reader insight and a basic understanding of the inner workings and design choices we made for our implementation of MiniJava.
+
+\section{Overview}
+Topics: stages of compilation, introduction to visitors
+
+\section{Lexing and Parsing}
+Topics: JFlex, JavaCUP
+
+\section{Scope and Type Checking}
+Topics: scope and type
+
+\section{Translation to Intermediate Code}
+Topics: frames, IR tree, canonicalization
+
+\section{Instruction Selection}
+Topics: maximal munch, architecture specifics of frames
+
+\section{Register Allocation}
+Topics: liveness analysis, graph coloring
+
+\section{Conclusions}
+
+\begin{thebibliography}{9}
+
+\bibitem{appel}
+	Andrew W. Appel,
+	\emph{Modern Compiler Implementation in Java, 2nd edition}.
+
+
+\bibitem{jameson}
+	G.J.O. Jameson,
+	\emph{Finding Carmichael numbers}.
+	\url{www.maths.lancs.ac.uk/~jameson/carfind.pdf}
+	
+\end{thebibliography}
+\end{document}  
