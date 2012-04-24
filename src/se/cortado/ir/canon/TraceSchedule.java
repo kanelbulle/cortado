@@ -7,7 +7,7 @@ public class TraceSchedule {
 
 	public IR_StmList stms;
 	BasicBlocks theBlocks;
-	java.util.Dictionary table = new java.util.Hashtable();
+	java.util.Dictionary<Label, IR_StmList> table = new java.util.Hashtable<Label, IR_StmList>();
 
 	IR_StmList getLast(IR_StmList block) {
 		IR_StmList l=block;
@@ -23,7 +23,7 @@ public class TraceSchedule {
 			IR_Stm s = last.tail.head;
 			if (s instanceof JUMP) {
 				JUMP j = (JUMP)s;
-				IR_StmList target = (IR_StmList)table.get(j.targets.head);
+				IR_StmList target = table.get(j.targets.head);
 				if (j.targets.tail==null && target!=null) {
 					last.tail=target;
 					l=target;
@@ -35,8 +35,8 @@ public class TraceSchedule {
 			}
 			else if (s instanceof CJUMP) {
 				CJUMP j = (CJUMP)s;
-				IR_StmList t = (IR_StmList)table.get(j.iftrue);
-				IR_StmList f = (IR_StmList)table.get(j.iffalse);
+				IR_StmList t = table.get(j.iftrue);
+				IR_StmList f = table.get(j.iffalse);
 				if (f!=null) {
 					last.tail.tail=f; 
 					l=f;

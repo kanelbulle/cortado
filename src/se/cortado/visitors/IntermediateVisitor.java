@@ -141,7 +141,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 		IR_Stm res = null;
 		for (int i = 0; i < node.size(); ++i) {
 			Translate next = node.elementAt(i).accept(this);
-
+			
 			if (res == null) {
 				res = next.getNoValue();
 			} else {
@@ -203,14 +203,18 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 		// get method body
 		Translate body = node.statementList.accept(this);
-		
-		IR_Stm bodyStm = curFrame.procEntryExit1(body.getNoValue());
-		
+				
 		// move return value to register
 		Translate returnTranslation = node.exp.accept(this);
 		MOVE returnValue = new MOVE(new TEMP(curFrame.RV()), returnTranslation.getValue()); 
-		
-		bodyStm = new SEQ(bodyStm, returnValue);
+
+		IR_Stm bodyStm = curFrame.procEntryExit1(body.getNoValue());
+		if (bodyStm == null) {
+			// some functions have zero statements, making the body empty
+			bodyStm = returnValue;
+		} else {
+			bodyStm = new SEQ(bodyStm, returnValue);
+		}
 
 		ProcFragment fragment = new ProcFragment(bodyStm, curFrame);
 		
@@ -218,7 +222,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 		fragments = fragment;
 		
 		// Debug out
-		irPrinter.prStm(body.getNoValue());
+		irPrinter.prStm(bodyStm);
 
 		return body;
 	}
@@ -486,13 +490,19 @@ public class IntermediateVisitor implements TranslateVisitor {
 		System.out.println("IR: Accept Call");
 
 		Translate exp = node.e.accept(this);
-		Translate expList = node.el.accept(this);
+		
+		IR_Exp thisPointer = exp.getValue();
+		IR_ExpList paramList = new IR_ExpList(thisPointer);
+		for (int i = 0; i < node.el.size(); i++) {
+			Exp e = node.el.elementAt(i);
+			Translate t = e.accept(this);
+
+			paramList = new IR_ExpList(t.getValue(), paramList);
+		}
 
 		String s = node.cs.getClassDecl().i.s + "$" + node.ms.getLabelName();
-		IR_Exp thisPointer = exp.getValue();
-		IR_ExpList params = new IR_ExpList(thisPointer, expList.getValue().kids());
 
-		IR_Exp call = new CALL(new NAME(new Label(s)), params);
+		IR_Exp call = new CALL(new NAME(new Label(s)), paramList);
 
 		return new TR_Ex(call);
 	}

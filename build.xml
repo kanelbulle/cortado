@@ -1,0 +1,52 @@
+<project name="cortado" default="compile" basedir=".">
+	<property name="src" location="src"/>
+	<property name="build" location="build"/>
+	<property name="gen" location="gen"/>
+
+	<!-- define the cup and jflex tasks -->
+	<taskdef name="cup"
+		classname="java_cup.anttask.CUPTask"
+		classpath="lib/java-cup-11a.jar"
+	/>
+	
+	<taskdef name="jflex"
+		classname="JFlex.anttask.JFlexTask"
+		classpath="lib/JFlex.jar"
+	/>
+	
+	<!-- initialization target -->
+	<target name="init">
+		<tstamp />
+	</target>
+	
+	<!-- run the lexer -->
+	<target name="lexer" depends="init">
+		<jflex
+		    file="res/lexer/minijava.jflex"
+		    destdir="gen/se/cortado/"
+		/>
+	</target>
+	
+	<!-- run the parser -->
+	<target name="parser" depends="lexer">
+		<cup 
+			srcfile="res/parser/minijava.cup"
+		  	destdir="gen/se/cortado/"
+			package="se.cortado"
+			expect="0"
+			interface="true"
+		/>
+	</target>
+	
+	<!-- compile the code in src and gen to build folder -->
+	<target name="compile" depends="parser">
+		<javac destdir="${build}" includeantruntime="false">
+			<src path="${src}" />
+			<src path="${gen}" />
+			<classpath path="lib/java-cup-11a.jar" />
+			<classpath path="lib/JFlex.jar" />
+			<classpath path="lib/junit-4.10.jar" />
+		</javac>
+	</target>
+
+</project>
