@@ -23,7 +23,7 @@
 	<target name="lexer" depends="init">
 		<jflex
 		    file="res/lexer/minijava.jflex"
-		    destdir="gen/se/cortado/"
+		    destdir="gen/"
 		/>
 	</target>
 	
