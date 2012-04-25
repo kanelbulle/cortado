@@ -93,7 +93,10 @@ public class IntermediateVisitor implements TranslateVisitor {
 	public Translate visit(Program node) {
 		System.out.println("IR: Accept Program");
 
-		return node.classDeclList.accept(this);
+		node.mainClass.accept(this);
+		node.classDeclList.accept(this);
+		
+		return null;
 	}
 
 	@Override
@@ -208,14 +211,17 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 		curMethod = node;
 		curFrame = symbolTable.getFrame(curClass, curMethod);
-		ClassScope cs = symbolTable.get(curClass.i.s);
-		MethodScope ms = cs.getMethodMatching(node);
 
 		// get method body
 		Translate body = node.statementList.accept(this);
 
 		// move return value to register
 		Translate returnTranslation = node.exp.accept(this);
+		if (returnTranslation == null) {
+			// no return value, set zero instead
+			returnTranslation = new TR_Ex(new CONST(0));
+		}
+		
 		MOVE returnValue = new MOVE(new TEMP(curFrame.RV()), returnTranslation.getValue());
 
 		IR_Stm bodyStm = curFrame.procEntryExit1(body.getNoValue());
@@ -231,8 +237,10 @@ public class IntermediateVisitor implements TranslateVisitor {
 		fragment.next = fragments;
 		fragments = fragment;
 
-		// Debug out
+		// debug print
+		System.out.println(node.identifier.s);
 		irPrinter.prStm(bodyStm);
+		System.out.println();
 
 		return body;
 	}
@@ -603,7 +611,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 	public Translate visit(VoidExp node) {
 		System.out.println("IR: Accept VoidExp");
 
-		throw new Error("Not implemented yet!");
+		return new TR_Ex(new CONST(0));
 	}
 
 }
