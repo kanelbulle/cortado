@@ -7,9 +7,13 @@ import se.cortado.ir.tree.IR_Exp;
 /** @author Samuel Wejeus */
 public class TR_Nx extends Translate {
 	
-	IR_Stm stm;
+	private IR_Stm stm;
 
 	public TR_Nx(IR_Stm s) {
+    	if (s == null) {
+    		throw new Error("Initializing TR_Nx with s = null");
+    	}
+    	
 		stm = s;
 	}
 

@@ -18,12 +18,20 @@ public class TR_RelCx extends TR_Cx {
     private int op;
     
     public TR_RelCx(int o, Translate l, Translate r) {
+    	if (l == null || r == null) {
+    		throw new Error("Initializing TR_Nx with l or r = null");
+    	}
+    	
         op = o;
         left = l;
         right = r;
     }
 
     public IR_Stm getConditional(Label t, Label f) {
+    	if (t == null || f == null) {
+    		throw new Error("t or f is null in getConditional");
+    	}
+    	
         return new CJUMP(op, left.getValue(), right.getValue(), t, f);
     }
 }

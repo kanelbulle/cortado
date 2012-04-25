@@ -9,6 +9,10 @@ public class TR_Ex extends Translate {
 	private IR_Exp exp;
     
     public TR_Ex(IR_Exp e) {
+    	if (e == null) {
+    		throw new Error("Initializing TR_Ex with e = null");
+    	}
+    	
         exp = e;
     }
 
@@ -26,6 +30,10 @@ public class TR_Ex extends Translate {
      * since they have particularly simple and efficient translations." 
      */
     public IR_Stm getConditional(Label t, Label f) {
+    	if (t == null || f == null) {
+    		throw new Error("t or f is null in getConditional");
+    	}
+    	
         return new CJUMP(CJUMP.EQ, exp, new CONST(0), f, t);
     }
 

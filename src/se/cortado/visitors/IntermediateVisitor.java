@@ -15,6 +15,7 @@ import se.cortado.ir.tree.CALL;
 import se.cortado.ir.tree.CJUMP;
 import se.cortado.ir.tree.CONST;
 import se.cortado.ir.tree.ESEQ;
+import se.cortado.ir.tree.EXP;
 import se.cortado.ir.tree.IR_Exp;
 import se.cortado.ir.tree.IR_ExpList;
 import se.cortado.ir.tree.IR_Stm;
@@ -64,26 +65,25 @@ import se.cortado.syntaxtree.While;
 
 /** @author Samuel Wejeus */
 public class IntermediateVisitor implements TranslateVisitor {
-	private SymbolTable symbolTable;
-	
+	private SymbolTable			symbolTable;
+
 	/* Stored fragments */
-	private Fragment fragments;
+	private Fragment			fragments;
 
 	/* Temporaries used during construction */
-	private Frame curFrame;
-	private ClassDecl curClass;
-	private MethodDecl curMethod;
+	private Frame				curFrame;
+	private ClassDecl			curClass;
+	private MethodDecl			curMethod;
 
-	private final int wordSize = MethodScope.getMotherFrame().wordSize();
+	private final int			wordSize	= MethodScope.getMotherFrame().wordSize();
 
 	// for debug
-	se.cortado.ir.tree.Print irPrinter = new se.cortado.ir.tree.Print(
-			System.out);;
+	se.cortado.ir.tree.Print	irPrinter	= new se.cortado.ir.tree.Print(System.out);	;
 
 	public IntermediateVisitor(SymbolTable symbolTable) {
 		this.symbolTable = symbolTable;
 	}
-	
+
 	public Fragment getResult() {
 		return fragments;
 	}
@@ -92,6 +92,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 	@Override
 	public Translate visit(Program node) {
 		System.out.println("IR: Accept Program");
+
 		return node.classDeclList.accept(this);
 	}
 
@@ -102,22 +103,22 @@ public class IntermediateVisitor implements TranslateVisitor {
 			node.elementAt(i).accept(this);
 		}
 
-		return null;
-
-		// throw new Error("Not implemented yet!");
+		throw new Error(node.getClass().getCanonicalName() + ": Not implemented yet and/or not used");
 	}
 
 	@Override
 	public Translate visit(ClassDecl node) {
 		// System.out.println("IR: Accept ClassDecl: " + node.i.s);
 		// node.accept(this);
-		return null;
+
+		throw new Error(node.getClass().getCanonicalName() + ": Not implemented yet and/or not used");
 	}
 
 	@Override
 	public Translate visit(MainClass node) {
 		System.out.println("IR: Accept MainClass: " + node.i.s);
 		curClass = node;
+
 		return node.md.accept(this);
 	}
 
@@ -125,12 +126,14 @@ public class IntermediateVisitor implements TranslateVisitor {
 	public Translate visit(ClassDeclSimple node) {
 		System.out.println("IR: Accept ClassDeclSimple: " + node.i.s);
 		curClass = node;
+
 		return node.ml.accept(this);
 	}
 
 	@Override
 	public Translate visit(Statement node) {
 		System.out.println("IR: Accept Statement");
+
 		return node.accept(this);
 	}
 
@@ -141,12 +144,17 @@ public class IntermediateVisitor implements TranslateVisitor {
 		IR_Stm res = null;
 		for (int i = 0; i < node.size(); ++i) {
 			Translate next = node.elementAt(i).accept(this);
-			
+
 			if (res == null) {
 				res = next.getNoValue();
 			} else {
 				res = new SEQ(res, next.getNoValue());
 			}
+		}
+
+		// quick-fix: return a no-op if there are no statements
+		if (res == null) {
+			return new TR_Nx(new EXP(new CONST(0)));
 		}
 
 		return new TR_Nx(res);
@@ -155,6 +163,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 	@Override
 	public Translate visit(Exp node) {
 		System.out.println("IR: Accept Exp");
+
 		return node.accept(this);
 	}
 
@@ -179,6 +188,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 	@Override
 	public Translate visit(Formal node) {
 		System.out.println("IR: Accept Formal");
+
 		throw new Error("FORMAL: Not implemented yet and/or not used");
 	}
 
@@ -189,7 +199,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 			node.elementAt(i).accept(this);
 		}
 
-		return null;
+		throw new Error(node.getClass().getCanonicalName() + ": Not implemented yet and/or not used");
 	}
 
 	@Override
@@ -203,10 +213,10 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 		// get method body
 		Translate body = node.statementList.accept(this);
-				
+
 		// move return value to register
 		Translate returnTranslation = node.exp.accept(this);
-		MOVE returnValue = new MOVE(new TEMP(curFrame.RV()), returnTranslation.getValue()); 
+		MOVE returnValue = new MOVE(new TEMP(curFrame.RV()), returnTranslation.getValue());
 
 		IR_Stm bodyStm = curFrame.procEntryExit1(body.getNoValue());
 		if (bodyStm == null) {
@@ -217,10 +227,10 @@ public class IntermediateVisitor implements TranslateVisitor {
 		}
 
 		ProcFragment fragment = new ProcFragment(bodyStm, curFrame);
-		
+
 		fragment.next = fragments;
 		fragments = fragment;
-		
+
 		// Debug out
 		irPrinter.prStm(bodyStm);
 
@@ -235,6 +245,8 @@ public class IntermediateVisitor implements TranslateVisitor {
 		}
 
 		return null;
+		// throw new Error(node.getClass().getCanonicalName() +
+		// ": Not implemented yet and/or not used");
 	}
 
 	/* -------------- /ITERATE PROGRAM/CLASSES ------------- */
@@ -250,10 +262,8 @@ public class IntermediateVisitor implements TranslateVisitor {
 		Translate condition = node.e.accept(this);
 		Translate body2 = node.s.accept(this);
 
-		IR_Stm r = new SEQ(new LABEL(testLabel), new SEQ(
-				condition.getConditional(body, doneLabel), new SEQ(new LABEL(
-						body), new SEQ(body2.getNoValue(), new SEQ(new JUMP(
-						testLabel), new LABEL(doneLabel))))));
+		IR_Stm r = new SEQ(new LABEL(testLabel), new SEQ(condition.getConditional(body, doneLabel), new SEQ(new LABEL(body), new SEQ(
+				body2.getNoValue(), new SEQ(new JUMP(testLabel), new LABEL(doneLabel))))));
 
 		return new TR_Nx(r);
 	}
@@ -270,16 +280,14 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 		IR_Stm res;
 
-		IR_Exp e1 = symbolTable.getAccess(curClass, curMethod, node.i.s).exp(
-				new TEMP(curFrame.FP()));
+		IR_Exp e1 = symbolTable.getAccess(curClass, curMethod, node.i.s).exp(new TEMP(curFrame.FP()));
 		Translate e2 = node.e.accept(this);
 
 		if (e1 instanceof TEMP) {
 			res = new MOVE(e1, e2.getValue());
 		} else {
 			Temp z = new Temp();
-			res = new MOVE(new MEM(new BINOP(BINOP.PLUS, new TEMP(z), e1)),
-					e2.getValue());
+			res = new MOVE(new MEM(new BINOP(BINOP.PLUS, new TEMP(z), e1)), e2.getValue());
 		}
 
 		return new TR_Nx(res);
@@ -288,6 +296,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 	@Override
 	public Translate visit(IntegerLiteral node) {
 		System.out.println("IR: Accept IntegerLiteral");
+
 		return new TR_Ex(new CONST(node.i));
 	}
 
@@ -299,6 +308,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 		Translate e2 = node.e2.accept(this);
 
 		IR_Exp r = new BINOP(BINOP.MINUS, e1.getValue(), e2.getValue());
+
 		return new TR_Ex(r);
 	}
 
@@ -310,6 +320,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 		Translate e2 = node.e2.accept(this);
 
 		IR_Exp r = new BINOP(BINOP.PLUS, e1.getValue(), e2.getValue());
+
 		return new TR_Ex(r);
 	}
 
@@ -320,6 +331,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 		Translate e2 = node.e2.accept(this);
 
 		IR_Exp r = new BINOP(BINOP.MUL, e1.getValue(), e2.getValue());
+
 		return new TR_Ex(r);
 	}
 
@@ -333,8 +345,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 		// first 'element' of array is the length
 		// so address of element relative to base is 1 + wordSize * index
-		IR_Exp offset = new BINOP(BINOP.MUL, index.getValue(), new CONST(
-				wordSize));
+		IR_Exp offset = new BINOP(BINOP.MUL, index.getValue(), new CONST(wordSize));
 		offset = new BINOP(BINOP.PLUS, new CONST(1), offset);
 		IR_Exp address = new BINOP(BINOP.PLUS, array.getValue(), offset);
 
@@ -365,8 +376,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 		// first 'element' of array is the length
 		// so address of element relative to base is 1 + wordSize * index
-		IR_Exp offset = new BINOP(BINOP.MUL, index.getValue(), new CONST(
-				MethodScope.getMotherFrame().wordSize()));
+		IR_Exp offset = new BINOP(BINOP.MUL, index.getValue(), new CONST(MethodScope.getMotherFrame().wordSize()));
 		offset = new BINOP(BINOP.PLUS, new CONST(1), offset);
 		IR_Exp address = new BINOP(BINOP.PLUS, array.getValue(), offset);
 
@@ -376,12 +386,14 @@ public class IntermediateVisitor implements TranslateVisitor {
 	@Override
 	public Translate visit(Block node) {
 		System.out.println("IR: Accept Block");
+
 		return node.sl.accept(this);
 	}
 
 	@Override
 	public Translate visit(False node) {
 		System.out.println("IR: Accept False");
+
 		return new TR_Ex(new CONST(0));
 	}
 
@@ -403,14 +415,12 @@ public class IntermediateVisitor implements TranslateVisitor {
 			a = symbolTable.getAccess(curClass, node.s);
 
 			if (a == null) {
-				throw new Error(
-						"Did not find identifier in method or class, something is b0rked");
+				throw new Error("Did not find identifier in method or class, something is b0rked");
 			}
 
-			Access thisAccess = symbolTable.getAccess(curClass, curMethod,
-					"this");
-			// referencing 'this' relative to address 0, is this correct?
-			res = a.exp(thisAccess.exp(new CONST(0)));
+			Access thisAccess = symbolTable.getAccess(curClass, curMethod, "this");
+
+			res = a.exp(thisAccess.exp(new TEMP(curFrame.FP())));
 		} else {
 			res = a.exp(new TEMP(curFrame.FP()));
 		}
@@ -423,8 +433,8 @@ public class IntermediateVisitor implements TranslateVisitor {
 	@Override
 	public Translate visit(IdentifierExp node) {
 		System.out.println("IR: Accept IdentifierExp");
-		IR_Exp res = symbolTable.getAccess(curClass, curMethod, node.s).exp(
-				new TEMP(curFrame.FP()));
+		IR_Exp res = symbolTable.getAccess(curClass, curMethod, node.s).exp(new TEMP(curFrame.FP()));
+
 		return new TR_Ex(res);
 	}
 
@@ -442,18 +452,15 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 		// If statement is singleton (no else clause)
 		if (elseClause == null) {
-			IR_Stm res = new SEQ(condition.getConditional(T, join), new SEQ(
-					new LABEL(T), new SEQ(thenClause.getNoValue(), new LABEL(
-							join))));
+			IR_Stm res = new SEQ(condition.getConditional(T, join), new SEQ(new LABEL(T), new SEQ(thenClause.getNoValue(), new LABEL(join))));
+
 			return new TR_Nx(res);
 		}
 		// If statement is on the form "if c then e1 else e2"
 		else {
-			IR_Stm res = new SEQ(condition.getConditional(T, F), new SEQ(
-					new LABEL(T),
-					new SEQ(thenClause.getNoValue(), new SEQ(new JUMP(join),
-							new SEQ(new LABEL(F), new SEQ(elseClause
-									.getNoValue(), new LABEL(join)))))));
+			IR_Stm res = new SEQ(condition.getConditional(T, F), new SEQ(new LABEL(T), new SEQ(thenClause.getNoValue(), new SEQ(new JUMP(join),
+					new SEQ(new LABEL(F), new SEQ(elseClause.getNoValue(), new LABEL(join)))))));
+
 			return new TR_Nx(res);
 		}
 	}
@@ -471,6 +478,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 	@Override
 	public Translate visit(True node) {
 		System.out.println("IR: Accept True");
+
 		return new TR_Ex(new CONST(1));
 	}
 
@@ -482,6 +490,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 		Translate e2 = node.e2.accept(this);
 
 		IR_Exp r = new BINOP(BINOP.AND, e1.getValue(), e2.getValue());
+
 		return new TR_Ex(r);
 	}
 
@@ -490,7 +499,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 		System.out.println("IR: Accept Call");
 
 		Translate exp = node.e.accept(this);
-		
+
 		IR_Exp thisPointer = exp.getValue();
 		IR_ExpList paramList = new IR_ExpList(thisPointer);
 		for (int i = 0; i < node.el.size(); i++) {
@@ -512,8 +521,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 		System.out.println("IR: Accept NewArray");
 
 		Translate l = node.e.accept(this);
-		IR_Exp numElem = new BINOP(BINOP.MUL, l.getValue(), new CONST(
-				wordSize / 4));
+		IR_Exp numElem = new BINOP(BINOP.MUL, l.getValue(), new CONST(wordSize / 4));
 
 		IR_ExpList args = new IR_ExpList(numElem);
 
@@ -534,20 +542,20 @@ public class IntermediateVisitor implements TranslateVisitor {
 		ClassScope c = symbolTable.get(node.i.s);
 		int heapSize = (c.getVariables().size() + 1) * curFrame.wordSize();
 		IR_ExpList params = new IR_ExpList(new CONST(heapSize));
-		IR_Exp allocatedHeap = curFrame.externalCall(
-				"externalNewObjectFunction", params);
+		IR_Exp allocatedHeap = curFrame.externalCall("externalNewObjectFunction", params);
 
 		/* iterate and set to 0/null */
 		IR_Stm it = null;
 		for (int i = 0; i < (c.getVariables().size() + 1); ++i) {
-			IR_Exp memLocation = new MEM(new BINOP(BINOP.PLUS, allocatedHeap,
-					new CONST(i * curFrame.wordSize())));
+			IR_Exp memLocation = new MEM(new BINOP(BINOP.PLUS, allocatedHeap, new CONST(i * curFrame.wordSize())));
 			IR_Stm init = new MOVE(memLocation, new CONST(0));
 			it = new SEQ(init, it);
-
 		}
 
+		System.out.println("it: " + it);
+
 		IR_Exp e = new ESEQ(it, allocatedHeap);
+
 		return new TR_Ex(e);
 	}
 
@@ -583,12 +591,14 @@ public class IntermediateVisitor implements TranslateVisitor {
 		// TODO returns the address of 'this', relative to what? what is the
 		// basepointer?
 		// this assumes that 'this' is in the heap with 0 as basepointer..?
+
 		return new TR_Ex(thisAccess.exp(new CONST(0)));
 	}
 
 	@Override
 	public Translate visit(VoidExp node) {
 		System.out.println("IR: Accept VoidExp");
+
 		throw new Error("Not implemented yet!");
 	}
 
