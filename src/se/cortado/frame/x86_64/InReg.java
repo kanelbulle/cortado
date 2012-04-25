@@ -18,6 +18,10 @@ public class InReg implements se.cortado.frame.Access {
 
 	@Override
 	public IR_Exp exp(IR_Exp basePointer) {
+		if (basePointer == null) {
+			throw new Error("basePointer == null in InReg");
+		}
+		
 		return new TEMP(register);
 	}
 }

@@ -13,6 +13,8 @@ public class TR_Ex extends Translate {
     		throw new Error("Initializing TR_Ex with e = null");
     	}
     	
+    	new Print(System.out).prExp(e);
+    	
         exp = e;
     }
 

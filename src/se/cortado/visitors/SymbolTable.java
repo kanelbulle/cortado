@@ -52,8 +52,14 @@ public class SymbolTable {
 	public Access getAccess(ClassDecl classDecl, MethodDecl methodDecl, String variableIdentifier) {
 		ClassScope cs = symbolTable.get(classDecl.i.s);
 		MethodScope ms = cs.getMethodMatching(methodDecl);
+		
+		Access a = ms.getAccess(variableIdentifier);
+		if (a == null) {
+			// no variable in method, look for variable in class fields
+			a = cs.getAccess(variableIdentifier);
+		}
 
-		return ms.getAccess(variableIdentifier);
+		return a;
 	}
 	
 	public Access getAccess(ClassDecl classDecl, String variableIdentifier) {

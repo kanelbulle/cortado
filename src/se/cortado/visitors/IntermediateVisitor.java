@@ -103,7 +103,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 			node.elementAt(i).accept(this);
 		}
 
-		throw new Error(node.getClass().getCanonicalName() + ": Not implemented yet and/or not used");
+		return null;
 	}
 
 	@Override
@@ -279,8 +279,9 @@ public class IntermediateVisitor implements TranslateVisitor {
 		System.out.println("IR: Accept Assign");
 
 		IR_Stm res;
-
-		IR_Exp e1 = symbolTable.getAccess(curClass, curMethod, node.i.s).exp(new TEMP(curFrame.FP()));
+		
+		Access variableAccess = symbolTable.getAccess(curClass, curMethod, node.i.s);
+		IR_Exp e1 = variableAccess.exp(new TEMP(curFrame.FP()));
 		Translate e2 = node.e.accept(this);
 
 		if (e1 instanceof TEMP) {
@@ -453,7 +454,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 		// If statement is singleton (no else clause)
 		if (elseClause == null) {
 			IR_Stm res = new SEQ(condition.getConditional(T, join), new SEQ(new LABEL(T), new SEQ(thenClause.getNoValue(), new LABEL(join))));
-
+			
 			return new TR_Nx(res);
 		}
 		// If statement is on the form "if c then e1 else e2"
@@ -549,10 +550,13 @@ public class IntermediateVisitor implements TranslateVisitor {
 		for (int i = 0; i < (c.getVariables().size() + 1); ++i) {
 			IR_Exp memLocation = new MEM(new BINOP(BINOP.PLUS, allocatedHeap, new CONST(i * curFrame.wordSize())));
 			IR_Stm init = new MOVE(memLocation, new CONST(0));
-			it = new SEQ(init, it);
-		}
 
-		System.out.println("it: " + it);
+			if (it == null) {
+				it = init;
+			} else {
+				it = new SEQ(init, it);
+			}
+		}
 
 		IR_Exp e = new ESEQ(it, allocatedHeap);
 

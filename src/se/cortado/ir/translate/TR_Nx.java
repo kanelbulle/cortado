@@ -3,6 +3,7 @@ package se.cortado.ir.translate;
 import se.cortado.ir.temp.Label;
 import se.cortado.ir.tree.IR_Stm;
 import se.cortado.ir.tree.IR_Exp;
+import se.cortado.ir.tree.Print;
 
 /** @author Samuel Wejeus */
 public class TR_Nx extends Translate {
@@ -13,6 +14,8 @@ public class TR_Nx extends Translate {
     	if (s == null) {
     		throw new Error("Initializing TR_Nx with s = null");
     	}
+    	
+    	new Print(System.out).prStm(s);
     	
 		stm = s;
 	}
