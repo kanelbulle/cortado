@@ -4,7 +4,6 @@ import se.cortado.frame.Access;
 import se.cortado.frame.Frame;
 import se.cortado.ir.temp.Label;
 import se.cortado.ir.temp.Temp;
-import se.cortado.ir.translate.Fragment;
 import se.cortado.ir.translate.ProcFragment;
 import se.cortado.ir.translate.TR_Ex;
 import se.cortado.ir.translate.TR_Nx;
@@ -68,7 +67,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 	private SymbolTable			symbolTable;
 
 	/* Stored fragments */
-	private Fragment			fragments;
+	private ProcFragment		fragments;
 
 	/* Temporaries used during construction */
 	private Frame				curFrame;
@@ -84,7 +83,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 		this.symbolTable = symbolTable;
 	}
 
-	public Fragment getResult() {
+	public ProcFragment getResult() {
 		return fragments;
 	}
 
@@ -95,7 +94,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 		node.mainClass.accept(this);
 		node.classDeclList.accept(this);
-		
+
 		return null;
 	}
 
@@ -221,7 +220,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 			// no return value, set zero instead
 			returnTranslation = new TR_Ex(new CONST(0));
 		}
-		
+
 		MOVE returnValue = new MOVE(new TEMP(curFrame.RV()), returnTranslation.getValue());
 
 		IR_Stm bodyStm = curFrame.procEntryExit1(body.getNoValue());
@@ -232,15 +231,25 @@ public class IntermediateVisitor implements TranslateVisitor {
 			bodyStm = new SEQ(bodyStm, returnValue);
 		}
 
-		ProcFragment fragment = new ProcFragment(bodyStm, curFrame);
+		// get the label name for this method
+		ClassScope cs = symbolTable.get(curClass.i.s);
+		MethodScope ms = cs.getMethodMatching(node);
+		String labelname;
+		if (curClass instanceof MainClass) {
+			labelname = "main";
+		} else {
+			labelname = curClass.i.s + "$" + ms.getLabelName();
+		}
+		
+		ProcFragment fragment = new ProcFragment(bodyStm, curFrame, labelname);
 
 		fragment.next = fragments;
 		fragments = fragment;
 
 		// debug print
-		System.out.println(node.identifier.s);
-		irPrinter.prStm(bodyStm);
-		System.out.println();
+//		System.out.println(node.identifier.s);
+//		irPrinter.prStm(bodyStm);
+//		System.out.println();
 
 		return body;
 	}
@@ -287,7 +296,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 		System.out.println("IR: Accept Assign");
 
 		IR_Stm res;
-		
+
 		Access variableAccess = symbolTable.getAccess(curClass, curMethod, node.i.s);
 		IR_Exp e1 = variableAccess.exp(new TEMP(curFrame.FP()));
 		Translate e2 = node.e.accept(this);
@@ -462,7 +471,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 		// If statement is singleton (no else clause)
 		if (elseClause == null) {
 			IR_Stm res = new SEQ(condition.getConditional(T, join), new SEQ(new LABEL(T), new SEQ(thenClause.getNoValue(), new LABEL(join))));
-			
+
 			return new TR_Nx(res);
 		}
 		// If statement is on the form "if c then e1 else e2"
@@ -551,7 +560,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 		ClassScope c = symbolTable.get(node.i.s);
 		int heapSize = (c.getVariables().size() + 1) * curFrame.wordSize();
 		IR_ExpList params = new IR_ExpList(new CONST(heapSize));
-		IR_Exp allocatedHeap = curFrame.externalCall("externalNewObjectFunction", params);
+		IR_Exp allocatedHeap = curFrame.externalCall("_minijavalib_allocate", params);
 
 		/* iterate and set to 0/null */
 		IR_Stm it = null;

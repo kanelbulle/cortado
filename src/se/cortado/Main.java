@@ -3,8 +3,18 @@ package se.cortado;
 import java.io.FileReader;
 
 import java_cup.runtime.Symbol;
-import se.cortado.visitors.*;
+import se.cortado.ir.canon.BasicBlocks;
+import se.cortado.ir.canon.Canon;
+import se.cortado.ir.canon.TraceSchedule;
+import se.cortado.ir.translate.ProcFragment;
+import se.cortado.ir.tree.IR_StmList;
+import se.cortado.ir.tree.Print;
 import se.cortado.syntaxtree.Program;
+import se.cortado.visitors.ASTPrintVisitor;
+import se.cortado.visitors.IntermediateVisitor;
+import se.cortado.visitors.ScopeVisitor;
+import se.cortado.visitors.SlowTypeVisitor;
+import se.cortado.visitors.SymbolTable;
 
 
 public class Main {
@@ -48,6 +58,27 @@ public class Main {
 			
 			System.out.println("==================== DOING DA IR CONVERSION MAN ====================");
 			irVisitor.visit(prog);
+			
+			ProcFragment fragments = irVisitor.getResult();
+			while (fragments != null) {
+				System.out.println(fragments.labelName);
+				IR_StmList list = Canon.linearize(fragments.body);
+				BasicBlocks bb = new BasicBlocks(list);
+				TraceSchedule ts = new TraceSchedule(bb);
+				list = ts.stms;
+				
+				Print print = new Print(System.out);
+				
+				while (list != null) {
+					print.prStm(list.head);
+					System.out.println();
+					list = list.tail;
+				}
+				
+				System.out.println();
+				
+				fragments = (ProcFragment) fragments.next;
+			}
 
 		} catch (Exception e) {
 			System.out.println("NO PARSE FOR YOU!");
