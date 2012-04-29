@@ -16,6 +16,7 @@ import se.cortado.ir.tree.IR_Exp;
 import se.cortado.ir.tree.IR_ExpList;
 import se.cortado.ir.tree.IR_Stm;
 import se.cortado.ir.tree.NAME;
+import se.cortado.x86_64.Codegen;
 
 public class Frame implements se.cortado.frame.Frame {
 	List<Access> formals = new ArrayList<Access>();
@@ -148,8 +149,7 @@ public class Frame implements se.cortado.frame.Frame {
 
 	@Override
 	public List<Instr> codegen(IR_Stm stm) {
-		// TODO Auto-generated method stub
-		return null;
+		return new Codegen().codegen(stm);
 	}
 
 	@Override
