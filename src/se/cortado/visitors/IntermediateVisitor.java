@@ -597,11 +597,10 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 		Translate tr = node.e.accept(this);
 
-		NAME printName = new NAME(new Label("_minijavalib_println"));
 		IR_ExpList args = new IR_ExpList(tr.getValue());
-		CALL printCall = new CALL(printName, args);
+		IR_Exp call = curFrame.externalCall("_minijavalib_println", args);
 
-		return new TR_Ex(printCall);
+		return new TR_Ex(call);
 	}
 
 	@Override
@@ -613,7 +612,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 		// basepointer?
 		// this assumes that 'this' is in the heap with 0 as basepointer..?
 
-		return new TR_Ex(thisAccess.exp(new CONST(0)));
+		return new TR_Ex(thisAccess.exp(new TEMP(curFrame.FP())));
 	}
 
 	@Override
