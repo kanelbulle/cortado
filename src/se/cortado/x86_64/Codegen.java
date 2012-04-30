@@ -45,6 +45,10 @@ public class Codegen {
 		return new TempList(h, null);
 	}
 
+	private TempList L(Temp t1, Temp t2) {
+		return new TempList(t1, new TempList(t2, null));
+	}
+
 	private TempList L(Temp h, TempList t) {
 		return new TempList(h, t);
 	}
@@ -84,10 +88,10 @@ public class Codegen {
 
 					if (b.binop == BINOP.PLUS) {
 						String str = String.format("movl $%d, %d(`d0)", constSrc.value, c.value);
-						emit(new OPER(str, L(t.temp, null), null));
+						emit(new OPER(str, L(t.temp), null));
 					} else if (b.binop == BINOP.MINUS) {
 						String str = String.format("movl $%d, -%d(`d0)", constSrc.value, c.value);
-						emit(new OPER(str, L(t.temp, null), null));
+						emit(new OPER(str, L(t.temp), null));
 					}
 				}
 			}
@@ -100,7 +104,7 @@ public class Codegen {
 			// covers 3 nodes
 			Temp dstTemp = munchExp(dst);
 			Temp srcTemp = munchExp(src);
-			emit(new OPER("movl d0, s0", L(dstTemp, null), L(srcTemp, null)));
+			emit(new OPER("movl d0, s0", L(dstTemp), L(srcTemp)));
 		}
 	}
 
@@ -130,14 +134,14 @@ public class Codegen {
 	 * munchCJUMP
 	 */
 	private void munchCJUMP(int relop, IR_Exp left, IR_Exp right, Label iftrue, Label iffalse) {
-
+		
 	}
 
 	/*
 	 * munchLABEL
 	 */
 	private void munchLABEL(Label label) {
-
+		emit(new se.cortado.assem.LABEL("", label));
 	}
 
 	private Temp munchExp(IR_Exp e) {
@@ -192,13 +196,67 @@ public class Codegen {
 	 * munchBINOP
 	 */
 	private Temp munchBINOP(int binop, IR_Exp left, IR_Exp right) {
+		String instr;
+		switch (binop) {
+		case BINOP.PLUS:
+			instr = "addl";
+			break;
+		case BINOP.MINUS:
+			instr = "subl";
+			break;
+		case BINOP.MUL:
+			instr = "imull";
+			break;
+		case BINOP.DIV:
+			instr = "idivl";
+			break;
+		case BINOP.AND:
+			instr = "andl";
+			break;
+		case BINOP.OR:
+			instr = "orl";
+			break;
+		case BINOP.LSHIFT:
+			instr = "shll";
+			break;
+		case BINOP.RSHIFT:
+			instr = "shrl";
+			break;
+		case BINOP.ARSHIFT:
+			instr = "sarl";
+			break;
+		case BINOP.XOR:
+			instr = "xorl";
+			break;
+		default:
+			throw new Error("Unknown binop: " + binop);
+		}
+
 		if (left instanceof TEMP && right instanceof CONST) {
+			// covers 3 nodes
 			Temp t = munchExp(left);
 			CONST c = (CONST) right;
 
+			String assem = String.format("%s $%d, `d0", instr, c.value);
+			emit(new OPER(assem, L(t), L(t)));
+			return t;
+		} if (left instanceof TEMP && right instanceof TEMP) {
+			// covers 3 nodes
+			TEMP l = (TEMP) left;
+			TEMP r = (TEMP) right;
+			
+			String assem = String.format("%s `s1, `d0", instr);
+			emit(new OPER(assem, L(l.temp), L(r.temp)));
+			return l.temp;
+		} else {
+			// covers 1 node
+			Temp l = munchExp(left);
+			Temp r = munchExp(right);
+			
+			String assem = String.format("%s `s1, `d0", instr);
+			emit(new OPER(assem, L(l), L(r)));
+			return l;
 		}
-
-		return null;
 	}
 
 	/*
@@ -228,7 +286,7 @@ public class Codegen {
 			Temp t = munchExp(exp);
 			emit(new se.cortado.assem.MOVE("movl `(s0), `d0", resTemp, t));
 		}
-		
+
 		return resTemp;
 	}
 
@@ -236,8 +294,9 @@ public class Codegen {
 	 * munchNAME
 	 */
 	private Temp munchNAME(Label label) {
-		
-		return null;
+		Temp t = new Temp();
+		emit(new OPER("movl " + label.toString() + ", `d0", L(t), null));
+		return t;
 	}
 
 }
