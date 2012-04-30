@@ -1,6 +1,7 @@
 package se.cortado.frame.x86_64;
 
 import se.cortado.ir.temp.Temp;
+import se.cortado.ir.temp.TempList;
 
 @SuppressWarnings("unused")
 public class Hardware {
@@ -43,5 +44,13 @@ public class Hardware {
 
 	public static Temp getArgReg(int index) {
 		return argRegs[index];
+	}
+	
+	public static TempList calleeSavedList() {
+		TempList tl = new TempList(calleeSaves[0], null);
+		for (int i = 1; i < calleeSaves.length; i++) {
+			tl = new TempList(calleeSaves[i], tl);
+		}
+		return tl;
 	}
 }

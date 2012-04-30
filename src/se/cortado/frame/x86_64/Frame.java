@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.cortado.assem.Instr;
+import se.cortado.assem.OPER;
 import se.cortado.frame.Access;
 import se.cortado.frame.Proc;
 import se.cortado.frame.Record;
@@ -19,14 +20,16 @@ import se.cortado.ir.tree.NAME;
 import se.cortado.x86_64.Codegen;
 
 public class Frame implements se.cortado.frame.Frame {
-	List<Access> formals = new ArrayList<Access>();
+	List<Access>	formals			= new ArrayList<Access>();
 
-	Label name;
-	int numFormals;
-	int numLocals;
+	Label			name;
+	int				numFormals;
+	int				numLocals;
 
-	final int maxInRegArgs = 6;
-	int maxOutgoing = 6;
+	final int		maxInRegArgs	= 6;
+	int				maxOutgoing		= 6;
+
+	static TempList	returnSink		= new TempList(Hardware.FP, new TempList(Hardware.RV, new TempList(Hardware.SP, Hardware.calleeSavedList())));
 
 	public Frame() {
 
@@ -44,8 +47,7 @@ public class Frame implements se.cortado.frame.Frame {
 				a = new InReg(Hardware.getArgReg(i));
 			} else {
 				// first overflowed arg at +16, second at +24, third at +32...
-				a = new InFrame(wordSize() * (i - maxInRegArgs) + 2
-						* wordSize());
+				a = new InFrame(wordSize() * (i - maxInRegArgs) + 2 * wordSize());
 			}
 
 			formals.add(a);
@@ -132,19 +134,14 @@ public class Frame implements se.cortado.frame.Frame {
 
 	@Override
 	public List<Instr> procEntryExit2(List<Instr> inst) {
-		// TODO Auto-generated method stub
-		return null;
+		inst.add(new OPER("", null, returnSink));
+
+		return inst;
 	}
 
 	@Override
 	public Proc procEntryExit3(List<Instr> body) {
-		// generate method label
-//		String labelName = curClass.i.s + "$" + ms.getLabelName();
-//		LABEL methodLabel = new LABEL(new Label(labelName));
-		
-		
-		
-		return null;
+		return new Proc("PROCEDURE " + name.toString() + "\n", body, "END " + name.toString() + "\n");
 	}
 
 	@Override
