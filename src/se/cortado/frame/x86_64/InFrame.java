@@ -27,6 +27,6 @@ class InFrame implements se.cortado.frame.Access {
 			return new MEM(basePointer);
 		else
 			return new MEM(
-					new BINOP(BINOP.PLUS, basePointer, new CONST(offset)));
+					new BINOP(BINOP.MINUS, basePointer, new CONST(offset)));
 	}
 }
