@@ -8,10 +8,6 @@ public class EXP extends IR_Stm {
 		exp = e;
 	}
 	
-//	public abstract ExpList kids();
-	
-//	public abstract Stm build(ExpList kids);
-	
 	public IR_ExpList kids() {
 		return new IR_ExpList(exp, null);
 	}
