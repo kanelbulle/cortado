@@ -134,7 +134,87 @@ public class Codegen {
 	 * munchCJUMP
 	 */
 	private void munchCJUMP(int relop, IR_Exp left, IR_Exp right, Label iftrue, Label iffalse) {
-		
+		String instr;
+		switch (relop) {
+		case CJUMP.EQ:
+			instr = "je";
+			break;
+		case CJUMP.NE:
+			instr = "jne";
+			break;
+		case CJUMP.LT:
+			instr = "jl";
+			break;
+		case CJUMP.GT:
+			instr = "jg";
+			break;
+		case CJUMP.LE:
+			instr = "jle";
+			break;
+		case CJUMP.GE:
+			instr = "jge";
+			break;
+		case CJUMP.ULT:
+			instr = "jb";
+			break;
+		case CJUMP.UGT:
+			instr = "ja";
+			break;
+		case CJUMP.ULE:
+			instr = "jbe";
+			break;
+		case CJUMP.UGE:
+			instr = "jae";
+			break;
+		default:
+			throw new Error("Unknown relop in CJUMP: " + relop);
+		}
+
+		// CJUMP is always followed by its false label
+		// cmpl seems to have the format 'cmpl operand2 operand1'
+
+		LabelList destinations = new LabelList(iftrue, new LabelList(iffalse));
+		if (left instanceof MEM && right instanceof CONST && ((MEM) left).exp instanceof BINOP && ((BINOP) ((MEM) left).exp).left instanceof TEMP
+				&& ((BINOP) ((MEM) left).exp).right instanceof CONST && ((BINOP) ((MEM) left).exp).binop == BINOP.PLUS
+				|| ((BINOP) ((MEM) left).exp).binop == BINOP.MINUS) {
+			// covers 6 nodes
+			MEM l = (MEM) left;
+			CONST r = (CONST) right;
+			BINOP b = (BINOP) l.exp;
+			TEMP bl = (TEMP) b.left;
+			CONST br = (CONST) b.right;
+
+			String bop = b.binop == BINOP.PLUS ? "" : "-";
+			String assem = String.format("cmpl $%d, `%s%d(s0)", r.value, bop, br.value);
+			emit(new OPER(assem, null, L(bl.temp)));
+			assem = instr + " " + iftrue.toString();
+			emit(new OPER(assem, null, null, destinations));
+		} else if (left instanceof TEMP && right instanceof CONST) {
+			// covers 3 nodes
+			TEMP l = (TEMP) left;
+			CONST c = (CONST) right;
+
+			String assem = String.format("cmpl $%d, `s0", c.value);
+			emit(new OPER(assem, null, L(l.temp)));
+			assem = instr + " " + iftrue.toString();
+			emit(new OPER(assem, null, null, destinations));
+		} else if (left instanceof TEMP && right instanceof TEMP) {
+			// covers 3 nodes
+			TEMP l = (TEMP) left;
+			TEMP r = (TEMP) right;
+
+			emit(new OPER("cmpl `s0, `s1", null, L(l.temp, r.temp)));
+			String assem = instr + " " + iftrue.toString();
+			emit(new OPER(assem, null, null, destinations));
+		} else {
+			// covers 1 node (kinda)
+			Temp l = munchExp(left);
+			Temp r = munchExp(right);
+
+			emit(new OPER("cmpl `s0, `s1", null, L(l, r)));
+			String assem = instr + " " + iftrue.toString();
+			emit(new OPER(assem, null, null, destinations));
+		}
 	}
 
 	/*
@@ -172,6 +252,7 @@ public class Codegen {
 	 * munchCALL
 	 */
 	private Temp munchCALL(IR_Exp func, IR_ExpList args) {
+		
 		return null;
 	}
 
@@ -232,6 +313,8 @@ public class Codegen {
 			throw new Error("Unknown binop: " + binop);
 		}
 
+		// FIXME 'idivl' behaves different compared to the other ops
+
 		if (left instanceof TEMP && right instanceof CONST) {
 			// covers 3 nodes
 			Temp t = munchExp(left);
@@ -240,11 +323,12 @@ public class Codegen {
 			String assem = String.format("%s $%d, `d0", instr, c.value);
 			emit(new OPER(assem, L(t), L(t)));
 			return t;
-		} if (left instanceof TEMP && right instanceof TEMP) {
+		}
+		if (left instanceof TEMP && right instanceof TEMP) {
 			// covers 3 nodes
 			TEMP l = (TEMP) left;
 			TEMP r = (TEMP) right;
-			
+
 			String assem = String.format("%s `s1, `d0", instr);
 			emit(new OPER(assem, L(l.temp), L(r.temp)));
 			return l.temp;
@@ -252,7 +336,7 @@ public class Codegen {
 			// covers 1 node
 			Temp l = munchExp(left);
 			Temp r = munchExp(right);
-			
+
 			String assem = String.format("%s `s1, `d0", instr);
 			emit(new OPER(assem, L(l), L(r)));
 			return l;
