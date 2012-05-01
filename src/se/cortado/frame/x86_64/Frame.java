@@ -102,7 +102,7 @@ public class Frame implements se.cortado.frame.Frame {
 			return new InReg(Hardware.getArgReg(index - 1));
 		} else {
 			// offset = -8, -16, -24 ...
-			return new InFrame(-wordSize() * (index - maxInRegArgs));
+			return new InFrame(-size() - wordSize() * (index - maxInRegArgs));
 		}
 	}
 
@@ -146,7 +146,7 @@ public class Frame implements se.cortado.frame.Frame {
 
 	@Override
 	public List<Instr> codegen(IR_Stm stm) {
-		return new Codegen().codegen(stm);
+		return new Codegen(this).codegen(stm);
 	}
 
 	@Override
