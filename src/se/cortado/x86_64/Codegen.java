@@ -5,6 +5,9 @@ import java.util.List;
 
 import se.cortado.assem.Instr;
 import se.cortado.assem.OPER;
+import se.cortado.frame.Access;
+import se.cortado.frame.Frame;
+import se.cortado.frame.x86_64.Hardware;
 import se.cortado.ir.temp.Label;
 import se.cortado.ir.temp.LabelList;
 import se.cortado.ir.temp.Temp;
@@ -26,9 +29,11 @@ import se.cortado.ir.tree.TEMP;
 
 public class Codegen {
 	private List<Instr>	ilist;
+	private Frame		frame;
 
-	public Codegen() {
+	public Codegen(Frame frame) {
 		ilist = new ArrayList<Instr>();
+		this.frame = frame;
 	}
 
 	public List<Instr> codegen(IR_Stm s) {
@@ -95,6 +100,18 @@ public class Codegen {
 					}
 				}
 			}
+		} else if (dst instanceof TEMP && src instanceof CALL) {
+			// covers 3 nodes
+			// function call, put result of call into the TEMP
+			
+			TEMP t = (TEMP) dst;
+			CALL call = (CALL) src;
+			
+			Temp funcAddr = munchExp(call.func);
+			TempList argTemps = munchArgs(0, call.args);
+			emit(new OPER("callq `s0", Hardware.calldefs, L(funcAddr, argTemps)));
+			// move return value to specified destination
+			emit(new se.cortado.assem.MOVE("movl `d0, `s0", t.temp, Hardware.RV));
 		} else if (dst instanceof TEMP && src instanceof CONST) {
 			// covers 3 nodes
 			TEMP t = (TEMP) dst;
@@ -112,7 +129,15 @@ public class Codegen {
 	 * munchEXP
 	 */
 	private void munchEXP(IR_Exp exp) {
-		munchExp(exp);
+		if (exp instanceof CALL) {
+			// procedure call
+			CALL call = (CALL) exp;
+			Temp c = munchExp(call.func);
+			TempList tl = munchArgs(0, call.args);
+			emit(new OPER("callq `s0", Hardware.calldefs, L(c, tl)));
+		} else {
+			munchExp(exp);
+		}
 	}
 
 	/*
@@ -252,7 +277,6 @@ public class Codegen {
 	 * munchCALL
 	 */
 	private Temp munchCALL(IR_Exp func, IR_ExpList args) {
-		
 		return null;
 	}
 
@@ -381,6 +405,35 @@ public class Codegen {
 		Temp t = new Temp();
 		emit(new OPER("movl " + label.toString() + ", `d0", L(t), null));
 		return t;
+	}
+
+	/*
+	 * helpers
+	 */
+
+	private TempList munchArgs(int n, IR_ExpList list) {
+		// recursive cause its funny
+		if (list != null) {
+			// could optimize cases where list.head is CONST or TEMP
+			
+			// munch the argument to get a temp containing the result
+			Temp t = munchExp(list.head);
+			// get out argument position, may be a TEMP or stack position
+			Access access = frame.accessOutgoing(n);
+			IR_Exp outLoc = access.exp(new TEMP(frame.FP()));
+			
+			// munchMove contains code for moving stuff into registers, reuse
+			munchMOVE(outLoc, new TEMP(t));
+			
+			if (outLoc instanceof TEMP) {
+				TEMP res = (TEMP) outLoc;
+				return new TempList(res.temp, munchArgs(++n, list.tail));
+			} else {
+				return munchArgs(++n, list.tail);
+			}
+		} else {
+			return null;
+		}
 	}
 
 }
