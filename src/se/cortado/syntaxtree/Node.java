@@ -1,5 +1,5 @@
 package se.cortado.syntaxtree;
 
 public class Node {
-	public int line;
+	public int line = -1;
 }
