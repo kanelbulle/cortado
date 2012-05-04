@@ -50,7 +50,7 @@ public class MethodScope {
 		// add "this" access
 		Access thisAccess = frame.allocLocal(false);
 		accesses.put("this", thisAccess);
-
+		
 		parameters = new FormalList();
 		variables = new HashMap<String, Type>();
 		this.returnType = returnType;

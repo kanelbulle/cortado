@@ -16,6 +16,7 @@ import se.cortado.ir.tree.CALL;
 import se.cortado.ir.tree.IR_Exp;
 import se.cortado.ir.tree.IR_ExpList;
 import se.cortado.ir.tree.IR_Stm;
+import se.cortado.ir.tree.IR_StmList;
 import se.cortado.ir.tree.NAME;
 import se.cortado.x86_64.Codegen;
 
@@ -30,6 +31,8 @@ public class Frame implements se.cortado.frame.Frame {
 	int				maxOutgoing		= 6;
 
 	static TempList	returnSink		= new TempList(Hardware.FP, new TempList(Hardware.RV, new TempList(Hardware.SP, Hardware.calleeSavedList())));
+
+	IR_StmList		moveArguments;
 
 	public Frame() {
 
