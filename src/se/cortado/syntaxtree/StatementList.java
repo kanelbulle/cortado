@@ -7,7 +7,7 @@ import se.cortado.visitors.TranslateVisitor;
 import se.cortado.visitors.TypeVisitor;
 import se.cortado.visitors.Visitor;
 
-public class StatementList {
+public class StatementList extends Node {
 	private Vector<Statement> list;
 
 	public StatementList() {

@@ -7,7 +7,7 @@ import se.cortado.visitors.TranslateVisitor;
 import se.cortado.visitors.TypeVisitor;
 import se.cortado.visitors.Visitor;
 
-public class MethodDeclList {
+public class MethodDeclList extends Node {
 	private Vector<MethodDecl> list;
 
 	public MethodDeclList() {

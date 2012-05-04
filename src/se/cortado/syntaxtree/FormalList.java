@@ -7,7 +7,7 @@ import se.cortado.visitors.TranslateVisitor;
 import se.cortado.visitors.TypeVisitor;
 import se.cortado.visitors.Visitor;
 
-public class FormalList {
+public class FormalList extends Node {
    private Vector<Formal> list;
 
    public FormalList() {
