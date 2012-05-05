@@ -36,8 +36,7 @@ public class Main {
 			System.out.println("==================== BADASS SCOPE CHECKING! ====================");
 			scopeVisitor.visit(prog);
 			if (scopeVisitor.errorOccurred) {
-				System.out.println("Scope check failed with errors.");
-				return;
+				throw new Exception("Scope check failed with errors.");
 			}
 
 			System.out.println("==================== GOT EPIC SYMBOL TABLE ====================");
@@ -47,8 +46,7 @@ public class Main {
 			typeVisitor.setSymbolTable(symbolTable);
 			typeVisitor.visit(prog);
 			if (typeVisitor.errorOccurred) {
-				System.out.println("Type check failed with errors.");
-				return;
+				throw new Exception("Type check failed with errors.");
 			}
 
 			System.out.println("==================== DOING DA IR CONVERSION MAN ====================");
@@ -56,13 +54,13 @@ public class Main {
 			ProcFragment fragments = irVisitor.getResult();
 
 			System.out.println("==================== DOING DA CANONICALIZATION DUDE ====================");
-
 			Canonicalizer canon = new Canonicalizer(true);
 			canon.canonicalize(fragments);
 
 		} catch (Exception e) {
-			System.out.println("NO PARSE FOR YOU!");
-			e.printStackTrace();
+			System.out.println("ERROR: " + e.getMessage());
+//			e.printStackTrace();
+			System.exit(-1);
 		}
 	}
 }
