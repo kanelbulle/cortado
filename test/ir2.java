@@ -1,4 +1,4 @@
-class Superklasse {
+asdfclass Superklasse {
 	public static void main(String[] args) {
 
 	}
