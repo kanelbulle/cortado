@@ -97,7 +97,7 @@ out[n] &= \bigcup_{s \in succ[n]} in[s]
 
 Here $in[n]/out[n]$ is edges, $use[n] =$ a right hand side \textit{usage}, $def[n]$ is a variable definition and $succ[n]$ is the successor node of $n$. The equation given above is executed for each node and the algorithm terminates when, for a node, both its in and out edges satisfy the equation. 
 
-The result of this procedure is an \textit{interference graph} which is a graph consisting of the variables discovered in the control-flow graph and two nodes (i.e. variables) are connected if, and only if, they are \textit{live} at the same time.
+The result of this procedure is an \textit{interference graph} which is a graph consisting of the variables discovered in the control-flow graph and two nodes (i.e. variables) are connected if, and only if, they are \textit{live} at the same time. The reader should note that this graph could, and most likely will, be disconnected.
 
 \subsection{Graph coloring}
 During the finalization of the interference graph it is still assumed that the number of registers is unlimited, what we done so far is simply to determine the minimal subset of variables than \textit{must} be live at each point in time.
