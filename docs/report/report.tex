@@ -100,7 +100,7 @@ Here $in[n]/out[n]$ is edges, $use[n] =$ a right hand side \textit{usage}, $def[
 The result of this procedure is an \textit{interference graph} which is a graph consisting of the variables discovered in the control-flow graph and two nodes (i.e. variables) are connected if, and only if, they are \textit{live} at the same time. The reader should note that this graph could, and most likely will, be disconnected.
 
 \subsection{Graph coloring}
-During the finalization of the interference graph it is still assumed that the number of registers is unlimited, what we done so far is simply to determine the minimal subset of variables than \textit{must} be live at each point in time.
+During the finalization of the interference graph it is still assumed that the number of registers is unlimited, what we done so far is simply to determine the minimal subset of variables than \textit{must} be live at each point in time. For this we use the \textit{graph coloring} procedure evaluated with \textit{K} colors, where \textit{K} is the number of registers available. If we allocate the registers according to the graph coloring scheme we will be guaranteed that variables that are live at the same time never will interfere with each other by, possibly, overwrite each others values.
 
 \section{Conclusions}
 
