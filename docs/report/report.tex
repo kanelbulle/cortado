@@ -88,7 +88,7 @@ Through out the compilation process so far virtual temporaries have been used to
 
 This problem is solved using \textit{flow control}. When flow control starts the input for this stages is a linear list of \texttt{Assem} instructions. The flow analysis is done in two parts: First, the control flow of the \texttt{Assem} program is analyzed by traversing the statements backwards, producing a control-flow graph. The control-flow graph is simply a graph representation of \textit{"how"} the \texttt{Assem} program executes and consists of nodes corresponding to each statement (or instruction) and directed edges between them modeling the flow of the program.
 
-Second part is what is called \textit{liveness analysis}. What liveness does is to traverse the control-graph determining at each node the set of variables that needs to be \textit{live} at that point so that future points that potentially use those variables can be guaranteed correct data. The mathematical definition for liveness at a node is listen below:
+Second part is what is called \textit{liveness analysis}. Liveness analysis could be used for various kinds of optimizations but here our goal is to focus on what set of variable is live at the same time. What liveness now does is to traverse the control-graph determining at each node the set of variables that needs to be \textit{live} at that point so that future points that potentially use those variables can be guaranteed correct data. The mathematical definition for liveness at a node is listen below:
 
 \begin{align*}
 in[n] &= use[n] \cup (out[n] - def[n]) \\
