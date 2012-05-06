@@ -162,4 +162,15 @@ public interface Frame
     */
     public TempList registers();
     
+
+	/**
+	 * @return the maxCallParams
+	 */
+	public int getMaxCallParams();
+
+	/**
+	 * @param maxCallParams the maxCallParams to set
+	 */
+	public void setMaxCallParams(int maxCallParams);
+    
 };

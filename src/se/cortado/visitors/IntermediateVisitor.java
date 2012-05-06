@@ -243,7 +243,8 @@ public class IntermediateVisitor implements TranslateVisitor {
 			labelname = curClass.i.s + "$" + ms.getLabelName();
 		}
 
-		ProcFragment fragment = new ProcFragment(bodyStm, curFrame, labelname, maxCallParams);
+		ProcFragment fragment = new ProcFragment(bodyStm, curFrame, labelname);
+		curFrame.setMaxCallParams(maxCallParams);
 		maxCallParams = 0;
 
 		fragment.next = fragments;

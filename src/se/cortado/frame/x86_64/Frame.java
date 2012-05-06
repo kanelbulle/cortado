@@ -30,6 +30,8 @@ public class Frame implements se.cortado.frame.Frame {
 	final int		maxInRegArgs	= 6;
 	int				maxOutgoing		= 6;
 
+	int				maxCallParams;
+
 	static TempList	returnSink		= new TempList(Hardware.FP, new TempList(Hardware.RV, new TempList(Hardware.SP, Hardware.calleeSavedList())));
 
 	IR_StmList		moveArguments;
@@ -131,8 +133,7 @@ public class Frame implements se.cortado.frame.Frame {
 
 	@Override
 	public IR_Stm procEntryExit1(IR_Stm body) {
-		
-		
+
 		return body;
 	}
 
@@ -146,10 +147,9 @@ public class Frame implements se.cortado.frame.Frame {
 	@Override
 	public Proc procEntryExit3(List<Instr> body) {
 		// append prologue
-		
-		
+
 		// append epilogue
-		
+
 		return new Proc("PROCEDURE " + name.toString() + "\n", body, "END " + name.toString() + "\n");
 	}
 
@@ -170,6 +170,23 @@ public class Frame implements se.cortado.frame.Frame {
 	public TempList registers() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+
+	/**
+	 * @return the maxCallParams
+	 */
+	@Override
+	public int getMaxCallParams() {
+		return maxCallParams;
+	}
+
+	/**
+	 * @param maxCallParams the maxCallParams to set
+	 */
+	@Override
+	public void setMaxCallParams(int maxCallParams) {
+		this.maxCallParams = maxCallParams;
 	}
 
 }
