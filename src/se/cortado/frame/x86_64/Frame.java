@@ -1,9 +1,11 @@
 package se.cortado.frame.x86_64;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import se.cortado.assem.Instr;
+import se.cortado.assem.MOVE;
 import se.cortado.assem.OPER;
 import se.cortado.frame.Access;
 import se.cortado.frame.Proc;
@@ -146,9 +148,28 @@ public class Frame implements se.cortado.frame.Frame {
 
 	@Override
 	public Proc procEntryExit3(List<Instr> body) {
-		// append prologue
+		// prologue
+		// push all callee saved regs
+		List<Instr> prologue = new ArrayList<Instr>();
+		for (Temp t : Hardware.calleeSaves) {
+			prologue.add(new OPER("pushq `s0", null, new TempList(t, null)));
+		}
+		
+		// decrement stack pointer
+		prologue.add(new OPER("subq $" + size() + ", %`d0", new TempList(Hardware.SP, null), null));
 
-		// append epilogue
+		// epilogue
+		List<Instr> epilogue = new ArrayList<Instr>();
+		for (int i = Hardware.calleeSaves.length - 1; i >= 0; i--) {
+			Temp t = Hardware.calleeSaves[i];
+			epilogue.add(new OPER("popq `d0", null, new TempList(t, null)));
+		}
+		
+		// increment stack pointer
+		prologue.add(new OPER("addq $" + size() + ", %`d0", new TempList(Hardware.SP, null), null));
+		
+		body.addAll(0, prologue);
+		body.addAll(epilogue);
 
 		return new Proc("PROCEDURE " + name.toString() + "\n", body, "END " + name.toString() + "\n");
 	}

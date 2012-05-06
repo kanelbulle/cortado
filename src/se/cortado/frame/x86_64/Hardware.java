@@ -33,7 +33,7 @@ public class Hardware {
 
 	public static final Temp[]	argRegs		= { rdi, rsi, rdx, rcx, r8, r9 };
 
-	public static final Temp[]	calleeSaves	= { rbx, rsp, rbp, r12, r13, r14, r15 };
+	public static final Temp[]	calleeSaves	= { rbp, rbx, rsp, r12, r13, r14, r15 };
 
 	public static final Temp[]	callerSaves	= { rax, rcx, rdx, rsi, rdi, r8, r9, r10, r11 };
 
