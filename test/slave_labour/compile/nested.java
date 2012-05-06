@@ -1,22 +1,3 @@
-// EXT:!ISC
-// EXT:!ICG
-// EXT:!JVM
-// EXT:!SPARC
-// EXT:!MIPS
-// EXT:!ARM
-// EXT:!X86
-// EXT:!SPILL
-// EXT:!LONG
-// EXT:!IWE
-// EXT:!NBD
-// EXT:!ABC
-// EXT:!CLE
-// EXT:!CGT
-// EXT:!CGE
-// EXT:!CEQ
-// EXT:!CNE
-// EXT:!BDJ
-// EXT:!INT32
 
 class Nested {
 

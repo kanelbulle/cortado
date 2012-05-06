@@ -55,7 +55,7 @@ public class Main {
 
 			System.out.println("==================== DOING DA CANONICALIZATION DUDE ====================");
 			Canonicalizer canon = new Canonicalizer(true);
-			canon.canonicalize(fragments);
+			fragments = canon.canonicalize(fragments);
 
 		} catch (Exception e) {
 			System.out.println("ERROR: " + e.getMessage());

@@ -5,7 +5,7 @@ import se.cortado.visitors.TranslateVisitor;
 import se.cortado.visitors.TypeVisitor;
 import se.cortado.visitors.Visitor;
 
-public class Program {
+public class Program extends Node {
 
 	public MainClass mainClass;
 	public ClassDeclList classDeclList;

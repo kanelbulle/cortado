@@ -5,7 +5,7 @@ import se.cortado.visitors.TranslateVisitor;
 import se.cortado.visitors.TypeVisitor;
 import se.cortado.visitors.Visitor;
 
-public class Formal {
+public class Formal extends Node {
 	public Type t;
 	public Identifier i;
 

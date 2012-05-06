@@ -92,10 +92,10 @@ public class Codegen {
 					CONST c = (CONST) b.right;
 
 					if (b.binop == BINOP.PLUS) {
-						String str = String.format("movl $%d, %d(`d0)", constSrc.value, c.value);
+						String str = String.format("movl $%d, %d(%%`d0)", constSrc.value, c.value);
 						emit(new OPER(str, L(t.temp), null));
 					} else if (b.binop == BINOP.MINUS) {
-						String str = String.format("movl $%d, -%d(`d0)", constSrc.value, c.value);
+						String str = String.format("movl $%d, -%d(%%`d0)", constSrc.value, c.value);
 						emit(new OPER(str, L(t.temp), null));
 					}
 				}
@@ -110,18 +110,18 @@ public class Codegen {
 			Temp funcAddr = munchExp(call.func);
 			TempList argTemps = munchArgs(0, call.args);
 			emit(new OPER("callq `s0", Hardware.calldefs, L(funcAddr, argTemps)));
-			// move return value to specified destination
-			emit(new se.cortado.assem.MOVE("movl `d0, `s0", t.temp, Hardware.RV));
+			// move return value to specified temp
+			emit(new se.cortado.assem.MOVE("movl %`d0, %`s0", t.temp, Hardware.RV));
 		} else if (dst instanceof TEMP && src instanceof CONST) {
 			// covers 3 nodes
 			TEMP t = (TEMP) dst;
 			CONST c = (CONST) src;
-			emit(new se.cortado.assem.MOVE("movl $" + c.value + "`d0", t.temp, null));
+			emit(new se.cortado.assem.MOVE("movl $" + c.value + "%`d0", t.temp, null));
 		} else {
 			// covers 3 nodes
 			Temp dstTemp = munchExp(dst);
 			Temp srcTemp = munchExp(src);
-			emit(new OPER("movl d0, s0", L(dstTemp), L(srcTemp)));
+			emit(new OPER("movl %`d0, %`s0", L(dstTemp), L(srcTemp)));
 		}
 	}
 
@@ -134,7 +134,7 @@ public class Codegen {
 			CALL call = (CALL) exp;
 			Temp c = munchExp(call.func);
 			TempList tl = munchArgs(0, call.args);
-			emit(new OPER("callq `s0", Hardware.calldefs, L(c, tl)));
+			emit(new OPER("callq %`s0", Hardware.calldefs, L(c, tl)));
 		} else {
 			munchExp(exp);
 		}
@@ -151,7 +151,7 @@ public class Codegen {
 		} else {
 			// covers 2 nodes
 			Temp t = munchExp(exp);
-			emit(new OPER("jmp `s0", null, L(t)));
+			emit(new OPER("jmp %`s0", null, L(t)));
 		}
 	}
 
@@ -210,7 +210,7 @@ public class Codegen {
 			CONST br = (CONST) b.right;
 
 			String bop = b.binop == BINOP.PLUS ? "" : "-";
-			String assem = String.format("cmpl $%d, `%s%d(s0)", r.value, bop, br.value);
+			String assem = String.format("cmpl $%d, %s%d(%%`s0)", r.value, bop, br.value);
 			emit(new OPER(assem, null, L(bl.temp)));
 			assem = instr + " " + iftrue.toString();
 			emit(new OPER(assem, null, null, destinations));
@@ -219,7 +219,7 @@ public class Codegen {
 			TEMP l = (TEMP) left;
 			CONST c = (CONST) right;
 
-			String assem = String.format("cmpl $%d, `s0", c.value);
+			String assem = String.format("cmpl $%d, %%`s0", c.value);
 			emit(new OPER(assem, null, L(l.temp)));
 			assem = instr + " " + iftrue.toString();
 			emit(new OPER(assem, null, null, destinations));
@@ -228,7 +228,7 @@ public class Codegen {
 			TEMP l = (TEMP) left;
 			TEMP r = (TEMP) right;
 
-			emit(new OPER("cmpl `s0, `s1", null, L(l.temp, r.temp)));
+			emit(new OPER("cmpl %`s0, %`s1", null, L(l.temp, r.temp)));
 			String assem = instr + " " + iftrue.toString();
 			emit(new OPER(assem, null, null, destinations));
 		} else {
@@ -236,7 +236,7 @@ public class Codegen {
 			Temp l = munchExp(left);
 			Temp r = munchExp(right);
 
-			emit(new OPER("cmpl `s0, `s1", null, L(l, r)));
+			emit(new OPER("cmpl %`s0, %`s1", null, L(l, r)));
 			String assem = instr + " " + iftrue.toString();
 			emit(new OPER(assem, null, null, destinations));
 		}
@@ -293,7 +293,7 @@ public class Codegen {
 	private Temp munchCONST(int value) {
 		// move the value in const to a temp
 		Temp t = new Temp();
-		emit(new se.cortado.assem.MOVE("movq $" + value + ", `d0", t, null));
+		emit(new se.cortado.assem.MOVE("movq $" + value + ", %`d0", t, null));
 		return t;
 	}
 
@@ -344,7 +344,7 @@ public class Codegen {
 			Temp t = munchExp(left);
 			CONST c = (CONST) right;
 
-			String assem = String.format("%s $%d, `d0", instr, c.value);
+			String assem = String.format("%s $%d, %%`d0", instr, c.value);
 			emit(new OPER(assem, L(t), L(t)));
 			return t;
 		}
@@ -353,7 +353,7 @@ public class Codegen {
 			TEMP l = (TEMP) left;
 			TEMP r = (TEMP) right;
 
-			String assem = String.format("%s `s1, `d0", instr);
+			String assem = String.format("%s %%`s1, %%`d0", instr);
 			emit(new OPER(assem, L(l.temp), L(r.temp)));
 			return l.temp;
 		} else {
@@ -361,7 +361,7 @@ public class Codegen {
 			Temp l = munchExp(left);
 			Temp r = munchExp(right);
 
-			String assem = String.format("%s `s1, `d0", instr);
+			String assem = String.format("%s %%`s1, %%`d0", instr);
 			emit(new OPER(assem, L(l), L(r)));
 			return l;
 		}
@@ -380,7 +380,7 @@ public class Codegen {
 			BINOP b = (BINOP) exp;
 			TEMP t = (TEMP) b.left;
 			CONST c = (CONST) b.right;
-			String assem = String.format("movl %s%d(`s0), `d0", (b.binop == BINOP.PLUS ? "" : "-"), c.value);
+			String assem = String.format("movl %s%d(%%`s0), `d0", (b.binop == BINOP.PLUS ? "" : "-"), c.value);
 
 			resTemp = new Temp();
 			emit(new OPER(assem, L(resTemp), L(t.temp)));
@@ -388,11 +388,11 @@ public class Codegen {
 			// covers 2 nodes
 			TEMP srcTemp = (TEMP) exp;
 			resTemp = new Temp();
-			emit(new se.cortado.assem.MOVE("movl `s0, `d0", resTemp, srcTemp.temp));
+			emit(new se.cortado.assem.MOVE("movl %`s0, %`d0", resTemp, srcTemp.temp));
 		} else {
 			// covers 2 nodes
 			Temp t = munchExp(exp);
-			emit(new se.cortado.assem.MOVE("movl `(s0), `d0", resTemp, t));
+			emit(new se.cortado.assem.MOVE("movl (%`s0), %`d0", resTemp, t));
 		}
 
 		return resTemp;
@@ -403,7 +403,7 @@ public class Codegen {
 	 */
 	private Temp munchNAME(Label label) {
 		Temp t = new Temp();
-		emit(new OPER("movl " + label.toString() + ", `d0", L(t), null));
+		emit(new OPER("movl " + label.toString() + ", %`d0", L(t), null));
 		return t;
 	}
 

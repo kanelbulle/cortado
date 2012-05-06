@@ -5,7 +5,7 @@ import se.cortado.visitors.TranslateVisitor;
 import se.cortado.visitors.TypeVisitor;
 import se.cortado.visitors.Visitor;
 
-public abstract class ClassDecl {
+public abstract class ClassDecl extends Node {
 	public Identifier i;
 
 	public abstract void accept(Visitor v);

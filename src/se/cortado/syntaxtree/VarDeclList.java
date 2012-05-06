@@ -3,7 +3,7 @@ package se.cortado.syntaxtree;
 import se.cortado.visitors.TypeVisitor;
 import se.cortado.visitors.Visitor;
 
-public class VarDeclList {
+public class VarDeclList extends Node {
 	private java.util.ArrayList<VarDecl> list;
 
 	public VarDeclList() {

@@ -3,7 +3,7 @@ package se.cortado.syntaxtree;
 import se.cortado.visitors.TypeVisitor;
 import se.cortado.visitors.Visitor;
 
-public abstract class Type {
+public abstract class Type extends Node {
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof Type) {

@@ -98,10 +98,11 @@ non terminal Exp			returnExp;
 non terminal 				empty;
 
 /* Precedences */
-precedence left AND, LESS;
+precedence left AND;
+precedence right LESS;
 precedence left PLUS, MINUS;
 precedence left MULTIPLY;
-precedence left BANG;
+precedence right BANG;
 precedence left DOT;
 
 /* State to start with */
@@ -263,10 +264,10 @@ expr 			::= expr:e1 PLUS expr:e2
 						{: RESULT = new Minus(e1, e2); :}
 					| expr:e1 MULTIPLY expr:e2
 						{: RESULT = new Times(e1, e2); :}
-					| expr:e1 AND expr:e2
-						{: RESULT = new And(e1, e2); :}
 					| expr:e1 LESS expr:e2
 						{: RESULT = new LessThan(e1, e2); :}
+					| expr:e1 AND expr:e2
+						{: RESULT = new And(e1, e2); :}
 					| expr:e1 LBRACKET expr:e2 RBRACKET
 						{: RESULT = new ArrayLookup(e1, e2); :}
 					| expr:e1 DOT LENGTH

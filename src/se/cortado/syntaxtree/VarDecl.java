@@ -3,7 +3,7 @@ package se.cortado.syntaxtree;
 import se.cortado.visitors.TypeVisitor;
 import se.cortado.visitors.Visitor;
 
-public class VarDecl {
+public class VarDecl extends Node {
 	public Type type;
 	public Identifier identifier;
 

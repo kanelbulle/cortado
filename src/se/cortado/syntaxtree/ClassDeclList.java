@@ -7,7 +7,7 @@ import se.cortado.visitors.TranslateVisitor;
 import se.cortado.visitors.TypeVisitor;
 import se.cortado.visitors.Visitor;
 
-public class ClassDeclList {
+public class ClassDeclList extends Node {
 	private Vector<ClassDecl> list;
 
 	public ClassDeclList() {
