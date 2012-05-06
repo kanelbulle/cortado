@@ -20,6 +20,7 @@ import se.cortado.ir.tree.EXP;
 import se.cortado.ir.tree.IR_Exp;
 import se.cortado.ir.tree.IR_ExpList;
 import se.cortado.ir.tree.IR_Stm;
+import se.cortado.ir.tree.IR_StmList;
 import se.cortado.ir.tree.JUMP;
 import se.cortado.ir.tree.LABEL;
 import se.cortado.ir.tree.MEM;
@@ -36,8 +37,11 @@ public class Codegen {
 		this.frame = frame;
 	}
 
-	public List<Instr> codegen(IR_Stm s) {
-		munchStm(s);
+	public List<Instr> codegen(IR_StmList sl) {
+		while (sl.tail != null) {
+			munchStm(sl.head);
+			sl = sl.tail;
+		}
 
 		return ilist;
 	}

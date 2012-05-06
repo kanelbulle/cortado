@@ -131,7 +131,8 @@ public class Frame implements se.cortado.frame.Frame {
 
 	@Override
 	public IR_Stm procEntryExit1(IR_Stm body) {
-		// TODO Auto-generated method stub
+		
+		
 		return body;
 	}
 
@@ -144,12 +145,19 @@ public class Frame implements se.cortado.frame.Frame {
 
 	@Override
 	public Proc procEntryExit3(List<Instr> body) {
+		// append prologue
+		
+		
+		// append epilogue
+		
 		return new Proc("PROCEDURE " + name.toString() + "\n", body, "END " + name.toString() + "\n");
 	}
 
 	@Override
-	public List<Instr> codegen(IR_Stm stm) {
-		return new Codegen(this).codegen(stm);
+	public List<Instr> codegen(IR_StmList stmList) {
+		Codegen codegen = new Codegen(this);
+
+		return codegen.codegen(stmList);
 	}
 
 	@Override

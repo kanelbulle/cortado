@@ -74,6 +74,8 @@ public class IntermediateVisitor implements TranslateVisitor {
 	private ClassDecl			curClass;
 	private MethodDecl			curMethod;
 
+	private int					maxCallParams;
+
 	private final int			wordSize	= MethodScope.getMotherFrame().wordSize();
 
 	// for debug
@@ -240,16 +242,17 @@ public class IntermediateVisitor implements TranslateVisitor {
 		} else {
 			labelname = curClass.i.s + "$" + ms.getLabelName();
 		}
-		
-		ProcFragment fragment = new ProcFragment(bodyStm, curFrame, labelname);
+
+		ProcFragment fragment = new ProcFragment(bodyStm, curFrame, labelname, maxCallParams);
+		maxCallParams = 0;
 
 		fragment.next = fragments;
 		fragments = fragment;
 
 		// debug print
-//		System.out.println(node.identifier.s);
-//		irPrinter.prStm(bodyStm);
-//		System.out.println();
+		// System.out.println(node.identifier.s);
+		// irPrinter.prStm(bodyStm);
+		// System.out.println();
 
 		return body;
 	}
@@ -526,7 +529,12 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 			paramList = new IR_ExpList(t.getValue(), paramList);
 		}
-
+		
+		int numParams = 1 + node.el.size(); 
+		if (numParams > maxCallParams) {
+			maxCallParams = numParams;
+		}
+			
 		String s = node.cs.getClassDecl().i.s + "$" + node.ms.getLabelName();
 
 		IR_Exp call = new CALL(new NAME(new Label(s)), paramList);

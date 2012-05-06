@@ -146,7 +146,7 @@ public interface Frame
     /**
        @return The translation of a tree.Stm into a list of assem.Instr.
     */
-    public abstract List<se.cortado.assem.Instr> codegen(se.cortado.ir.tree.IR_Stm stm);
+    public abstract List<se.cortado.assem.Instr> codegen(se.cortado.ir.tree.IR_StmList stmList);
 
     /**
        @return A TempMap mapping Temp:s corresponding to hardware 
