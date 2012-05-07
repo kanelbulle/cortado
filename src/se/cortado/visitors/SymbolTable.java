@@ -78,7 +78,7 @@ public class SymbolTable {
 		MainClass mc = (MainClass) classScopes.get(0).getClassDecl();
 		System.out.println("Main class: " + mc.i);
 
-		for (int i = 1; i < classScopes.size(); i++) {
+		for (int i = 0; i < classScopes.size(); i++) {
 			ClassScope cs = classScopes.get(i);
 			ClassDecl cd = cs.getClassDecl();
 

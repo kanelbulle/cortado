@@ -5,6 +5,9 @@ public class TEMP extends IR_Exp {
 	public se.cortado.ir.temp.Temp temp;
 	
 	public TEMP(se.cortado.ir.temp.Temp t) {
+		if (t == null) {
+			throw new Error("BALLE");
+		}
 		temp = t;
 	}
 	

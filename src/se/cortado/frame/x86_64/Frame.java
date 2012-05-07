@@ -173,17 +173,17 @@ public class Frame implements se.cortado.frame.Frame {
 		List<Instr> epilogue = new ArrayList<Instr>();
 		for (int i = Hardware.calleeSaves.length - 1; i >= 0; i--) {
 			Temp t = Hardware.calleeSaves[i];
-			epilogue.add(new OPER("popq `d0", null, new TempList(t, null)));
+			epilogue.add(new OPER("popq `d0", new TempList(t, null), null));
 		}
 
 		// increment stack pointer
 		prologue.add(new OPER("addq $" + size() + ", %`d0", new TempList(Hardware.SP, null), null));
 
-		// return
-		prologue.add(new OPER("ret", null, null));
-
 		body.addAll(0, prologue);
 		body.addAll(epilogue);
+
+		// return
+		prologue.add(new OPER("ret", null, null));
 
 		return new Proc("PROCEDURE " + name.toString() + "\n", body, "END " + name.toString() + "\n");
 	}
@@ -229,5 +229,10 @@ public class Frame implements se.cortado.frame.Frame {
 	@Override
 	public void setLabel(Label label) {
 		this.name = label;
+	}
+
+	@Override
+	public String tempMap(Temp t) {
+		return null;
 	}
 }

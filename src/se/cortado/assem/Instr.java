@@ -27,7 +27,6 @@ public abstract class Instr {
 	}
 
 	public String format(TempMap m) {
-
 		TempList dst = def();
 		TempList src = use();
 		Targets j = jumps();
@@ -62,7 +61,7 @@ public abstract class Instr {
 			else
 				s.append(assem.charAt(i));
 
-		return s.toString();
+		return s.toString() + "\n";
 	}
 
 }

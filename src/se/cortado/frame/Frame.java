@@ -18,7 +18,7 @@ import java.util.List;
 	• the number of locals allocated so far,
 	• and the label at which the function’s machine code is to begin
 */
-public interface Frame
+public interface Frame extends TempMap
 {
 
 	public Frame newFrame(Label name, List<Boolean> formals);

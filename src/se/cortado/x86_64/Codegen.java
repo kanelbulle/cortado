@@ -8,6 +8,7 @@ import se.cortado.assem.OPER;
 import se.cortado.frame.Access;
 import se.cortado.frame.Frame;
 import se.cortado.frame.x86_64.Hardware;
+import se.cortado.ir.temp.DefaultMap;
 import se.cortado.ir.temp.Label;
 import se.cortado.ir.temp.LabelList;
 import se.cortado.ir.temp.Temp;
@@ -48,6 +49,8 @@ public class Codegen {
 
 	private void emit(Instr inst) {
 		ilist.add(inst);
+		
+		inst.format(new DefaultMap());
 	}
 
 	private TempList L(Temp h) {
@@ -113,18 +116,22 @@ public class Codegen {
 
 			Temp funcAddr = munchExp(call.func);
 			TempList argTemps = munchArgs(0, call.args);
-			emit(new OPER("callq `s0", Hardware.calldefs, L(funcAddr, argTemps)));
+			emit(new OPER("callq %`s0", Hardware.calldefs, L(funcAddr, argTemps)));
 			// move return value to specified temp
 			emit(new se.cortado.assem.MOVE("movl %`d0, %`s0", t.temp, Hardware.RV));
 		} else if (dst instanceof TEMP && src instanceof CONST) {
 			// covers 3 nodes
 			TEMP t = (TEMP) dst;
 			CONST c = (CONST) src;
-			emit(new se.cortado.assem.MOVE("movl $" + c.value + "%`d0", t.temp, null));
+			emit(new se.cortado.assem.MOVE("movl $" + c.value + ", %`d0", t.temp, null));
 		} else {
 			// covers 3 nodes
 			Temp dstTemp = munchExp(dst);
 			Temp srcTemp = munchExp(src);
+			
+			if (srcTemp == null) {
+				System.out.println("FASEN: " + src);
+			}
 			emit(new OPER("movl %`d0, %`s0", L(dstTemp), L(srcTemp)));
 		}
 	}
@@ -282,7 +289,15 @@ public class Codegen {
 	 * munchCALL
 	 */
 	private Temp munchCALL(IR_Exp func, IR_ExpList args) {
-		return null;
+		Temp t = new Temp();
+		
+		Temp funcAddr = munchExp(func);
+		TempList argTemps = munchArgs(0, args);
+		emit(new OPER("callq %`s0", Hardware.calldefs, L(funcAddr, argTemps)));
+		// move return value to specified temp
+		emit(new se.cortado.assem.MOVE("movl %`d0, %`s0", t, Hardware.RV));
+		
+		return t;
 	}
 
 	/*

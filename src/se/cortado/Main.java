@@ -7,6 +7,7 @@ import java_cup.runtime.Symbol;
 import se.cortado.assem.Instr;
 import se.cortado.frame.Proc;
 import se.cortado.ir.canon.Canonicalizer;
+import se.cortado.ir.temp.DefaultMap;
 import se.cortado.ir.translate.ProcFragment;
 import se.cortado.syntaxtree.Program;
 import se.cortado.visitors.ASTPrintVisitor;
@@ -70,6 +71,8 @@ public class Main {
 				instr = fragments.frame.procEntryExit2(instr);
 				
 				Proc proc = fragments.frame.procEntryExit3(instr);
+				
+				System.out.println(proc.toString(new DefaultMap()));
 				
 				fragments.proc = proc;
 				fragments = (ProcFragment) fragments.next;
