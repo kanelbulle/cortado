@@ -1,4 +1,4 @@
-package se.cortado.frame.x86_64;
+package se.cortado.x86_64.frame;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +68,7 @@ public class Frame implements se.cortado.frame.Frame {
 
 	@Override
 	public Record newRecord(String name) {
-		return new se.cortado.frame.x86_64.Record(name);
+		return new se.cortado.x86_64.frame.Record(name);
 	}
 
 	@Override

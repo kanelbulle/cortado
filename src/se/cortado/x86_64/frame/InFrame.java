@@ -1,4 +1,4 @@
-package se.cortado.frame.x86_64;
+package se.cortado.x86_64.frame;
 
 import se.cortado.ir.tree.BINOP;
 import se.cortado.ir.tree.CONST;

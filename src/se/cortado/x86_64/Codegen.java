@@ -7,7 +7,6 @@ import se.cortado.assem.Instr;
 import se.cortado.assem.OPER;
 import se.cortado.frame.Access;
 import se.cortado.frame.Frame;
-import se.cortado.frame.x86_64.Hardware;
 import se.cortado.ir.temp.DefaultMap;
 import se.cortado.ir.temp.Label;
 import se.cortado.ir.temp.LabelList;
@@ -28,6 +27,7 @@ import se.cortado.ir.tree.MEM;
 import se.cortado.ir.tree.MOVE;
 import se.cortado.ir.tree.NAME;
 import se.cortado.ir.tree.TEMP;
+import se.cortado.x86_64.frame.Hardware;
 
 public class Codegen {
 	private List<Instr>	ilist;

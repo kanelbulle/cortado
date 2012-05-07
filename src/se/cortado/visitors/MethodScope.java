@@ -20,7 +20,7 @@ public class MethodScope {
 
 	public static Frame getMotherFrame() {
 		if (motherFrame == null) {
-			motherFrame = new se.cortado.frame.x86_64.Frame();
+			motherFrame = new se.cortado.x86_64.frame.Frame();
 		}
 
 		return motherFrame;
