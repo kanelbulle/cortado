@@ -4,7 +4,7 @@ import se.cortado.ir.temp.*;
 
 public abstract class Instr {
 
-	public String	assem;
+	public String assem;
 
 	public abstract TempList use();
 

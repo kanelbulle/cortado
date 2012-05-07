@@ -3,8 +3,12 @@ package se.cortado.liveness;
 public class Graph {
 
 	int nodecount = 0;
+	
 	NodeList mynodes, mylast;
-	public NodeList nodes() { return mynodes;} 
+	
+	public NodeList nodes() { 
+		return mynodes;
+	} 
 
 	public Node newNode() {
 		return new Node(this);
