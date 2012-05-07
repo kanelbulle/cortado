@@ -172,5 +172,7 @@ public interface Frame
 	 * @param maxCallParams the maxCallParams to set
 	 */
 	public void setMaxCallParams(int maxCallParams);
+	
+	public void setLabel(Label label);
     
 };
