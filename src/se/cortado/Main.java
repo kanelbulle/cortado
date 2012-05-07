@@ -1,8 +1,11 @@
 package se.cortado;
 
 import java.io.FileReader;
+import java.util.List;
 
 import java_cup.runtime.Symbol;
+import se.cortado.assem.Instr;
+import se.cortado.frame.Proc;
 import se.cortado.ir.canon.Canonicalizer;
 import se.cortado.ir.translate.ProcFragment;
 import se.cortado.syntaxtree.Program;
@@ -11,6 +14,7 @@ import se.cortado.visitors.IntermediateVisitor;
 import se.cortado.visitors.ScopeVisitor;
 import se.cortado.visitors.SlowTypeVisitor;
 import se.cortado.visitors.SymbolTable;
+import se.cortado.x86_64.Codegen;
 
 public class Main {
 
@@ -56,10 +60,25 @@ public class Main {
 			System.out.println("==================== DOING DA CANONICALIZATION DUDE ====================");
 			Canonicalizer canon = new Canonicalizer(true);
 			fragments = canon.canonicalize(fragments);
+			
+			System.out.println("==================== DOING DA CODEGEN DUDE ====================");
+			ProcFragment firstFrag = fragments;
+			while (fragments != null) {
+				Codegen codegen = new Codegen(fragments.frame);
+				List<Instr> instr = codegen.codegen(fragments.canonicalized);
+				
+				instr = fragments.frame.procEntryExit2(instr);
+				
+				Proc proc = fragments.frame.procEntryExit3(instr);
+				
+				fragments.proc = proc;
+				fragments = (ProcFragment) fragments.next;
+			}
+			fragments = firstFrag;
 
 		} catch (Exception e) {
 			System.out.println("ERROR: " + e.getMessage());
-//			e.printStackTrace();
+			e.printStackTrace();
 			System.exit(-1);
 		}
 	}

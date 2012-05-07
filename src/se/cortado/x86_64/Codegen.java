@@ -107,10 +107,10 @@ public class Codegen {
 		} else if (dst instanceof TEMP && src instanceof CALL) {
 			// covers 3 nodes
 			// function call, put result of call into the TEMP
-			
+
 			TEMP t = (TEMP) dst;
 			CALL call = (CALL) src;
-			
+
 			Temp funcAddr = munchExp(call.func);
 			TempList argTemps = munchArgs(0, call.args);
 			emit(new OPER("callq `s0", Hardware.calldefs, L(funcAddr, argTemps)));
@@ -204,8 +204,9 @@ public class Codegen {
 
 		LabelList destinations = new LabelList(iftrue, new LabelList(iffalse));
 		if (left instanceof MEM && right instanceof CONST && ((MEM) left).exp instanceof BINOP && ((BINOP) ((MEM) left).exp).left instanceof TEMP
-				&& ((BINOP) ((MEM) left).exp).right instanceof CONST && ((BINOP) ((MEM) left).exp).binop == BINOP.PLUS
-				|| ((BINOP) ((MEM) left).exp).binop == BINOP.MINUS) {
+				&& ((BINOP) ((MEM) left).exp).right instanceof CONST
+				&& (((BINOP) ((MEM) left).exp).binop == BINOP.PLUS
+				|| ((BINOP) ((MEM) left).exp).binop == BINOP.MINUS)) {
 			// covers 6 nodes
 			MEM l = (MEM) left;
 			CONST r = (CONST) right;
@@ -419,16 +420,16 @@ public class Codegen {
 		// recursive cause its funny
 		if (list != null) {
 			// could optimize cases where list.head is CONST or TEMP
-			
+
 			// munch the argument to get a temp containing the result
 			Temp t = munchExp(list.head);
 			// get out argument position, may be a TEMP or stack position
 			Access access = frame.accessOutgoing(n);
 			IR_Exp outLoc = access.exp(new TEMP(frame.FP()));
-			
+
 			// munchMove contains code for moving stuff into registers, reuse
 			munchMOVE(outLoc, new TEMP(t));
-			
+
 			if (outLoc instanceof TEMP) {
 				TEMP res = (TEMP) outLoc;
 				return new TempList(res.temp, munchArgs(++n, list.tail));

@@ -1,6 +1,7 @@
 package se.cortado.ir.translate;
 
 import se.cortado.frame.Frame;
+import se.cortado.frame.Proc;
 import se.cortado.ir.tree.IR_Stm;
 import se.cortado.ir.tree.IR_StmList;
 
@@ -9,6 +10,7 @@ public class ProcFragment extends Fragment {
 	public Frame frame;
 	public String labelName;
 	public IR_StmList canonicalized;
+	public Proc proc;
 
 	public ProcFragment(IR_Stm body, Frame frame, String labelName) {
 		this.body = body;

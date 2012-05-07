@@ -83,10 +83,11 @@ public class Frame implements se.cortado.frame.Frame {
 
 		// return address + previous rbp value + maxOutgoing + numLocal
 		int sz = wordSize() * (1 + 1 + maxOutgoing + numLocals + maxCallParams);
-		
+
 		// stack frame size should be 16 byte aligned
-		while (sz % 16 != 0) sz += wordSize();
-		
+		while (sz % 16 != 0)
+			sz += wordSize();
+
 		return sz;
 	}
 
@@ -139,7 +140,6 @@ public class Frame implements se.cortado.frame.Frame {
 
 	@Override
 	public IR_Stm procEntryExit1(IR_Stm body) {
-
 		return body;
 	}
 
@@ -155,15 +155,15 @@ public class Frame implements se.cortado.frame.Frame {
 		// prologue
 		// push all callee saved regs
 		List<Instr> prologue = new ArrayList<Instr>();
-		
+
 		// append function name label
 		prologue.add(new LABEL(name.toString(), name));
-		
+
 		// push all callee saved regs
 		for (Temp t : Hardware.calleeSaves) {
 			prologue.add(new OPER("pushq `s0", null, new TempList(t, null)));
 		}
-		
+
 		// move frame pointer to stack pointer reg
 		prologue.add(new MOVE("movq %`d0, %`s0", Hardware.SP, Hardware.FP));
 		// decrement stack pointer
@@ -175,13 +175,13 @@ public class Frame implements se.cortado.frame.Frame {
 			Temp t = Hardware.calleeSaves[i];
 			epilogue.add(new OPER("popq `d0", null, new TempList(t, null)));
 		}
-		
+
 		// increment stack pointer
 		prologue.add(new OPER("addq $" + size() + ", %`d0", new TempList(Hardware.SP, null), null));
-		
+
 		// return
 		prologue.add(new OPER("ret", null, null));
-		
+
 		body.addAll(0, prologue);
 		body.addAll(epilogue);
 
@@ -191,8 +191,10 @@ public class Frame implements se.cortado.frame.Frame {
 	@Override
 	public List<Instr> codegen(IR_StmList stmList) {
 		Codegen codegen = new Codegen(this);
+		
+		List<Instr> instr = codegen.codegen(stmList);
 
-		return codegen.codegen(stmList);
+		return instr;
 	}
 
 	@Override
@@ -206,7 +208,6 @@ public class Frame implements se.cortado.frame.Frame {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
 
 	/**
 	 * @return the maxCallParams
@@ -217,7 +218,8 @@ public class Frame implements se.cortado.frame.Frame {
 	}
 
 	/**
-	 * @param maxCallParams the maxCallParams to set
+	 * @param maxCallParams
+	 *            the maxCallParams to set
 	 */
 	@Override
 	public void setMaxCallParams(int maxCallParams) {
