@@ -7,8 +7,6 @@ public class Node {
 	NodeList succs;
 	NodeList preds;
 	
-	private Node() {}
-	
 	public Node(Graph g) {
 		mygraph = g; 
 		mykey = g.nodecount++;
