@@ -412,6 +412,7 @@ public class Codegen {
 		} else {
 			// covers 2 nodes
 			Temp t = munchExp(exp);
+			resTemp = new Temp();
 			emit(new se.cortado.assem.MOVE("movl (%`s0), %`d0", resTemp, t));
 		}
 
