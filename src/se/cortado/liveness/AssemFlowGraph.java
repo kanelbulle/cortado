@@ -71,6 +71,7 @@ public class AssemFlowGraph extends FlowGraph {
 		if (node == null) {
 			node = this.newNode();
 			mInstructions.put(node, instr);
+			mNodes.put(instr, node);
 		}
 
 		return node;
