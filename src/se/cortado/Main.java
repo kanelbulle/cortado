@@ -10,6 +10,7 @@ import se.cortado.ir.canon.Canonicalizer;
 import se.cortado.ir.temp.DefaultMap;
 import se.cortado.ir.translate.ProcFragment;
 import se.cortado.liveness.AssemFlowGraph;
+import se.cortado.liveness.Liveness;
 import se.cortado.syntaxtree.Program;
 import se.cortado.visitors.ASTPrintVisitor;
 import se.cortado.visitors.IntermediateVisitor;
@@ -86,6 +87,8 @@ public class Main {
 				
 				afg.show(System.out);
 				System.out.println("\n\n\n\n");
+				
+				new Liveness(afg);
 				
 				fragments = (ProcFragment) fragments.next;
 			}
