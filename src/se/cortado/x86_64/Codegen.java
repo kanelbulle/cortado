@@ -373,7 +373,7 @@ public class Codegen {
 			TEMP l = (TEMP) left;
 			TEMP r = (TEMP) right;
 
-			String assem = String.format("%s %%`s1, %%`d0", instr);
+			String assem = String.format("%s %%`s0, %%`d0", instr);
 			emit(new OPER(assem, L(l.temp), L(r.temp)));
 			return l.temp;
 		} else {
@@ -381,7 +381,7 @@ public class Codegen {
 			Temp l = munchExp(left);
 			Temp r = munchExp(right);
 
-			String assem = String.format("%s %%`s1, %%`d0", instr);
+			String assem = String.format("%s %%`s0, %%`d0", instr);
 			emit(new OPER(assem, L(l), L(r)));
 			return l;
 		}
