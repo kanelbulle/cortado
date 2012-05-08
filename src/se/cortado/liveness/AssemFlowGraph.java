@@ -56,12 +56,12 @@ public class AssemFlowGraph extends FlowGraph {
 				mLabels.put(l.label, l);
 			}
 		}
-		
+
 		// build the graph
 		for (int i = 0; i < program.size() - 1; i++) {
 			Instr i1 = program.get(i);
 			Instr i2 = program.get(i + 1);
-			
+
 			processInstruction(i1, i2);
 		}
 	}
