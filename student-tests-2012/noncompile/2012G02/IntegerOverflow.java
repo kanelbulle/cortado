@@ -1,3 +1,4 @@
+// EXT:INT32
 class IntegerOverflow{
 	public static void main(String[] args){
 		int i;

@@ -8,10 +8,10 @@ class Pollard {
 		pollard = new PollardRho();
 		testnumbers = new int[4];
 		
-		testnumbers[0] = 4652633; // 2 153 * 2 161 = 4 652 633
-		testnumbers[1] = 11641271; // 2 153 * 5 407 = 11 641 271
-		testnumbers[2] = 40378981; // 7 919 * 5 099 = 40 378 981
-		testnumbers[3] = 35; // 5 * 7 = 35
+		testnumbers[0] = 229 * 233; // 229 * 233
+		testnumbers[1] = 197 * 241; // 197 * 241
+		testnumbers[2] = 227 * 223; // 227 * 223
+		testnumbers[3] = 211 * 199; // 211 * 199
 		
 		i = 0;
 		while(i < testnumbers.length){
@@ -36,7 +36,6 @@ class PollardRho{
 		x = 2;
 		y = 2;
 		d = 1;
-		
 		while(this.intEquals(d,1)){
 			x = this.f(x, n);
 			y = this.f(this.f(y, n), n);

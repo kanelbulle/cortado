@@ -7,7 +7,7 @@
 * properly.
 */
 
-// EXT:ISC 
+// EXT:ISC
 
 class SubTyping {
 
@@ -16,7 +16,7 @@ class SubTyping {
       int myrand;
 
       myrand = 6;
-    
+
       if (( myrand >= 0) && (myrand < 5)) {
          myobj = new A();
       } else
@@ -25,10 +25,10 @@ class SubTyping {
       } else {
          myobj = new C();
       }
-      
+
       myobj.printValue();
 
-     
+
    }
 
 }

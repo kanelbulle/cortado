@@ -2,8 +2,8 @@
  * Should output 28572
  * No extensions required
  */
-class InsertionSort {
 
+class MainClassInsertionSort {
 	public static void main(String[] args)
 	{
 		InsertionSort sorter;
@@ -40,7 +40,9 @@ class InsertionSort {
 		}
 		System.out.println(out);
 	}
-	
+}
+
+class InsertionSort {	
 	public int[] sort(int[] in)
 	{
 		int i;

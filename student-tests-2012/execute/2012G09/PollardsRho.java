@@ -8,14 +8,17 @@
 // EXT:CNE
 // EXT:CGE
 
-class PollardsRho
+class MainClassPollardsRho
 {
 	public static void main(String[] args) {
 		PollardsRho pr;
 		pr = new PollardsRho();
 		System.out.println(pr.calc(30738341111L));
 	}
-	
+}
+
+class PollardsRho
+{	
 	public long calc(long n)
 	{
 		long x;

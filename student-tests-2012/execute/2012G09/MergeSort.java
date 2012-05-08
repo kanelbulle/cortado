@@ -2,7 +2,7 @@
  * Should output 2142855
  * No extensions required
  */
-class MergeSort {
+class MainClassMergeSort {
 	public static void main(String[] args)
 	{
 		MergeSort sorter;
@@ -39,7 +39,9 @@ class MergeSort {
 		}
 		System.out.println(out);
 	}
-	
+}
+
+class MergeSort {
 	public int[] sort(int[] in)
 	{
 		int ai;

@@ -8,8 +8,7 @@
 // EXT:CGT
 // EXT:DIV
 
-class Tsp 
-{
+class MainClassTsp {
 	public static void main(String[] args) {
 		Tsp tsp;
 		int[] x;
@@ -51,7 +50,9 @@ class Tsp
 		
 		System.out.println(tsp.tspDis(x, y));
 	}
-	
+}
+
+class Tsp {
 	public int tspDis(int[] x, int[] y)
 	{
 		int i;
