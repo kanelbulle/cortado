@@ -6,9 +6,9 @@ public abstract class Instr {
 
 	public String assem;
 
-	public abstract TempList use();
+	public abstract TempList uses();
 
-	public abstract TempList def();
+	public abstract TempList defines();
 
 	public abstract Targets jumps();
 
@@ -27,8 +27,8 @@ public abstract class Instr {
 	}
 
 	public String format(TempMap m) {
-		TempList dst = def();
-		TempList src = use();
+		TempList dst = defines();
+		TempList src = uses();
 		Targets j = jumps();
 		LabelList jump = (j == null) ? null : j.labels;
 		StringBuffer s = new StringBuffer();

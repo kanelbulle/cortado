@@ -10,16 +10,29 @@ public class LABEL extends Instr {
 		label = l;
 	}
 
-	public TempList use() {
+	public TempList uses() {
 		return null;
 	}
 
-	public TempList def() {
+	public TempList defines() {
 		return null;
 	}
 
 	public Targets jumps() {
 		return null;
 	}
-
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof LABEL) {
+			return ((LABEL)obj).assem.equals(assem);
+		}
+		
+		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		return assem.hashCode();
+	}
 }

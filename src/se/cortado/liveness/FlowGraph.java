@@ -17,12 +17,12 @@ public abstract class FlowGraph extends Graph {
 	/**
 	 * The set of temporaries defined by this instruction or block 
 	 */
-	public abstract TempList def(Node node);
+	public abstract TempList defines(Node node);
 
 	/**
 	 * The set of temporaries used by this instruction or block 
 	 */
-	public abstract TempList use(Node node);
+	public abstract TempList uses(Node node);
 
 	/**
 	 * True if this node represents a <strong>move</strong> instruction,
@@ -38,12 +38,12 @@ public abstract class FlowGraph extends Graph {
 			Node n = p.head;
 			out.print(n.toString());
 			out.print(": ");
-			for(TempList q=def(n); q!=null; q=q.tail) {
+			for(TempList q=defines(n); q!=null; q=q.tail) {
 				out.print(q.head.toString());
 				out.print(" ");
 			}
 			out.print(isMove(n) ? "<= " : "<- ");
-			for(TempList q=use(n); q!=null; q=q.tail) {
+			for(TempList q=uses(n); q!=null; q=q.tail) {
 				out.print(q.head.toString());
 				out.print(" ");
 			}

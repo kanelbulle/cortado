@@ -12,11 +12,15 @@ public class MOVE extends Instr {
 		src = s;
 	}
 
-	public TempList use() {
+	public TempList uses() {
+		if (src == null) return null;
+		
 		return new TempList(src, null);
 	}
 
-	public TempList def() {
+	public TempList defines() {
+		if (dst == null) return null;
+		
 		return new TempList(dst, null);
 	}
 

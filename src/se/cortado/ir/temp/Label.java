@@ -7,8 +7,8 @@ import java_cup.runtime.Symbol;
  */
 
 public class Label {
-	private String name;
-	private static int count;
+	private String		name;
+	private static int	count;
 
 	/**
 	 * a printable representation of the label, for use in assembly language
@@ -39,4 +39,19 @@ public class Label {
 	public Label(Symbol s) {
 		this(s.toString());
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Label) {
+			return ((Label)obj).name.equals(name);
+		}
+		
+		return super.equals(obj);
+	}
+	
+	@Override
+	public int hashCode() {
+		return name.hashCode();
+	}
+
 }

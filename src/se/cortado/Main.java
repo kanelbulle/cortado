@@ -9,6 +9,7 @@ import se.cortado.frame.Proc;
 import se.cortado.ir.canon.Canonicalizer;
 import se.cortado.ir.temp.DefaultMap;
 import se.cortado.ir.translate.ProcFragment;
+import se.cortado.liveness.AssemFlowGraph;
 import se.cortado.syntaxtree.Program;
 import se.cortado.visitors.ASTPrintVisitor;
 import se.cortado.visitors.IntermediateVisitor;
@@ -78,6 +79,16 @@ public class Main {
 				fragments = (ProcFragment) fragments.next;
 			}
 			fragments = firstFrag;
+			
+			System.out.println("==================== BUILDIN' SOME GRAPHS AND NIZZLE ====================");
+			while (fragments != null) {
+				AssemFlowGraph afg = new AssemFlowGraph(fragments.proc.body);
+				
+				afg.show(System.out);
+				System.out.println("\n\n\n\n");
+				
+				fragments = (ProcFragment) fragments.next;
+			}
 
 		} catch (Exception e) {
 			System.out.println("ERROR: " + e.getMessage());

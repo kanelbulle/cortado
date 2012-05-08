@@ -21,11 +21,11 @@ public class OPER extends Instr {
 		jump = null;
 	}
 
-	public TempList use() {
+	public TempList uses() {
 		return src;
 	}
 
-	public TempList def() {
+	public TempList defines() {
 		return dst;
 	}
 
