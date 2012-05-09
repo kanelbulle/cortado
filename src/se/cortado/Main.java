@@ -10,7 +10,7 @@ import se.cortado.ir.canon.Canonicalizer;
 import se.cortado.ir.temp.DefaultMap;
 import se.cortado.ir.translate.ProcFragment;
 import se.cortado.liveness.AssemFlowGraph;
-import se.cortado.liveness.Liveness;
+import se.cortado.regalloc.Liveness;
 import se.cortado.syntaxtree.Program;
 import se.cortado.visitors.ASTPrintVisitor;
 import se.cortado.visitors.IntermediateVisitor;

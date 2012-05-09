@@ -1,4 +1,4 @@
-package se.cortado.liveness;
+package se.cortado.regalloc;
 
 import java.io.PrintStream;
 import java.util.HashMap;
@@ -9,6 +9,10 @@ import se.cortado.assem.Instr;
 import se.cortado.assem.MOVE;
 import se.cortado.ir.temp.Temp;
 import se.cortado.ir.temp.TempList;
+import se.cortado.liveness.AssemFlowGraph;
+import se.cortado.liveness.MoveList;
+import se.cortado.liveness.Node;
+import se.cortado.liveness.NodeList;
 
 public class Liveness extends InterferenceGraph {
 	LinkedHashMap<Node, Temp>		nodeMap		= new LinkedHashMap<Node, Temp>();
@@ -167,7 +171,7 @@ public class Liveness extends InterferenceGraph {
 		}
 
 		for (Node node : nodes()) {
-			for (NodeList nl = node.succs; nl != null; nl = nl.tail) {
+			for (NodeList nl = node.succ(); nl != null; nl = nl.tail) {
 				Node neighbor = nl.head;
 				out.println("edge : " + node.toString() + " --> " + neighbor.toString());
 			}

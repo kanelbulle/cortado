@@ -1,6 +1,9 @@
-package se.cortado.liveness;
+package se.cortado.regalloc;
 
 import se.cortado.ir.temp.Temp;
+import se.cortado.liveness.Graph;
+import se.cortado.liveness.MoveList;
+import se.cortado.liveness.Node;
 
 abstract public class InterferenceGraph extends Graph {
 	abstract public Node tnode(Temp temp);
