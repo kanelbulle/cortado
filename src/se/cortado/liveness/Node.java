@@ -3,20 +3,13 @@ package se.cortado.liveness;
 public class Node {
 
 	Graph		mygraph;
-	int			mykey;
+	String		name;
 	NodeList	succs;
 	NodeList	preds;
 
-	public Node(Graph g) {
+	public Node(Graph g, String name) {
 		mygraph = g;
-		mykey = g.nodecount++;
-		NodeList p = new NodeList(this, null);
-
-		if (g.mylast == null) {
-			g.mynodes = g.mylast = p;
-		} else {
-			g.mylast = g.mylast.tail = p;
-		}
+		this.name = name;
 	}
 
 	public NodeList succ() {
@@ -71,7 +64,7 @@ public class Node {
 	}
 
 	public String toString() {
-		return String.valueOf(mykey);
+		return name;
 	}
 
 }

@@ -88,7 +88,8 @@ public class Main {
 				afg.show(System.out);
 				System.out.println("\n\n\n\n");
 				
-				new Liveness(afg);
+				Liveness liveness = new Liveness(afg);
+				liveness.show(System.out);
 				
 				fragments = (ProcFragment) fragments.next;
 			}
