@@ -1,41 +1,18 @@
 package se.cortado.liveness;
 
-import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
-import se.cortado.ir.temp.Temp;
-
 public class Graph {
-	LinkedHashMap<Node, Temp>	nodeMap	= new LinkedHashMap<Node, Temp>();
-	LinkedHashMap<Temp, Node>	tempMap	= new LinkedHashMap<Temp, Node>();
+	LinkedHashSet<Node>	nodeSet	= new LinkedHashSet<Node>();
 
 	public Set<Node> nodes() {
-		return nodeMap.keySet();
-	}
-
-	public Temp nodeTemp(Node node) {
-		return nodeMap.get(node);
-	}
-
-	public Node nodeForTemp(Temp temp) {
-		Node node = tempMap.get(temp);
-		if (node == null) {
-			return newNode(temp);
-		}
-		
-		return node; 
+		return nodeSet;
 	}
 
 	public Node newNode() {
-		Node node = new Node(this, "" + nodes().size());
-		nodeMap.put(node, null);
-		return node;
-	}
-
-	public Node newNode(Temp temp) {
-		Node node = new Node(this, temp.toString());
-		nodeMap.put(node, temp);
-		tempMap.put(temp, node);
+		Node node = new Node(this);
+		nodeSet.add(node);
 		return node;
 	}
 

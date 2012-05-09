@@ -1,7 +1,9 @@
 package se.cortado.liveness;
 
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 
 import se.cortado.assem.Instr;
 import se.cortado.assem.MOVE;
@@ -9,6 +11,8 @@ import se.cortado.ir.temp.Temp;
 import se.cortado.ir.temp.TempList;
 
 public class Liveness extends InterferenceGraph {
+	LinkedHashMap<Node, Temp>		nodeMap		= new LinkedHashMap<Node, Temp>();
+	LinkedHashMap<Temp, Node>		tempMap		= new LinkedHashMap<Temp, Node>();
 
 	HashMap<Node, HashSet<Temp>>	mLiveIn		= new HashMap<Node, HashSet<Temp>>();
 	HashMap<Node, HashSet<Temp>>	mLiveOut	= new HashMap<Node, HashSet<Temp>>();
@@ -21,7 +25,7 @@ public class Liveness extends InterferenceGraph {
 		while (changed) {
 			changed = false;
 
-			for (Node node : nodes()) {
+			for (Node node : flow.nodes()) {
 				TempList use = flow.uses(node);
 				TempList def = flow.defines(node);
 
@@ -51,16 +55,16 @@ public class Liveness extends InterferenceGraph {
 		}
 
 		// process all nodes using the livein and liveout information
-		for (Node node : nodes()) {
+		for (Node node : flow.nodes()) {
 			Instr instr = flow.instr(node);
 
-			if (instr instanceof MOVE && ((MOVE)instr).dst != null && ((MOVE)instr).src != null) {
+			if (instr instanceof MOVE && ((MOVE) instr).dst != null && ((MOVE) instr).src != null) {
 				MOVE move = (MOVE) instr;
-				Node dstNode = nodeForTemp(move.dst);
+				Node dstNode = tnode(move.dst);
 				for (Temp liveOutTemp : getLiveOut(node)) {
 					if (liveOutTemp != move.src) {
-						Node liveOutNode = nodeForTemp(liveOutTemp);
-						
+						Node liveOutNode = tnode(liveOutTemp);
+
 						addEdge(dstNode, liveOutNode);
 					}
 				}
@@ -69,8 +73,8 @@ public class Liveness extends InterferenceGraph {
 				for (Temp liveOutTemp : getLiveOut(node)) {
 					for (Temp definedTemp : defSet) {
 						// add interference edge from definedTemp to liveOutTemp
-						Node liveOutNode = nodeForTemp(liveOutTemp);
-						Node definedNode = nodeForTemp(definedTemp);
+						Node liveOutNode = tnode(liveOutTemp);
+						Node definedNode = tnode(definedTemp);
 
 						addEdge(definedNode, liveOutNode);
 					}
@@ -89,12 +93,12 @@ public class Liveness extends InterferenceGraph {
 
 	public HashSet<Temp> getLiveIn(Node node) {
 		HashSet<Temp> set = mLiveIn.get(node);
-		return set == null ? null : new HashSet<Temp>(set);
+		return set == null ? new HashSet<Temp>() : new HashSet<Temp>(set);
 	}
 
 	public HashSet<Temp> getLiveOut(Node node) {
 		HashSet<Temp> set = mLiveOut.get(node);
-		return set == null ? null : new HashSet<Temp>(set);
+		return set == null ? new HashSet<Temp>() : new HashSet<Temp>(set);
 	}
 
 	/**
@@ -126,14 +130,29 @@ public class Liveness extends InterferenceGraph {
 		return true;
 	}
 
+	public Node newNode(Temp temp) {
+		Node node = super.newNode();
+
+		nodeMap.put(node, temp);
+		tempMap.put(temp, node);
+		node.name = temp.toString();
+
+		return node;
+	}
+
 	@Override
 	public Node tnode(Temp temp) {
-		return null;
+		Node node = tempMap.get(temp);
+		if (node == null) {
+			node = newNode(temp);
+		}
+		
+		return node;
 	}
 
 	@Override
 	public Temp gtemp(Node node) {
-		return null;
+		return nodeMap.get(node);
 	}
 
 	@Override
@@ -141,12 +160,18 @@ public class Liveness extends InterferenceGraph {
 		return null;
 	}
 
-	// @Override
-	// public void show(PrintStream out) {
-	// for (NodeList nl = mynodes; nl != null; nl = nl.tail) {
-	// out.print("node : " + )
-	// }
-	//
-	// }
+	@Override
+	public void show(PrintStream out) {
+		for (Node node : nodes()) {
+			out.println("node : " + node.toString());
+		}
+
+		for (Node node : nodes()) {
+			for (NodeList nl = node.succs; nl != null; nl = nl.tail) {
+				Node neighbor = nl.head;
+				out.println("edge : " + node.toString() + " --> " + neighbor.toString());
+			}
+		}
+	}
 
 }

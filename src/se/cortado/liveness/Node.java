@@ -2,14 +2,14 @@ package se.cortado.liveness;
 
 public class Node {
 
-	Graph		mygraph;
-	String		name;
-	NodeList	succs;
-	NodeList	preds;
+	Graph			mygraph;
+	public String	name;
+	NodeList		succs;
+	NodeList		preds;
 
-	public Node(Graph g, String name) {
+	public Node(Graph g) {
 		mygraph = g;
-		this.name = name;
+		name = "" + g.nodes().size();
 	}
 
 	public NodeList succ() {
