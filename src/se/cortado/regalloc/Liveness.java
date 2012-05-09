@@ -80,7 +80,9 @@ public class Liveness extends InterferenceGraph {
 						Node liveOutNode = tnode(liveOutTemp);
 						Node definedNode = tnode(definedTemp);
 
-						addEdge(definedNode, liveOutNode);
+						if (liveOutNode != definedNode) {
+							addEdge(definedNode, liveOutNode);
+						}
 					}
 				}
 			}
@@ -150,7 +152,7 @@ public class Liveness extends InterferenceGraph {
 		if (node == null) {
 			node = newNode(temp);
 		}
-		
+
 		return node;
 	}
 
