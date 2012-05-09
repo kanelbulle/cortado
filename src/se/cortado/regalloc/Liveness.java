@@ -10,17 +10,17 @@ import se.cortado.assem.MOVE;
 import se.cortado.ir.temp.Temp;
 import se.cortado.ir.temp.TempList;
 import se.cortado.liveness.AssemFlowGraph;
-import se.cortado.liveness.MoveList;
 import se.cortado.liveness.Node;
 import se.cortado.liveness.NodeList;
 
 public class Liveness extends InterferenceGraph {
-	LinkedHashMap<Node, Temp>		nodeMap		= new LinkedHashMap<Node, Temp>();
-	LinkedHashMap<Temp, Node>		tempMap		= new LinkedHashMap<Temp, Node>();
+	HashSet<MovePair>				mMoveNodes	= new HashSet<MovePair>();
+	
+	LinkedHashMap<Node, Temp>		mNodeMap	= new LinkedHashMap<Node, Temp>();
+	LinkedHashMap<Temp, Node>		mTempMap	= new LinkedHashMap<Temp, Node>();
 
 	HashMap<Node, HashSet<Temp>>	mLiveIn		= new HashMap<Node, HashSet<Temp>>();
 	HashMap<Node, HashSet<Temp>>	mLiveOut	= new HashMap<Node, HashSet<Temp>>();
-	HashMap<Node, HashSet<Temp>>	mLiveMap	= new HashMap<Node, HashSet<Temp>>();
 
 	public Liveness(AssemFlowGraph flow) {
 
@@ -65,6 +65,11 @@ public class Liveness extends InterferenceGraph {
 			if (instr instanceof MOVE && ((MOVE) instr).dst != null && ((MOVE) instr).src != null) {
 				MOVE move = (MOVE) instr;
 				Node dstNode = tnode(move.dst);
+				Node srcNode = tnode(move.src);
+				
+				MovePair mp = new MovePair(srcNode, dstNode);
+				mMoveNodes.add(mp);
+				
 				for (Temp liveOutTemp : getLiveOut(node)) {
 					if (liveOutTemp != move.src) {
 						Node liveOutNode = tnode(liveOutTemp);
@@ -139,8 +144,8 @@ public class Liveness extends InterferenceGraph {
 	public Node newNode(Temp temp) {
 		Node node = super.newNode();
 
-		nodeMap.put(node, temp);
-		tempMap.put(temp, node);
+		mNodeMap.put(node, temp);
+		mTempMap.put(temp, node);
 		node.name = temp.toString();
 
 		return node;
@@ -148,7 +153,7 @@ public class Liveness extends InterferenceGraph {
 
 	@Override
 	public Node tnode(Temp temp) {
-		Node node = tempMap.get(temp);
+		Node node = mTempMap.get(temp);
 		if (node == null) {
 			node = newNode(temp);
 		}
@@ -158,11 +163,11 @@ public class Liveness extends InterferenceGraph {
 
 	@Override
 	public Temp gtemp(Node node) {
-		return nodeMap.get(node);
+		return mNodeMap.get(node);
 	}
 
 	@Override
-	public MoveList moves() {
+	public HashSet<MovePair> moves() {
 		return null;
 	}
 
