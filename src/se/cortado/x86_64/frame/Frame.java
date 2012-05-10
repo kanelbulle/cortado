@@ -205,8 +205,7 @@ public class Frame implements se.cortado.frame.Frame {
 
 	@Override
 	public TempList registers() {
-		// TODO Auto-generated method stub
-		return null;
+		return Hardware.registers;
 	}
 
 	/**
