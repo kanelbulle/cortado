@@ -1,10 +1,14 @@
 package se.cortado.x86_64.frame;
 
+import java.util.HashMap;
+
 import se.cortado.ir.temp.Temp;
 import se.cortado.ir.temp.TempList;
 
 public class Hardware {
 	public static final int			wordSize	= 8;
+	
+	private static final HashMap<Temp, String> tempMap = new HashMap<Temp, String>();
 
 	private static final Temp		rax			= new Temp();
 	private static final Temp		rbx			= new Temp();
@@ -70,6 +74,25 @@ public class Hardware {
 				new TempList(r13,
 				new TempList(r14,
 				new TempList(r15, null))))))))))))));
+		
+		tempMap.put(rax, "rax");
+		tempMap.put(rbx, "rbx");
+		tempMap.put(rcx, "rcx");
+		tempMap.put(rdx, "rdx");
+		tempMap.put(rsi, "rsi");
+		tempMap.put(rdi, "rdi");
+		tempMap.put(r8, "r8");
+		tempMap.put(r9, "r9");
+		tempMap.put(r10, "r10");
+		tempMap.put(r11, "r11");
+		tempMap.put(r12, "r12");
+		tempMap.put(r13, "r13");
+		tempMap.put(r14, "r14");
+		tempMap.put(r15, "r15");
+	}
+	
+	public static String tempName(Temp temp) {
+		return tempMap.get(temp);
 	}
 
 	public static Temp getArgReg(int index) {

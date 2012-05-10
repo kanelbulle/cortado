@@ -191,7 +191,7 @@ public class Frame implements se.cortado.frame.Frame {
 	@Override
 	public List<Instr> codegen(IR_StmList stmList) {
 		Codegen codegen = new Codegen(this);
-		
+
 		List<Instr> instr = codegen.codegen(stmList);
 
 		return instr;
@@ -199,8 +199,7 @@ public class Frame implements se.cortado.frame.Frame {
 
 	@Override
 	public TempMap initial() {
-		// TODO Auto-generated method stub
-		return null;
+		return this;
 	}
 
 	@Override
@@ -232,6 +231,12 @@ public class Frame implements se.cortado.frame.Frame {
 
 	@Override
 	public String tempMap(Temp t) {
-		return null;
+		String name = Hardware.tempName(t);
+
+		if (name == null) {
+			name = t.toString();
+		}
+
+		return name;
 	}
 }
