@@ -11,7 +11,6 @@ import se.cortado.ir.temp.DefaultMap;
 import se.cortado.ir.translate.ProcFragment;
 import se.cortado.liveness.AssemFlowGraph;
 import se.cortado.regalloc.Liveness;
-import se.cortado.regalloc.RegAlloc;
 import se.cortado.syntaxtree.Program;
 import se.cortado.visitors.ASTPrintVisitor;
 import se.cortado.visitors.IntermediateVisitor;

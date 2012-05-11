@@ -62,10 +62,10 @@ public class Liveness extends InterferenceGraph {
 		for (Node node : flow.nodes()) {
 			Instr instr = flow.instr(node);
 
-			if (instr instanceof MOVE && ((MOVE) instr).dst != null && ((MOVE) instr).src != null) {
+			if (instr instanceof MOVE) {
 				MOVE move = (MOVE) instr;
-				Node dstNode = tnode(move.dst);
-				Node srcNode = tnode(move.src);
+				Node dstNode = move.dst == null ? null : tnode(move.dst);
+				Node srcNode = move.src == null ? null : tnode(move.src);
 				
 				MovePair mp = new MovePair(srcNode, dstNode);
 				mMoveNodes.add(mp);
