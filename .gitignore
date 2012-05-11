@@ -10,4 +10,7 @@ bin/
 docs/report/report.aux
 docs/report/report.log
 docs/report/report.synctex.gz
-
+res/runtime/libminijava.a
+res/runtime/runtime-opt.s
+res/runtime/runtime.o
+res/runtime/runtime.s
