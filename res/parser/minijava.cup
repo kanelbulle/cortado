@@ -267,7 +267,15 @@ stmt 			::=	LCURLY stmt_list_opt:sl RCURLY
 						{: RESULT = new ArrayAssign(new Identifier(id, getReducedRow()), e1, e2); :}
 					;
 				
-expr 			::= expr:e1 PLUS expr:e2 
+expr 			::= /* Multidimensional arrays are not supported, try to detect subsets of multi arrays and trigger error */
+					NEW IDENTIFIER:id LBRACKET expr:e1 RBRACKET LBRACKET expr:e2 RBRACKET
+						{: RESULT = new TwoDimensionalArrayType(); :}
+					| NEW INT LBRACKET expr:e1 RBRACKET LBRACKET expr:e2 RBRACKET
+						{: RESULT = new TwoDimensionalArrayType(); :}
+					| expr:e0 LBRACKET expr:e1 RBRACKET LBRACKET expr:e2 RBRACKET
+						{: RESULT = new TwoDimensionalArrayType(); :}
+						
+					| expr:e1 PLUS expr:e2 
 						{: RESULT = new Plus(e1, e2); :}
 					| expr:e1 MINUS expr:e2
 						{: RESULT = new Minus(e1, e2); :}
@@ -308,7 +316,7 @@ formal 			::= type:t IDENTIFIER:id
 					;
 
 type 			::= INT
-						{: RESULT = new IntegerType(); :} 
+						{: RESULT = new IntegerType(); :}
 					| INT LBRACKET RBRACKET
 						{: RESULT = new IntArrayType(); :}
 					| BOOLEAN

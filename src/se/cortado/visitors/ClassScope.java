@@ -62,15 +62,21 @@ public class ClassScope {
 			for (MethodScope ms : scopes) {
 				FormalList otherParams = ms.getParameterList();
 
+				if (method.formalList.size() == 0 && otherParams.size() == 0) {
+					throw new Exception("Redeclaration class method \""
+							+ method.identifier + "\" on line: "
+							+ method.identifier.row);
+				}
+				
 				if (otherParams.size() == method.formalList.size()) {
 					/* Check if the two methods parameter types are identical */
+					
+					// check parameter list if same type on all arguments 
 					for (int i = 0; i < method.formalList.size(); ++i) {
 						if (method.formalList.elementAt(i).t.equals(otherParams.elementAt(i).t)) {
 							throw new Exception("Redeclaration class method \""
 									+ method.identifier + "\" on line: "
 									+ method.identifier.row);
-						} else {
-							System.out.println("COMPARING: " + method.formalList.elementAt(i).t + " WITH " + otherParams.elementAt(i).t);
 						}
 					}
 				}
