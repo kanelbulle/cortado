@@ -79,12 +79,17 @@ public class Hardware {
 		tempMap.put(rbx, "rbx");
 		tempMap.put(rcx, "rcx");
 		tempMap.put(rdx, "rdx");
+
+		tempMap.put(rsp, "rsp");
+		tempMap.put(rbp, "rbp");
 		tempMap.put(rsi, "rsi");
 		tempMap.put(rdi, "rdi");
+		
 		tempMap.put(r8, "r8");
 		tempMap.put(r9, "r9");
 		tempMap.put(r10, "r10");
 		tempMap.put(r11, "r11");
+		
 		tempMap.put(r12, "r12");
 		tempMap.put(r13, "r13");
 		tempMap.put(r14, "r14");
