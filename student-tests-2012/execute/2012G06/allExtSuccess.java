@@ -23,7 +23,7 @@ class _1g64r976g34f4397gf7g94fg3gy3Main
     		_1g64r976g34f4397gf7g94fg3gy3Main _1g64r976g34f4397gf7g94fg3gy3Main;
     		MainChild mc;
     		_1g64r976g34f4397gf7g94fg3gy3Main = new _1g64r976g34f4397gf7g94fg3gy3Main();
-    		
+
     		mc = new MainChild();
     		b = mc.initialize();
     		l = mc.dostuff(new MainGrandChild());
@@ -39,14 +39,14 @@ class MainChild extends/**/_1g64r976g34f4397gf7g94fg3gy3Main
 {
 	int i;
 	long l;
-	
+
 	public boolean initialize()
 	{
 		i = 1337;
 		l = 133L;
 		return true;
 	}
-	
+
 	public long dostuff(MainGrandChild mgc)
 	{
 		boolean b;
@@ -86,32 +86,32 @@ class MainChild extends/**/_1g64r976g34f4397gf7g94fg3gy3Main
 		l = 3;
 		System.out.println(this.geti());
 		System.out.println(this.getl());
-		
+
 		return i;
 	}
-	
+
 	public int geti()
 	{
 		return i;
 	}
-	
+
 	public long getl()
 	{
 		return l;
 	}
-	
+
 	public int seti(int newi)
 	{
 		i = newi;
 		return i;
 	}
-	
+
 	public long setl(int newl)
 	{
 		l = newl;
 		return l;
 	}
-	
+
 	public long fibonacci(int i)
 	{
 		return i;
@@ -128,7 +128,7 @@ class MainGrandChild extends MainChild
 		l = i;
 		return l;
 	}
-	
+
 	public long fibonacci(int i)
 	{
 		long ans;

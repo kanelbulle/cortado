@@ -5,5 +5,5 @@ class SOPLTest {
 }
 
 class Foo {
-	
+
 }

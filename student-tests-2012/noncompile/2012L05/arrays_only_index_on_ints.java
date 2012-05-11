@@ -1,8 +1,8 @@
 // EXT:LONG
 
-class fisk 
+class fisk
 {
-    public static void main(String[] woop) 
+    public static void main(String[] woop)
     {
         int[] a;
         long[] b;
@@ -12,6 +12,6 @@ class fisk
 
         a = new int[33l];                                   // not ok (lose precision)
         b = new long[33l];                                  // not ok (lose precision)
-        
+
     }
 }

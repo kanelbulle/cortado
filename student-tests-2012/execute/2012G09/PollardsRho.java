@@ -18,7 +18,7 @@ class MainClassPollardsRho
 }
 
 class PollardsRho
-{	
+{
 	public long calc(long n)
 	{
 		long x;
@@ -76,7 +76,7 @@ class PollardsRho
 
         return a;
     }
-	
+
 	public long mod(long x, long n)
 	{
 		while(x >= n)

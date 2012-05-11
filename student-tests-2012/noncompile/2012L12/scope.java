@@ -10,5 +10,5 @@ class Scope {
 }
 
 class Foo {
-	
+
 }

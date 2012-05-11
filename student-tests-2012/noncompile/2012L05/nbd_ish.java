@@ -1,8 +1,8 @@
 // EXT:NBD
 
-class asdf 
+class asdf
 {
-    public static void main(String[] args) 
+    public static void main(String[] args)
     {
         int a;
         a = 11;
@@ -13,10 +13,10 @@ class asdf
 
             a = a+b;                                        // eeyup
         }
-        
+
         b = 12;                                             // nnope
         a = a*a;                                            // eeyup
-        
+
         {
             int c;
 
@@ -28,7 +28,7 @@ class asdf
 
 
         a = c;                                              // nnope
-        
-        
+
+
     }
 }

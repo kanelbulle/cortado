@@ -7,7 +7,7 @@
 * properly.
 */
 
-// EXT:ISC
+// tege: invalid to use Exp as if Stmt
 
 class SubTyping {
 

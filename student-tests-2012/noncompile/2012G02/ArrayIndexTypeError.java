@@ -3,7 +3,7 @@ class ArrayIndexTypeError{
 		int i;
 		boolean b;
 		int[] a;
-	
+
 		a = new int[10];
 		b = true;
 		i = a[b];

@@ -1,3 +1,5 @@
+// EXT:CGT
+
 class Main {
 	public static void main(String[] args) {
 		Flipper f;
@@ -46,7 +48,7 @@ class Flipper {
 	int d;
 	/* annoying comment */
 	int[] arr;
-	
+
 	public int getNum(boolean p, int q) {
 		boolean c;
 		int __aa;
@@ -64,14 +66,14 @@ class Flipper {
 			q = arr.length;
 		}
 		arr = new int[5+24+arr.length];
-		
-		
+
+
 		q = 24+13+13*(5+2+3*1323*23+(123*123+(123)));
-		
+
 		System.out.println(arr.length);
-		
+
 		c = a;
-		
+
 		return 7;
 	}
 }

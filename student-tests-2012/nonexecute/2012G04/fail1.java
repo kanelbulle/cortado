@@ -9,7 +9,7 @@ class Main {
 
 class Flipper {
 
-	
+
 	public boolean flip(boolean p, int q) {
 		return this.flip(p,q+1);
 	}

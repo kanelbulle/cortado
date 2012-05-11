@@ -17,7 +17,7 @@ class BadMain {
    public static void main (String [ ] argv) {
       int a;
       BadMain myobj;
-      
+
       myobj = new BadMain();
 
       if (argv.length < 0) { a = argv.length * (0 - 1); } else a = argv.length;
@@ -25,8 +25,8 @@ class BadMain {
 
       while ( myobj.checkCond(a)) {
          System.out.println( argv[a]);
-         a = a - 1;	
-      }	
+         a = a - 1;
+      }
 
    }
 

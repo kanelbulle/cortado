@@ -30,19 +30,19 @@ class Flipper {
 	boolean c;
 	int b;
 	public int getNum(boolean p, int q) {
-		
+
 		if(q < 24) {
 			c = p;
 		} else {
 			b = q;
 		}
-		
+
 		return q * 7;
 	}
 
 	public int getNum(boolean p, int q) {
 
-		
+
 		return 7;
 	}
 }

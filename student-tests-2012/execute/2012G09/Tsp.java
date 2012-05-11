@@ -1,6 +1,6 @@
 
 /*
- * Should output 38
+ * Should output 34
  */
 
 // EXT:CEQ
@@ -8,46 +8,43 @@
 // EXT:CGT
 // EXT:DIV
 
-class MainClassTsp {
+class TspMC {
 	public static void main(String[] args) {
 		Tsp tsp;
 		int[] x;
 		int[] y;
-		
+
 		tsp = new Tsp();
-		x = new int[10];
-		y = new int[10];
-		
+		x = new int[9];
+		y = new int[9];
+
 		x[0] = 0;
 		y[0] = 0;
-		
+
 		x[1] = 10;
 		y[1] = 0-2;
-		
+
 		x[2] = 8;
 		y[2] = 2;
-		
+
 		x[3] = 10;
 		y[3] = 0;
-		
+
 		x[4] = 10;
 		y[4] = 2;
-		
+
 		x[5] = 6;
 		y[5] = 2;
-		
+
 		x[6] = 6;
 		y[6] = 0;
-		
-		x[7] = 21;
-		y[7] = 1;
-		
-		x[8] = 19;
-		y[8] = 6;
-		
-		x[9] = 14;
-		y[9] = 0-5;
-		
+
+		x[7] = 19;
+		y[7] = 6;
+
+		x[8] = 14;
+		y[8] = 0-5;
+
 		System.out.println(tsp.tspDis(x, y));
 	}
 }
@@ -62,9 +59,9 @@ class Tsp {
 		int[] ny;
 		int best;
 		int tmp;
-		
+
 		best = 32768;
-		
+
 		if(x.length == 2)
 		{
 			best = this.sqrt((x[1]-x[0])*(x[1]-x[0]) + (y[1]-y[0])*(y[1]-y[0]));
@@ -73,7 +70,7 @@ class Tsp {
 		{
 			nx = new int[x.length-1];
 			ny = new int[x.length-1];
-			
+
 			i = 1;
 			while(i < x.length)
 			{
@@ -94,16 +91,16 @@ class Tsp {
 					}
 					j = j + 1;
 				}
-				
+
 				tmp = this.tspDis(nx,ny);
 				tmp = tmp + this.sqrt((x[0]-nx[0])*(x[0]-nx[0]) + (y[0]-ny[0])*(y[0]-ny[0]));
-				
+
 				if(tmp < best)
 				{
 					best = tmp;
 				}
 				else {}
-				
+
 				i = i + 1;
 			}
 		}
@@ -128,9 +125,9 @@ class Tsp {
 	{
 		int m;
 		int ret;
-		
+
 		m = this.div(r-l, 2) + l;
-		
+
 		if(l >= r)
 		{
 			ret = m;
@@ -146,7 +143,7 @@ class Tsp {
 		}
 		return ret;
 	}
-	
+
 	public int div(int x, int y)
 	{
 		int out;
@@ -157,7 +154,7 @@ class Tsp {
 			x = x - y;
 			out = out + 1;
 		}
-		
+
 		return out;
 	}
 }

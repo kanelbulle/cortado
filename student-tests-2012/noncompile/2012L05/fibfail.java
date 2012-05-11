@@ -1,17 +1,17 @@
-class fib 
+class fib
 {
-    public static void main(String[] args) 
+    public static void main(String[] args)
     {
         System.out.println((new fibbery()).fib(38));
     }
 }
 
-// class fibbery 
+// class fibbery
 // {
-//     int fib(int n) 
+//     int fib(int n)
 //     {
 //         int result;
-        
+
 //         if (n == 0 || n == 1)
 //             result = n;
 //         else
@@ -19,5 +19,5 @@ class fib
 
 //         return result;
 //     }
-    
+
 // }

@@ -3,9 +3,9 @@
 
 // This test tests that minijava ints overflow in the same way as java ints by simply running code that will overflow
 
-class factorial 
+class factorial
 {
-    public static void main(String[] args) 
+    public static void main(String[] args)
     {
         System.out.println((new FactorialFaculty()).run(20));
         System.out.println((new FactorialTrecFaculty()).run(20));
@@ -14,12 +14,12 @@ class factorial
     }
 }
 
-class FactorialFaculty 
+class FactorialFaculty
 {
     public int run(int n)
     {
         int result;
-        
+
         if (n == 0)
             result = 1;
         else
@@ -35,7 +35,7 @@ class FactorialFaculty
 // "optimization" of scheme fame is even nigh-impossible (though a sufficiently smart compiler just might might... ... (although
 // the optimization is probably against java semantics to begin with))). But I still think it makes an interesting test since it
 // involves more parameters and all.
-class FactorialTrecFaculty 
+class FactorialTrecFaculty
 {
     public int run(int n)
     {
@@ -53,11 +53,11 @@ class FactorialTrecFaculty
 
         return result;
     }
-    
+
 }
 
 
-class FactorialIterFaculty 
+class FactorialIterFaculty
 {
     public int run(int n)
     {
@@ -69,7 +69,7 @@ class FactorialIterFaculty
             acc = n*acc;
             n = n - 1;
         }
-        
+
         return acc;
     }
 }

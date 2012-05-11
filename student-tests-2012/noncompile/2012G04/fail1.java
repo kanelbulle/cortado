@@ -9,16 +9,16 @@ class Main {
 
 class Flipper {
 
-	
+
 	public int getNum(boolean p, int q) {
 		boolean c;
-		
+
 		if(q < 24) {
 			c = p;
 		} else {
 			c = q;
 		}
-		
+
 		return q * 7;
 	}
 }

@@ -1,8 +1,8 @@
 // EXT:NBD
 
-class asdf 
+class asdf
 {
-    public static void main(String[] args) 
+    public static void main(String[] args)
     {
         {
             int ppo;
@@ -16,6 +16,6 @@ class asdf
             }
         }
     }
-    
+
 }
 

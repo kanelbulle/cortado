@@ -4,11 +4,11 @@
 * Author: Pedro de Carvalho Gomes <pedrodcg@csc.kth.se>
 *
 * This case checks if some class is a subtype of the main class
-* This should be an error. 
+* This should be an error.
 *
 */
 
-// EXT:ISC 
+// EXT:ISC
 
 class InhMain {
    public static void main (String [ ] argv) {
@@ -16,7 +16,7 @@ class InhMain {
 
       myA = new AType();
 
-      myA.printOne(); 
+      myA.printOne();
 
    }
 

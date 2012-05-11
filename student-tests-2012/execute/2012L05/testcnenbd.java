@@ -3,7 +3,7 @@
 
 class testcnenbd
 {
-    public static void main(String[] args) 
+    public static void main(String[] args)
     {
         System.out.println((new FactorialLitterFaculty()).run(10));
     }
@@ -11,7 +11,7 @@ class testcnenbd
 
 
 
-class FactorialLitterFaculty 
+class FactorialLitterFaculty
 {
     public int run(int n)
     {
@@ -28,7 +28,7 @@ class FactorialLitterFaculty
             n = n - rolf;
             acc = shoopwoop;
         }
-        
+
         return acc;
     }
 }

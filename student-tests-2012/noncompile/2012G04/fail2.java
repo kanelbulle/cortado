@@ -7,9 +7,9 @@ class Main {
 	}
 }
 
-class Flipper {	
+class Flipper {
 	public int getNum(boolean p, int q) {
-		
+
 		return 7;
 	}
 }

@@ -25,7 +25,7 @@ class AT {
 			i = i + 1;
 		}
 
-		i = 0; 
+		i = 0;
 		while(i < 5) {
 			if(b[i] != 10L) {
 					System.out.println(999999);

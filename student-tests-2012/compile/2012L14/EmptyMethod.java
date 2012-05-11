@@ -11,8 +11,8 @@
 class EmptyMethod {
 
    public static void main (String [   ] argv) {
-           
-      
+
+
    }
 
 }

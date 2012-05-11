@@ -5,5 +5,5 @@ class adsf
 
         System.out.println(new potatis().woop());
     }
-    
+
 }

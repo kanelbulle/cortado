@@ -1,20 +1,20 @@
 // EXT:BDJ
 // EXT:CEQ
 
-class fib 
+class fib
 {
-    public static void main(String[] args) 
+    public static void main(String[] args)
     {
         System.out.println((new fibbery()).fib(38));
     }
 }
 
-class fibbery 
+class fibbery
 {
-    public int fib(int n) 
+    public int fib(int n)
     {
         int result;
-        
+
         if (n == 0 || n == 1)
             result = n;
         else
@@ -22,5 +22,5 @@ class fibbery
 
         return result;
     }
-    
+
 }

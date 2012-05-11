@@ -2,6 +2,6 @@ class Bar {
 
 }
 
-class Foo { 
+class Foo {
 	public static void main(String[] args) {}
 }

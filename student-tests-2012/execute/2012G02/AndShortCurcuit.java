@@ -4,12 +4,12 @@ class AndShortCurcuit{
 		Test t;
 		t = new Test();
 		ret = t.set(1);
-		
+
 		if(false && 1 < t.set(2)){
 		}
 		else{
 		}
-		
+
 		ret = t.print(1);
 	}
 }
@@ -20,7 +20,7 @@ class Test{
 		value = v;
 		return 0;
 	}
-	
+
 	public int print(int v){
 		System.out.println(value);
 		return 0;

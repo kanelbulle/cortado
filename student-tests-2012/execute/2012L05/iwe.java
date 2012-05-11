@@ -1,4 +1,4 @@
-// EXT:NWE
+// EXT:IWE
 
 // a correct program prints nothing
 // a faulty one prints 33
@@ -8,7 +8,7 @@
 
 class iwe
 {
-    public static void main(String[] args) 
+    public static void main(String[] args)
     {
         if (false)
             if (true)

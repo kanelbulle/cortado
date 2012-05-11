@@ -3,10 +3,10 @@ class MethodTest{
 	Test2 t1;
 	Test2 t2;
 	int k;
-	
+
 	t1 = new Test2();
 	t2 = new Test2();
-	
+
 	k = t2.setJ(5);
 	k = t1.testMethod(t2, 1);
 	}

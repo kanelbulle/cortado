@@ -15,7 +15,7 @@ class NoVoid {
 
       myobj = new BadClass();
 
-      myobj.printNumber();      
+      myobj.printNumber();
 
    }
 

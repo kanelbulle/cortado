@@ -68,7 +68,7 @@ class StackOperator {
       last_item = last_item.push(item);
       return true;
    }
-   
+
    public Stackable exec() {
       last_item = last_item.exec();
       return last_item;

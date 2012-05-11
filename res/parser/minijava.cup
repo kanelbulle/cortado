@@ -104,6 +104,7 @@ precedence left PLUS, MINUS;
 precedence left MULTIPLY;
 precedence right BANG;
 precedence left DOT;
+precedence left LBRACKET;
 
 /* State to start with */
 start with program;

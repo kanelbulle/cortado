@@ -8,7 +8,7 @@
 *
 */
 
-// EXT:ISC 
+// EXT:ISC
 
 class CrossInh {
    public static void main (String [ ] argv) {
@@ -18,8 +18,8 @@ class CrossInh {
       myA = new AType();
       myB = new BType();
 
-      myA.printTwo(); 
-      myB.printOne(); 
+      myA.printTwo();
+      myB.printOne();
 
    }
 

@@ -99,7 +99,7 @@ class IntegerTest {
 		System.out.println((new GCD()).gcd(93,69));
 		System.out.println((new GCD()).gcd(93786,69456));
 		System.out.println((new GCD()).gcd(676577,134235));
-		
+
 		if((new GCD()).isNotZero(123)){System.out.println(1);}else{System.out.println(2);}
 		if(false && false){System.out.println(1);}else{System.out.println(2);}
 		if(false && true){System.out.println(1);}else{System.out.println(2);}
@@ -114,7 +114,7 @@ class IntegerTest {
 		if(true && true && true && false){System.out.println(1);}else{System.out.println(2);}
 		if(true && true && true && (0<1 && 1<2 && true)){System.out.println(1);}else{System.out.println(2);}
 		if(true && true && true && (1<1 && 1<2 && true)){System.out.println(1);}else{System.out.println(2);}
-		
+
 		if(true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true) && true && true && true && (1<1 && 1<2 && true))
 		{System.out.println(1);}else{System.out.println(2);}
 		return 1;
@@ -123,8 +123,8 @@ class IntegerTest {
 class GCD{
 	public int gcd(int a, int b){
 		int tmp;
-		
-		while(this.isNotZero(b)) { 
+
+		while(this.isNotZero(b)) {
 			tmp=b;
 			b = (new GCD()).mod(a,b);
 			a = tmp;
@@ -136,7 +136,7 @@ class GCD{
 	public int mod(int a,int b){
 		int modden;
 		modden =0;
-		if(a<b){			
+		if(a<b){
 		}else{
 			a=a-b;
 			while(b<a && this.isNotZero(b)){
@@ -161,7 +161,7 @@ class MeanTest {
 		baa=0;
 		i=40000;
 		ii=0;
-		arr = new int[i]; 
+		arr = new int[i];
 		t = new MeanTest();
 		System.out.println(arr.length);
 		sum=12;
@@ -176,14 +176,14 @@ class MeanTest {
 		sum = sum+11;
 		sum = (new Mean()).mean(10,sum);
 		System.out.println(sum);
-		
+
 		while(ii<i){
 			arr[ii]=ii;
 			ii=ii+1;
 			baa = (new Mean()).arrayMean(arr);
-			
+
 		}
-		
+
 		return 2;
 	}
 }

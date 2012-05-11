@@ -46,12 +46,12 @@ class IntArrayList {
 
 	public int add(int value) {
 		int whatever;
-		
+
 		if(intArr.length < nextFreePos) {
 			whatever = this.resize();
 		} else {
 		}
-		
+
 		if(!(intArr.length < nextFreePos) && !(nextFreePos < intArr.length)) {
 			whatever = this.resize();
 		} else {
@@ -63,21 +63,21 @@ class IntArrayList {
 
 		return 0;
 	}
-	
+
 	public int resize() {
 		int[] newArr;
 		int i;
-		
+
 		newArr = new int[intArr.length * 2];
-		
+
 		i = 0;
 		while(i < intArr.length) {
 			newArr[i] = intArr[i];
 			i = i + 1;
 		}
-		
+
 		intArr = newArr;
-		
+
 		return 0;
 	}
 
