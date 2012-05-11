@@ -16,6 +16,8 @@ action code {:
 		return parser.current_symbol.left;
 	}
 	
+			
+	
 :};
 	
 parser code {:
@@ -122,7 +124,8 @@ main_class 		::= CLASS IDENTIFIER:id LCURLY main_method:md RCURLY
 					;
 
 main_method 	::= PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING LBRACKET RBRACKET IDENTIFIER:id2 RPAREN LCURLY  RCURLY
-						{: 	VarDeclList vd = new VarDeclList();
+						{: 	
+							VarDeclList vd = new VarDeclList();
 							StatementList sl = new StatementList();
 							FormalList fl = new FormalList(new Formal(new StringArrayType(), new Identifier(id2, getReducedRow())));
 							RESULT = new MethodDecl(new VoidType(), new Identifier(id1, getReducedRow()), fl, vd, sl, new VoidExp());

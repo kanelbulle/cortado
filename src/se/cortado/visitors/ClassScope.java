@@ -64,13 +64,13 @@ public class ClassScope {
 
 				if (otherParams.size() == method.formalList.size()) {
 					/* Check if the two methods parameter types are identical */
-
 					for (int i = 0; i < method.formalList.size(); ++i) {
-						if (!method.formalList.elementAt(i).t
-								.equals(otherParams.elementAt(i).t)) {
+						if (method.formalList.elementAt(i).t.equals(otherParams.elementAt(i).t)) {
 							throw new Exception("Redeclaration class method \""
 									+ method.identifier + "\" on line: "
 									+ method.identifier.row);
+						} else {
+							System.out.println("COMPARING: " + method.formalList.elementAt(i).t + " WITH " + otherParams.elementAt(i).t);
 						}
 					}
 				}

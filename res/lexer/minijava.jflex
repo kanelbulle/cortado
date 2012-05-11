@@ -85,7 +85,6 @@ WS = [ \t\f]
 COMMENT   = "/*" [^*] ~"*/" | "/*" "*"+ "/" | \/\/.*\n
 
 %% /* ---------------- LEXICAL RULES ---------------- */
-
 "class" 						{ return token(sym.CLASS); }
 "static"						{ return token(sym.STATIC); }
 "void"							{ return token(sym.VOID); }
