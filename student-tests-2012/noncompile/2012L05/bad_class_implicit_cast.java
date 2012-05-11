@@ -2,7 +2,7 @@
 
 class wrwerwer
 {
-    public static void main(String[] args) 
+    public static void main(String[] args)
     {
         sup a;
         boppity b;
@@ -10,8 +10,8 @@ class wrwerwer
         a = new boppity();                                  // ok. casting upwards the hierarchy
         b = new boppity();                                  // ok. same type
         b = new sup();                                      // not ok
-        
-        
+
+
     }
 }
 

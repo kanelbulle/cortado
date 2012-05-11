@@ -11,5 +11,5 @@ class Foo {
 	// MethodRedecl.java:11: bar() is already defined in Foo
 	public int bar() {
 		return 0;
-	} 
+	}
 }

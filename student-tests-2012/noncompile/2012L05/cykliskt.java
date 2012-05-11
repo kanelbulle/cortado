@@ -11,9 +11,9 @@ class fasdf
     }
 }
 
-class fisk extends korv 
+class fisk extends korv
 {
-    public fisk me() 
+    public fisk me()
     {
         System.out.println(1337);
         System.out.println(this.foo(2));
@@ -29,19 +29,19 @@ class korv extends lol
 
 class lol extends fisk
 {
-    public int fii(int[] a) 
+    public int fii(int[] a)
     {
         System.out.println(a.length);
         a[0] = a[0]*2;
         return 12 + 12 + a[0];
     }
-    
-    
-    public int foo(int a) 
-    { 
+
+
+    public int foo(int a)
+    {
         int kor;
-        
-        
+
+
         return a+23;
     }
 }

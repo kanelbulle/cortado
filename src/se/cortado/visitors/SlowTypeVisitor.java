@@ -459,10 +459,13 @@ public class SlowTypeVisitor implements TypeVisitor {
 
 	@Override
 	public Type visit(Minus node) {
-		if (!(node.e1.accept(this) instanceof IntegerType)) {
+		Type typeLeft = node.e1.accept(this);
+		Type typeRight = node.e2.accept(this);
+				
+		if (!(typeLeft instanceof IntegerType) && !(typeLeft instanceof IntArrayType)) {
 			addError(LEFT_SIDE_ERROR, "-", "integer");
 		}
-		if (!(node.e2.accept(this) instanceof IntegerType)) {
+		if (!(typeRight instanceof IntegerType) && !(typeRight instanceof IntArrayType)) {
 			addError(RIGHT_SIDE_ERROR, "-", "integer");
 		}
 
@@ -500,10 +503,13 @@ public class SlowTypeVisitor implements TypeVisitor {
 
 	@Override
 	public Type visit(Plus node) {
-		if (!(node.e1.accept(this) instanceof IntegerType)) {
+		Type typeLeft = node.e1.accept(this);
+		Type typeRight = node.e2.accept(this);
+		
+		if (!(typeLeft instanceof IntegerType) && !(typeLeft instanceof IntArrayType)) {
 			addError(LEFT_SIDE_ERROR, "+", "integer");
 		}
-		if (!(node.e2.accept(this) instanceof IntegerType)) {
+		if (!(typeRight instanceof IntegerType) && !(typeRight instanceof IntArrayType)) {
 			addError(RIGHT_SIDE_ERROR, "+", "integer");
 		}
 
@@ -512,7 +518,10 @@ public class SlowTypeVisitor implements TypeVisitor {
 
 	@Override
 	public Type visit(Print node) {
-		node.e.accept(this);
+		Type t = node.e.accept(this);
+		if (!(t instanceof IntegerType) && !(t instanceof IntArrayType) && !(t instanceof BooleanType)) {
+			addError(EXPRESSION_INSIDE_ERROR, "System.out.println()", "int OR int[] OR boolean");
+		}
 		return null;
 	}
 

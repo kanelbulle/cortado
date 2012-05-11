@@ -16,6 +16,13 @@ action code {:
 		return parser.current_symbol.left;
 	}
 	
+	public void isMain(String method) throws Exception {
+		if (!method.equals("main")) {
+			throw new Exception("Missing static main method!");
+		}
+	}
+			
+	
 :};
 	
 parser code {:
@@ -53,7 +60,7 @@ terminal 					INTEGER;
 
 /* Datatypes */
 terminal String				IDENTIFIER;
-terminal 					INT, BOOLEAN, STRING_ARRAY;
+terminal 					INT, BOOLEAN, STRING;
 
 /* Operators */
 terminal Plus 				PLUS;
@@ -104,6 +111,7 @@ precedence left PLUS, MINUS;
 precedence left MULTIPLY;
 precedence right BANG;
 precedence left DOT;
+precedence left LBRACKET;
 
 /* State to start with */
 start with program;
@@ -120,26 +128,27 @@ main_class 		::= CLASS IDENTIFIER:id LCURLY main_method:md RCURLY
 						{: RESULT = new MainClass(new Identifier(id, getReducedRow()), md); :}
 					;
 
-main_method 	::= PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING_ARRAY IDENTIFIER:id2 RPAREN LCURLY  RCURLY
-						{: 	VarDeclList vd = new VarDeclList();
+main_method 	::= PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING LBRACKET RBRACKET IDENTIFIER:id2 RPAREN LCURLY  RCURLY
+						{: 	isMain(id1);
+							VarDeclList vd = new VarDeclList();
 							StatementList sl = new StatementList();
 							FormalList fl = new FormalList(new Formal(new StringArrayType(), new Identifier(id2, getReducedRow())));
 							RESULT = new MethodDecl(new VoidType(), new Identifier(id1, getReducedRow()), fl, vd, sl, new VoidExp());
 						:}	
-					| PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING_ARRAY IDENTIFIER:id2 RPAREN LCURLY stmt_list:sl RCURLY
-						{: 	
+					| PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING LBRACKET RBRACKET IDENTIFIER:id2 RPAREN LCURLY stmt_list:sl RCURLY
+						{: 	isMain(id1);
 							VarDeclList vd = new VarDeclList();
 							FormalList fl = new FormalList(new Formal(new StringArrayType(), new Identifier(id2, getReducedRow())));
 							RESULT = new MethodDecl(new VoidType(), new Identifier(id1, getReducedRow()), fl, vd, sl, new VoidExp());
 						:}	
-					| PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING_ARRAY IDENTIFIER:id2 RPAREN LCURLY var_decls:vd RCURLY
-						{: 	
+					| PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING LBRACKET RBRACKET IDENTIFIER:id2 RPAREN LCURLY var_decls:vd RCURLY
+						{: 	isMain(id1);
 							StatementList sl = new StatementList();
 							FormalList fl = new FormalList(new Formal(new StringArrayType(), new Identifier(id2, getReducedRow())));
 							RESULT = new MethodDecl(new VoidType(), new Identifier(id1, getReducedRow()), fl, vd, sl, new VoidExp());
 						:}	
-					| PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING_ARRAY IDENTIFIER:id2 RPAREN LCURLY var_decls:vd stmt_list:sl RCURLY
-						{: 	
+					| PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING LBRACKET RBRACKET IDENTIFIER:id2 RPAREN LCURLY var_decls:vd stmt_list:sl RCURLY
+						{: 	isMain(id1);
 							FormalList fl = new FormalList(new Formal(new StringArrayType(), new Identifier(id2, getReducedRow())));
 							RESULT = new MethodDecl(new VoidType(), new Identifier(id1, getReducedRow()), fl, vd, sl, new VoidExp());
 						:}

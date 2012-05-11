@@ -1,3 +1,5 @@
+// EXT:IWE
+
 class Main {
     public static void main(String[] args) {
 	Dog d;
@@ -36,9 +38,9 @@ class Main {
 	if(foo.toggle()){ b = foo.toggle(); }
 	if(!foo.toggle()){ b = foo.toggle(); }
 	if(true && foo.toggle()){ b = foo.toggle(); }
-	if(false && foo.toggle()){ b = foo.toggle(); } 
-	if(foo.toggle() && false){ b = foo.toggle(); } 
-	if(!foo.toggle() && foo.toggle()){ b = foo.toggle(); } 
+	if(false && foo.toggle()){ b = foo.toggle(); }
+	if(foo.toggle() && false){ b = foo.toggle(); }
+	if(!foo.toggle() && foo.toggle()){ b = foo.toggle(); }
 	System.out.println(foo.getCount());//Should print 8
 
     }
@@ -94,7 +96,7 @@ class Flipper {
 	boolean c;
 	int b;
 	public int getNum() {
-		
+
 		return b;
 	}
 

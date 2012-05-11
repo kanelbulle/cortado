@@ -10,7 +10,7 @@ class NoComp2 {
 
 		i = 0;
 		while (i=1) { // error here
-			arr[i] = i; 
+			arr[i] = i;
 			i = i+1;
 		}
 	}

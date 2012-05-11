@@ -1,27 +1,27 @@
 class Foo {
 
 	public static void main(String[] args) {
-			
+
 			A a;
 			B b;
 			C c;
 			D d;
 			E e;
-			
+
 			a = new A();
 			b = new B();
 			c = new C();
 			d = new D();
 			e = new E();
-			
+
 			System.out.println(a.foo());
 			System.out.println(b.foo());
 			System.out.println(c.foo());
 			System.out.println(d.foo());
 			System.out.println(e.foo());
-			
+
 	}
-	
+
 }
 
 class A {

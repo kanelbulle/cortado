@@ -1,7 +1,7 @@
-// EXT:CLE 
-// EXT:CGT 
-// EXT:CGE 
-// EXT:CEQ 
+// EXT:CLE
+// EXT:CGT
+// EXT:CGE
+// EXT:CEQ
 // EXT:CNE
 // EXT:BDJ
 // EXT:NBD
@@ -24,7 +24,7 @@ class Full{
 		{
 			ExtendsTest et;
 			et = new ExtendsTest();
-			
+
 			ret = et.Test();
 		}
 		{
@@ -66,7 +66,7 @@ class ExtendsTest{
 
 	public int ExtendsTestMethod(A a){
 		int ret;
-		
+
 		ret = a.print();
 		{
 			int ab;
@@ -74,12 +74,12 @@ class ExtendsTest{
 			ret = ab;
 
 		}
-		
+
 		return ret;
 	}
 	public int ExtendsTestMethod(B a){
 		int ret;
-		
+
 		ret = a.print();
 		{
 			int ab;
@@ -87,10 +87,10 @@ class ExtendsTest{
 			ret = ab;
 
 		}
-		
+
 		return ret;
 	}
-	
+
 	public int Test(){
 		B b;
 		int ret;
@@ -153,7 +153,7 @@ class CsToEconomy{
 		}
 		return 0;
 	}
-	
+
 	public int badSolve(){
 		int i;
 		int sumcs;
@@ -179,7 +179,7 @@ class CsToEconomy{
 			if(arrCS[i]*students < sumcs && arrCS[i]*students < sumec)
 				cnt = cnt +1;
 			i=i+1;
-			
+
 		}
 		return cnt;
 	}

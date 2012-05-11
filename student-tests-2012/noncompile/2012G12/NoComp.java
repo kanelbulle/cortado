@@ -12,16 +12,16 @@ class NoComp {
 		rectAB = 0;
 
 		o = 1 = 2;  // error here
-		i = 10; 
-		while (1<i) { 
-			o = i; 
+		i = 10;
+		while (1<i) {
+			o = i;
 			i = i+1;
 		}
 		if (o = 1){
 		System.out.println(o+o-(o+42)*0);
 		}
-		i = 1+2+3+4+5	//error here	
-		
+		i = 1+2+3+4+5	//error here
+
 		if (0 < sideA){
 			o = i; //save value
 			i = sideA;
@@ -48,7 +48,7 @@ class NoComp {
 		}
 		else{
 		squareA = 0;
-		}			
+		}
 		i = o;   //recover value
 	}
 }

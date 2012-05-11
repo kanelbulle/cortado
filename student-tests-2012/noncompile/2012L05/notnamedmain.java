@@ -1,6 +1,6 @@
-class fisk 
+class fisk
 {
-    public static void batman(String[] args) 
+    public static void batman(String[] args)
     {
     }
 }

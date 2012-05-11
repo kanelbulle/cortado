@@ -1,27 +1,28 @@
+// EXT:CGT
+
 /*
- * Should output 2142855
- * No extensions required
+ * Should output 21425
  */
-class MainClassMergeSort {
+class MergeSortMC {
 	public static void main(String[] args)
 	{
 		MergeSort sorter;
 		int i;
 		int[] in;
 		int out;
-		
+
 		sorter = new MergeSort();
-		in = new int[3000000];
-		
+		in = new int[30000];
+
 		i = 0;
 		while(i < in.length)
 		{
 			in[i] = sorter.mod(i, 11);
 			i = i + 1;
 		}
-		
+
 		in = sorter.sort(in);
-		
+
 		out = 0;
 		i = 0;
 		while(i < in.length-1 && !(out < 0))
@@ -31,7 +32,7 @@ class MainClassMergeSort {
 				out = 0-1;
 			} else {}
 			i = i + 1;
-			
+
 			if(!(0 < sorter.mod(i, 7)))
 			{
 				out = out + in[i];
@@ -49,7 +50,7 @@ class MergeSort {
 		int[] a;
 		int[] b;
 		int tmp;
-		
+
 		if(!(2 < in.length))
 		{
 			if(!(in.length < 0) && !(0 < in.length))
@@ -66,7 +67,7 @@ class MergeSort {
 						in[0] = ai;
 					} else {}
 				}
-				
+
 			}
 		}
 		else
@@ -74,7 +75,7 @@ class MergeSort {
 			tmp = this.div(in.length, 2);
 			a = new int[tmp];
 			b = new int[in.length - tmp];
-			
+
 			ai = 0;
 			while(ai < a.length)
 			{
@@ -87,10 +88,10 @@ class MergeSort {
 				b[bi] = in[bi+a.length];
 				bi = bi + 1;
 			}
-			
+
 			a = this.sort(a);
 			b = this.sort(b);
-			
+
 			ai = 0;
 			bi = 0;
 			while(ai+bi < in.length)
@@ -109,7 +110,7 @@ class MergeSort {
 							in[ai+bi] = b[bi];
 							bi = bi + 1;
 						}
-					} 
+					}
 					else
 					{
 						in[ai+bi] = a[ai];
@@ -125,7 +126,7 @@ class MergeSort {
 		}
 		return in;
 	}
-	
+
 	public int mod(int x, int n)
 	{
 		while(!(x < n))
@@ -134,7 +135,7 @@ class MergeSort {
 		}
 		return x;
 	}
-	
+
 	public int div(int x, int y)
 	{
 		int out;
@@ -145,7 +146,7 @@ class MergeSort {
 			x = x - y;
 			out = out + 1;
 		}
-		
+
 		return out;
 	}
 }

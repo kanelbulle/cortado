@@ -2,7 +2,7 @@ class SimpleMath {
 	public static void main(String[] a) {
 		int i;
 		int theMeaningOfLifeTheUniverseAndEverything;
-		int theNumberOfHornsOnAUnicorn;		
+		int theNumberOfHornsOnAUnicorn;
 
 		theMeaningOfLifeTheUniverseAndEverything = 42;
 
@@ -10,7 +10,7 @@ class SimpleMath {
 		while (i < theMeaningOfLifeTheUniverseAndEverything) {
 			i=i+1;
 		}
-		
+
 		theNumberOfHornsOnAUnicorn = i*0+1;
 
 		System.out.println(theNumberOfHornsOnAUnicorn*theMeaningOfLifeTheUniverseAndEverything);
@@ -51,7 +51,7 @@ class SimpleMath {
 				}
 			}
 		}
-		
+
 		public boolean xor(boolean a, boolean b){
 			if(a&&!b){
 				return true;
@@ -122,5 +122,5 @@ class SimpleMath {
 		}
 
 
-		
+
 	}

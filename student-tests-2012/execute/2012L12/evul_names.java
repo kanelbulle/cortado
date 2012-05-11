@@ -20,7 +20,7 @@ class pop {
 	}
 
 	public int swap() {
-		return 0;	
+		return 0;
 	}
 
 	public int iload_0() {

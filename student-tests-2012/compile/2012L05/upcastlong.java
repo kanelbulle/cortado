@@ -1,8 +1,8 @@
 // EXT:LONG
 
-class mama 
+class mama
 {
-    public static void main(String[] args) 
+    public static void main(String[] args)
     {
         int a;
         long b;

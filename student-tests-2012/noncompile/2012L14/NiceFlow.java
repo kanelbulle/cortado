@@ -2,7 +2,7 @@
 * Mini Java Test-case
 * Id:4
 * Author: Pedro de Carvalho Gomes <pedrodcg@csc.kth.se>
-* 
+*
 * This test-case tests if the correct scanning of comments.
 * Also, test some exp constructions and passing of parameters
 */

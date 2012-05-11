@@ -20,8 +20,8 @@
 
 class Main {
 	public static void main(String[] args) {
-		
-	}	
+
+	}
 }
 
 class Sub {
@@ -29,12 +29,12 @@ class Sub {
 	public int selfKill(int i) {
 		return this.this.selfKill(1);
 	}
-	
+
 	// && on non-boolean should not be allowed
 	public int selfKill1() {
 		return selfKill1() && selfKill1();
 	}
-	
+
 	// Empty statements should not be allowed
 	public int selfKill2(int i) {
 		;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

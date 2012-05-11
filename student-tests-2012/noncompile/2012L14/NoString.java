@@ -13,9 +13,9 @@ class NoString {
       int a;
       NoString myobj;
 
-      myobj = new NoString(); 
+      myobj = new NoString();
 
-      myobj.printInvParameters( argv);      
+      myobj.printInvParameters( argv);
 
    }
 

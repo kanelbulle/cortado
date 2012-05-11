@@ -1,10 +1,10 @@
 
 
-// testing main as variable name among others. this should weed out compilers that handle main like a keyword. 
+// testing main as variable name among others. this should weed out compilers that handle main like a keyword.
 
 class drain
 {
-    public static void main(String[] args) 
+    public static void main(String[] args)
     {
         int main;
 

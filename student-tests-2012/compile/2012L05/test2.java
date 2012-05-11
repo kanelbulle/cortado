@@ -13,7 +13,7 @@ class fasdf
     }
 }
 
-class fisk extends korv 
+class fisk extends korv
 {
 }
 
@@ -23,24 +23,24 @@ class korv extends lol
 }
 
 
-class lol 
+class lol
 {
 
-    public long fii(long[] a) 
+    public long fii(long[] a)
     {
         return 12l;
     }
-    
-    
-    public int foo(int a) 
-    { 
+
+
+    public int foo(int a)
+    {
         int kor;
         long b;
 
         a = a*23 + 1;
         b = 2L * 2L;
-        
-        
+
+
         return a+23;
     }
 }

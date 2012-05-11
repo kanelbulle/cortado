@@ -7,12 +7,7 @@
 * Thus, any ID could use such name.
 */
 
-
-// EXT:CGE
-// EXT:CLE
-// EXT:IWE
-// EXT:CNE 
-// EXT:BDJ
+// tege: invalid syntax with return
 
 class NotMain {
    public static void main ( String [] argv) {
@@ -22,7 +17,7 @@ class NotMain {
       main myobj;
 
       myobj = new main();
-        
+
       len = 10;
 
       if ( ( len != 0)) {array1 = new int [len]; array2 = new int [len+1];} if ((( len >= 1) || len <= 2 )) {array1 = new int[len*2]; array2 = new int[len-2];} else {array1 = new int[len*2]; array2 = new int[len+3];}

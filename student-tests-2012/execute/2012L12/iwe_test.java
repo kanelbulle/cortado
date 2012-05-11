@@ -9,7 +9,7 @@ class IweTest  {
 class CT {
 
 	public int run() {
-      
+
       if(1 < 2) {
          System.out.println(1);
          if(4 < 6) {
@@ -23,7 +23,7 @@ class CT {
       if(1 < 2)
          System.out.println(4);
       System.out.println(5);
-      if(6 < 2) 
+      if(6 < 2)
          System.out.println(6);
       System.out.println(7);
 

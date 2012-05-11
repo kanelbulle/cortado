@@ -11,7 +11,7 @@ class CmpTest {
 }
 
 class CT {
-	int a; 
+	int a;
 
 	public int run() {
 		int errors;
@@ -74,7 +74,7 @@ class CT {
 		} else {
 		}
 
-		return errors; 
+		return errors;
 	}
 
 	public boolean setA() {

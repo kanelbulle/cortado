@@ -60,12 +60,12 @@ class Sorter {
 			if (l) {
 				left = left + 1;
 			} else {
-				right = right - 1;	
+				right = right - 1;
 			}
 
 			l = !l;
 		}
-		
+
 		return left;
 	}
 
@@ -112,7 +112,7 @@ class Sorter {
 
 		return idx;
 	}
-	
+
 	public boolean print() {
 		int i;
 		i = 0;
@@ -120,6 +120,6 @@ class Sorter {
 			System.out.println(data[i]);
 			i = i + 1;
 		}
-		return true;	
+		return true;
 	}
 }

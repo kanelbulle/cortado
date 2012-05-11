@@ -85,7 +85,6 @@ WS = [ \t\f]
 COMMENT   = "/*" [^*] ~"*/" | "/*" "*"+ "/" | \/\/.*\n
 
 %% /* ---------------- LEXICAL RULES ---------------- */
-
 "class" 						{ return token(sym.CLASS); }
 "static"						{ return token(sym.STATIC); }
 "void"							{ return token(sym.VOID); }
@@ -111,7 +110,7 @@ COMMENT   = "/*" [^*] ~"*/" | "/*" "*"+ "/" | \/\/.*\n
 
 /* ----- Datatypes ----- */
 "int" 							{ return token(sym.INT); }
-String\[\]						{ return token(sym.STRING_ARRAY); }
+String							{ return token(sym.STRING); }
 "boolean" 						{ return token(sym.BOOLEAN); }
 [a-zA-Z]([0-9a-zA-Z] | _)* 		{ return token(sym.IDENTIFIER); }
 

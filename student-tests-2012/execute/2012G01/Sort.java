@@ -4,13 +4,13 @@ class Sort {
 		Data data;
 		int[] array;
 		int i;
- 		
+
 		qs = new QuickSort();
 		data = new Data();
-		
+
 		array = data.getData();
 		array = qs.sort(array);
-		
+
 		i = 0;
 		while (i < array.length) {
 			System.out.println(array[i]);
@@ -20,44 +20,44 @@ class Sort {
 }
 
 class QuickSort {
-	
+
 	public int[] sort(int[] array) {
 		int t;
 		t = this.quicksort(array, 0, array.length - 1);
-		
+
 		return array;
 	}
-	
+
 	public int quicksort(int[] v, int first, int last) {
 		int t;
 		int pivot;
 		int[] newPivotRange;
-		
+
 		if (first < last) {
 			// poorly chosen pivot
 			pivot = v[first];
 			newPivotRange = this.partition(v, first, last, pivot);
-			
+
 			t = this.quicksort(v, first, newPivotRange[0] - 1);
 			t = this.quicksort(v, newPivotRange[1] + 1, last);
 		} else {
-			
+
 		}
-		
+
 		return 0;
 	}
-	
+
 	public int[] partition(int[] v, int first, int last, int pivot) {
 		int low;
 		int mid;
 		int high;
 		int a;
 		int[] ret;
-		
+
 		low = first;
 		mid = first;
 		high = last;
-		
+
 		while (mid < high + 1) {
 			a = v[mid];
 			if (a < pivot) {
@@ -66,26 +66,26 @@ class QuickSort {
 				low = low + 1;
 				mid = mid + 1;
 			} else {
-				
+
 			}
 			if (a < (pivot + 1) && (pivot < (a + 1))) {
 				mid = mid + 1;
 			} else {
-				
+
 			}
 			if (pivot < a) {
 				v[mid] = v[high];
 				v[high] = a;
 				high = high - 1;
 			} else {
-				
+
 			}
 		}
-		
+
 		ret = new int[2];
 		ret[0] = low;
 		ret[1] = high;
-		
+
 		return ret;
 	}
 }

@@ -1,9 +1,9 @@
 // EXT:LONG
 // EXT:CEQ
 
-class factorial 
+class factorial
 {
-    public static void main(String[] args) 
+    public static void main(String[] args)
     {
         System.out.println((new FactorialFaculty()).run(20l));
         System.out.println((new FactorialTrecFaculty()).run(20l));
@@ -12,12 +12,12 @@ class factorial
     }
 }
 
-class FactorialFaculty 
+class FactorialFaculty
 {
     int shoop;
     long lawl;
     int woop;
-    
+
     public long run(long n)
     {
         int blah;
@@ -28,14 +28,14 @@ class FactorialFaculty
         blah = 0 - 222;
 
         lawl = 2323223l;                                    // Testing out instance-variables
-        
+
         if (n == 0)
             result = 1;
         else
             result = n * this.run(n-1);
 
         lawl = result;                                      // Testing out instance-variables
-        
+
         shoop = 34 + potato;                          // Testing out instance-variables some more (this is in reality dead code)
         woop = shoop*2;
 
@@ -50,7 +50,7 @@ class FactorialFaculty
 // "optimization" of scheme fame is even nigh-impossible (though a sufficiently smart compiler just might might... ... (although
 // the optimization is probably against java semantics to begin with))). But I still think it makes an interesting test since it
 // involves more parameters and all.
-class FactorialTrecFaculty 
+class FactorialTrecFaculty
 {
     public long run(long n)
     {
@@ -68,14 +68,14 @@ class FactorialTrecFaculty
 
         return result;
     }
-    
+
 }
 
 
-class FactorialIterFaculty 
+class FactorialIterFaculty
 {
     long acc;                                               // Try instance variables for real?
-    
+
     public long run(long n)
     {
         acc = 1;
@@ -84,7 +84,7 @@ class FactorialIterFaculty
             acc = n*acc;
             n = n - 1;
         }
-        
+
         return acc;
     }
 }
