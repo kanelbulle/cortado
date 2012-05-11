@@ -61,7 +61,17 @@ public abstract class Instr {
 			else
 				s.append(assem.charAt(i));
 
-		return s.toString() + "\n";
+		if (this instanceof LABEL) {
+			return s.toString() + "\n";	
+		} 
+		else if (s.length() == 0) {
+			// Ignore empty instructions
+			return "";
+		}
+		else {
+			return "\t" + s.toString() + "\n";
+		}
+		
 	}
 
 }

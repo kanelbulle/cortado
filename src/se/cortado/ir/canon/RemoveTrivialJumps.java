@@ -28,8 +28,7 @@ public class RemoveTrivialJumps
 		IR_Stm h = ss.head;	
 		IR_StmList t = fix(ss.tail);
 
-		if ( t == null 
-				|| ! (h instanceof JUMP && (t.head instanceof LABEL)))
+		if ( t == null || ! (h instanceof JUMP && (t.head instanceof LABEL)))
 			return L(h,t);
 
 		JUMP  jmp = (JUMP)  h;
@@ -40,7 +39,9 @@ public class RemoveTrivialJumps
 		String labl = ((LABEL) t.head).label.toString();
 		String labj = jmp.targets.head.toString();
 
-		if (labl == labj) return t;
+		if (labl == labj) {
+			return t;
+		}
 
 		return L(h,t);
 	}

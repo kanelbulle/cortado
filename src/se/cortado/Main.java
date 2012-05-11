@@ -92,10 +92,10 @@ public class Main {
 				Liveness liveness = new Liveness(afg);
 				liveness.show(System.out);
 				
-				RegAlloc regalloc = new RegAlloc(fragments.frame, fragments.proc.body, liveness);
-				for (Instr instr : fragments.proc.body) {
-					instr.format(regalloc);
-				}
+//				RegAlloc regalloc = new RegAlloc(fragments.frame, fragments.proc.body, liveness);
+//				for (Instr instr : fragments.proc.body) {
+//					instr.format(regalloc);
+//				}
 				
 				fragments = (ProcFragment) fragments.next;
 			}

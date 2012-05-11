@@ -11,16 +11,15 @@ import se.cortado.liveness.Node;
 
 public class Color implements TempMap {
 
-	HashMap<Temp, Temp>	mColorMap		= new HashMap<Temp, Temp>();
+	TempMap				mInitial;
+	HashMap<Temp, Temp>	mColorMap			= new HashMap<Temp, Temp>();
 
 	Set<Node>			mSimplifyWorklist	= new HashSet<Node>();
 	Set<Node>			mColoredNodes		= new HashSet<Node>();
 	Set<Temp>			mSelectStack		= new HashSet<Temp>();
-	
-	
 
 	public Color(InterferenceGraph ig, TempMap initial, TempList registers) {
-
+		mInitial = initial;
 	}
 
 	public TempList spills() {
@@ -29,7 +28,11 @@ public class Color implements TempMap {
 
 	@Override
 	public String tempMap(Temp t) {
-		return mColorMap.get(t).toString();
+		String s = mInitial.tempMap(t);
+		if (s == null) {
+			s = mColorMap.get(t).toString();
+		}
+		return s;
 	}
 
 }
