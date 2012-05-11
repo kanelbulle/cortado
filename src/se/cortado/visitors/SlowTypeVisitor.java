@@ -518,7 +518,10 @@ public class SlowTypeVisitor implements TypeVisitor {
 
 	@Override
 	public Type visit(Print node) {
-		node.e.accept(this);
+		Type t = node.e.accept(this);
+		if (!(t instanceof IntegerType) && !(t instanceof IntArrayType) && !(t instanceof BooleanType)) {
+			addError(EXPRESSION_INSIDE_ERROR, "System.out.println()", "int OR int[] OR boolean");
+		}
 		return null;
 	}
 
