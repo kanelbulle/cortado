@@ -1,6 +1,10 @@
 package se.cortado;
 
+import java.io.BufferedWriter;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import java_cup.runtime.Symbol;
@@ -104,14 +108,32 @@ public class Main {
 			
 			System.out.println("==================== ALLOCIN' SOME REGS FOR YO TEMPS DAWG ====================");
 			
+			List<ProcFragment> revFragments = new ArrayList<ProcFragment>();
 			while (fragments != null) {
 				RegAlloc regalloc = new RegAlloc(fragments.frame, fragments.proc.body, fragments.liveness);
 				for (Instr instr : fragments.proc.body) {
 					System.out.print(instr.format(regalloc));
 				}
+				fragments.regalloc = regalloc;
 				
+				revFragments.add(fragments);
 				fragments = (ProcFragment) fragments.next;
 			}
+			Collections.reverse(revFragments);
+			
+			
+			// assume file ends in .java
+			fileName = fileName.substring(fileName.lastIndexOf("/") + 1);
+			fileName = fileName.substring(0, fileName.length() - 5) + ".s";
+			BufferedWriter fileWriter = new BufferedWriter(new FileWriter(fileName));
+			
+			for (ProcFragment proc : revFragments) {
+				for (Instr instr : proc.proc.body) {
+					fileWriter.write(instr.format(proc.regalloc));
+				}
+			}
+			
+			fileWriter.close();
 			
 		} catch (Exception e) {
 			System.out.println("ERROR: " + e.getMessage());

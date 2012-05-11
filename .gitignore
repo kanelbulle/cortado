@@ -5,6 +5,7 @@ local.properties
 .metadata/
 *.class
 *.java~
+*.s
 gen/
 bin/
 docs/report/report.aux

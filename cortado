@@ -1,3 +1,9 @@
 #!/bin/bash
-java -cp bin/:lib/java-cup-11a.jar se.cortado.Main $1
-make -C res/runtime/
+mkdir cortadoout
+java -cp mjc.jar:lib/JFlex.jar:lib/java-cup-11a.jar mjc.X86Main $1 -S
+filename=$( basename $1 )
+filename=$( basename $filename .java)
+
+as ${filename}.s -o ${filename}.o
+
+gcc ${filename}.o -o ${filename} -L lib/ -l minijavalib
