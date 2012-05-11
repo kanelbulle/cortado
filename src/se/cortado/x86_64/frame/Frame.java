@@ -229,14 +229,11 @@ public class Frame implements se.cortado.frame.Frame {
 		this.name = label;
 	}
 
+	// returns null for any not precolored temporaries
 	@Override
 	public String tempMap(Temp t) {
 		String name = Hardware.tempName(t);
-
-		if (name == null) {
-			name = t.toString();
-		}
-
+		
 		return name;
 	}
 }

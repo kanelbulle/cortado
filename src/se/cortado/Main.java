@@ -11,6 +11,7 @@ import se.cortado.ir.temp.DefaultMap;
 import se.cortado.ir.translate.ProcFragment;
 import se.cortado.liveness.AssemFlowGraph;
 import se.cortado.regalloc.Liveness;
+import se.cortado.regalloc.RegAlloc;
 import se.cortado.syntaxtree.Program;
 import se.cortado.visitors.ASTPrintVisitor;
 import se.cortado.visitors.IntermediateVisitor;
@@ -90,6 +91,11 @@ public class Main {
 				
 				Liveness liveness = new Liveness(afg);
 				liveness.show(System.out);
+				
+				RegAlloc regalloc = new RegAlloc(fragments.frame, fragments.proc.body, liveness);
+				for (Instr instr : fragments.proc.body) {
+					instr.format(regalloc);
+				}
 				
 				fragments = (ProcFragment) fragments.next;
 			}

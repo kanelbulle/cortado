@@ -10,15 +10,15 @@ import se.cortado.ir.temp.TempMap;
 public class RegAlloc implements TempMap {
 
 	public List<Instr>	instructions;
+	private Color		color;
 
-	public RegAlloc(Frame frame, List<Instr> instrList) {
-
+	public RegAlloc(Frame frame, List<Instr> instrList, Liveness liveness) {
+		color = new Color(liveness, frame, frame.registers());
 	}
 
 	@Override
 	public String tempMap(Temp t) {
-		// TODO Auto-generated method stub
-		return null;
+		return color.tempMap(t);
 	}
 
 }

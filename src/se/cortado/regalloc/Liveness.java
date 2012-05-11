@@ -168,7 +168,7 @@ public class Liveness extends InterferenceGraph {
 
 	@Override
 	public HashSet<MovePair> moves() {
-		return null;
+		return mMoveNodes;
 	}
 
 	@Override
