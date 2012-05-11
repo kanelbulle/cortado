@@ -107,7 +107,7 @@ public class Main {
 			while (fragments != null) {
 				RegAlloc regalloc = new RegAlloc(fragments.frame, fragments.proc.body, fragments.liveness);
 				for (Instr instr : fragments.proc.body) {
-					System.out.println(instr.format(regalloc));
+					System.out.print(instr.format(regalloc));
 				}
 				
 				fragments = (ProcFragment) fragments.next;

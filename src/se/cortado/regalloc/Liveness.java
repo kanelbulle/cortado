@@ -15,7 +15,7 @@ import se.cortado.liveness.NodeList;
 
 public class Liveness extends InterferenceGraph {
 	HashSet<MovePair>				mMoveNodes	= new HashSet<MovePair>();
-	
+
 	LinkedHashMap<Node, Temp>		mNodeMap	= new LinkedHashMap<Node, Temp>();
 	LinkedHashMap<Temp, Node>		mTempMap	= new LinkedHashMap<Temp, Node>();
 
@@ -66,10 +66,10 @@ public class Liveness extends InterferenceGraph {
 				MOVE move = (MOVE) instr;
 				Node dstNode = move.dst == null ? null : tnode(move.dst);
 				Node srcNode = move.src == null ? null : tnode(move.src);
-				
+
 				MovePair mp = new MovePair(srcNode, dstNode);
 				mMoveNodes.add(mp);
-				
+
 				for (Temp liveOutTemp : getLiveOut(node)) {
 					if (liveOutTemp != move.src) {
 						Node liveOutNode = tnode(liveOutTemp);

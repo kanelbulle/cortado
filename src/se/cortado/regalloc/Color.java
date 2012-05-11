@@ -12,6 +12,7 @@ import se.cortado.ir.temp.TempList;
 import se.cortado.ir.temp.TempMap;
 import se.cortado.liveness.Node;
 import se.cortado.liveness.NodeList;
+import se.cortado.x86_64.frame.Hardware;
 
 public class Color implements TempMap {
 
@@ -65,12 +66,12 @@ public class Color implements TempMap {
 			// initialize the precolored nodes
 			if (mInitial.tempMap(tl.head) != null) {
 				mColorMap.put(tl.head, tl.head);
+				System.out.println("adding precolored " + tl.head);
 			}
 
 			mColors.add(tl.head);
 		}
 		K = c;
-
 
 		// create empty adjacency lists
 		for (Node node : ig.nodes()) {
@@ -84,7 +85,6 @@ public class Color implements TempMap {
 		makeWorklist();
 
 		// end of setup, start working
-
 		while (!mSimplifyWorklist.isEmpty()) {
 			simplify();
 		}
@@ -138,7 +138,11 @@ public class Color implements TempMap {
 			HashSet<Temp> okColors = new HashSet<Temp>(mColors);
 
 			for (Temp w : mAdjList.get(tempNode)) {
-				if (mColoredNodes.contains(w) || precolored(w)) {
+				if (mColoredNodes.contains(w)) {
+					Temp color = mColorMap.get(w);
+					okColors.remove(color);
+				}
+				if (precolored(w)) {
 					okColors.remove(w);
 				}
 			}
@@ -147,9 +151,9 @@ public class Color implements TempMap {
 				throw new Error("Could not complete register allocation due to spilling!");
 			}
 
-			System.out.println("Assigning color to " + tempNode.toString());
 			mColoredNodes.add(tempNode);
 			Temp color = okColors.iterator().next();
+			System.out.println("Assigning color " + color + " to " + tempNode);
 			mColorMap.put(tempNode, color);
 		}
 	}
@@ -194,7 +198,9 @@ public class Color implements TempMap {
 	public String tempMap(Temp t) {
 		String s = mInitial.tempMap(t);
 		if (s == null) {
-			s = mColorMap.get(t).toString();
+			Temp temp = mColorMap.get(t);
+			
+			s = Hardware.tempName(temp);
 		}
 		return s;
 	}
