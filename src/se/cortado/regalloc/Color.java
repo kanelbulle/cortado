@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
-import com.sun.tools.internal.ws.wsdl.document.jaxws.Exception;
-
 import se.cortado.ir.temp.Temp;
 import se.cortado.ir.temp.TempList;
 import se.cortado.ir.temp.TempMap;
@@ -53,11 +51,13 @@ public class Color implements TempMap {
 	Set<Temp>					mColoredNodes		= new HashSet<Temp>();
 	Stack<Temp>					mSelectStack		= new Stack<Temp>();
 
-	HashSet<Edge>				mAdjSet				= new HashSet<Edge>();
 	HashMap<Temp, List<Temp>>	mAdjList			= new HashMap<Temp, List<Temp>>();
 	HashMap<Node, Integer>		mDegree				= new HashMap<Node, Integer>();
 
 	public Color(InterferenceGraph ig, TempMap initial, TempList registers) {
+		mInterferenceGraph = ig;
+		mInitial = initial;
+
 		// calc K and setup mColors and mColorMap
 		int c = 0;
 		for (TempList tl = registers; tl != null; tl = tl.tail) {
@@ -71,13 +71,14 @@ public class Color implements TempMap {
 		}
 		K = c;
 
-		mInterferenceGraph = ig;
-		mInitial = initial;
 
 		// create empty adjacency lists
 		for (Node node : ig.nodes()) {
 			mAdjList.put(ig.gtemp(node), new ArrayList<Temp>());
 		}
+
+		// build edges
+		build();
 
 		// setup simplify worklist
 		makeWorklist();
@@ -94,9 +95,6 @@ public class Color implements TempMap {
 
 	private void addEdge(Node u, Node v) {
 		if (u != v) {
-			Edge e = new Edge(u, v);
-			mAdjSet.add(e);
-
 			Temp ut = mInterferenceGraph.gtemp(u);
 			Temp vt = mInterferenceGraph.gtemp(v);
 			if (mInitial.tempMap(ut) == null) {
@@ -127,24 +125,9 @@ public class Color implements TempMap {
 
 	private void build() {
 		for (Node node : mInterferenceGraph.nodes()) {
-			// set up the adjacency list and adjacency set
-			List<Temp> interferences = new ArrayList<Temp>();
 			for (NodeList nl = node.adj(); nl != null; nl = nl.tail) {
-				// adjSet
-				if (node != nl.head) {
-					Edge e = new Edge(node, nl.head);
-					mAdjSet.add(e);
-				}
-
-				// adjList
-
-				interferences.add(mInterferenceGraph.gtemp(nl.head));
+				addEdge(node, nl.head);
 			}
-
-			// mAdjList.put(node, interferences);
-
-			// initialize degree
-			mDegree.put(node, node.degree());
 		}
 	}
 
@@ -164,6 +147,7 @@ public class Color implements TempMap {
 				throw new Error("Could not complete register allocation due to spilling!");
 			}
 
+			System.out.println("Assigning color to " + tempNode.toString());
 			mColoredNodes.add(tempNode);
 			Temp color = okColors.iterator().next();
 			mColorMap.put(tempNode, color);
@@ -182,17 +166,20 @@ public class Color implements TempMap {
 	}
 
 	private void decrementDegree(Node node) {
-		int degree = mDegree.get(node);
+		Integer d = mDegree.get(node);
+		int degree = d == null ? 0 : d;
 		mDegree.put(node, degree - 1);
 	}
 
 	private void incrementDegree(Node node) {
-		int degree = mDegree.get(node);
+		Integer d = mDegree.get(node);
+		int degree = d == null ? 0 : d;
 		mDegree.put(node, degree + 1);
 	}
 
 	private int degree(Node node) {
-		return mDegree.get(node);
+		Integer d = mDegree.get(node);
+		return d == null ? 0 : d;
 	}
 
 	private boolean precolored(Temp t) {

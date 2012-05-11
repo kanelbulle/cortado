@@ -11,6 +11,7 @@ import se.cortado.ir.temp.DefaultMap;
 import se.cortado.ir.translate.ProcFragment;
 import se.cortado.liveness.AssemFlowGraph;
 import se.cortado.regalloc.Liveness;
+import se.cortado.regalloc.RegAlloc;
 import se.cortado.syntaxtree.Program;
 import se.cortado.visitors.ASTPrintVisitor;
 import se.cortado.visitors.IntermediateVisitor;
@@ -83,23 +84,35 @@ public class Main {
 			fragments = firstFrag;
 			
 			System.out.println("==================== BUILDIN' SOME GRAPHS AND NIZZLE ====================");
+			
+			
 			while (fragments != null) {
 				AssemFlowGraph afg = new AssemFlowGraph(fragments.proc.body);
 				
 				afg.show(System.out);
-				System.out.println("\n\n\n\n");
+				System.out.println("\n\n");
 				
 				Liveness liveness = new Liveness(afg);
 				liveness.show(System.out);
-				
-//				RegAlloc regalloc = new RegAlloc(fragments.frame, fragments.proc.body, liveness);
-//				for (Instr instr : fragments.proc.body) {
-//					instr.format(regalloc);
-//				}
+
+				fragments.liveness = liveness;
 				
 				fragments = (ProcFragment) fragments.next;
 			}
-
+			fragments = firstFrag;
+			
+			
+			System.out.println("==================== ALLOCIN' SOME REGS FOR YO TEMPS DAWG ====================");
+			
+			while (fragments != null) {
+				RegAlloc regalloc = new RegAlloc(fragments.frame, fragments.proc.body, fragments.liveness);
+				for (Instr instr : fragments.proc.body) {
+					System.out.println(instr.format(regalloc));
+				}
+				
+				fragments = (ProcFragment) fragments.next;
+			}
+			
 		} catch (Exception e) {
 			System.out.println("ERROR: " + e.getMessage());
 			e.printStackTrace();
