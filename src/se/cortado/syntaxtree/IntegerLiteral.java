@@ -1,5 +1,7 @@
 package se.cortado.syntaxtree;
 
+import java.math.BigInteger;
+
 import se.cortado.ir.translate.Translate;
 import se.cortado.visitors.TranslateVisitor;
 import se.cortado.visitors.TypeVisitor;
@@ -12,11 +14,12 @@ public class IntegerLiteral extends Exp {
 		i = ai;
 	}
 
-	public IntegerLiteral(String s) {
-		try {
-			i = Integer.parseInt(s);
-		} catch (NumberFormatException e) {
-			e.printStackTrace();
+	public IntegerLiteral(String s) throws Exception {
+		
+		BigInteger bigInt = new BigInteger(s);
+		BigInteger maxInt = new BigInteger(Integer.toString(Integer.MAX_VALUE));
+		if (bigInt.compareTo(maxInt) == 1) {
+			throw new Exception("Integer overflow!");
 		}
 	}
 
