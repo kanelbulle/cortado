@@ -81,18 +81,18 @@ public class Main {
 			}
 			fragments = firstFrag;
 			
-			System.out.println("==================== BUILDIN' SOME GRAPHS AND NIZZLE ====================");
-			while (fragments != null) {
-				AssemFlowGraph afg = new AssemFlowGraph(fragments.proc.body);
-				
-				afg.show(System.out);
-				System.out.println("\n\n\n\n");
-				
-				Liveness liveness = new Liveness(afg);
-				liveness.show(System.out);
-				
-				fragments = (ProcFragment) fragments.next;
-			}
+//			System.out.println("==================== BUILDIN' SOME GRAPHS AND NIZZLE ====================");
+//			while (fragments != null) {
+//				AssemFlowGraph afg = new AssemFlowGraph(fragments.proc.body);
+//				
+//				afg.show(System.out);
+//				System.out.println("\n\n\n\n");
+//				
+//				Liveness liveness = new Liveness(afg);
+//				liveness.show(System.out);
+//				
+//				fragments = (ProcFragment) fragments.next;
+//			}
 
 		} catch (Exception e) {
 			System.out.println("ERROR: " + e.getMessage());

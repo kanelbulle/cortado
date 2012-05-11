@@ -179,11 +179,9 @@ public class Frame implements se.cortado.frame.Frame {
 		// increment stack pointer
 		prologue.add(new OPER("addq $" + size() + ", %`d0", new TempList(Hardware.SP, null), null));
 
+		prologue.add(new OPER("ret", null, null));
 		body.addAll(0, prologue);
 		body.addAll(epilogue);
-
-		// return
-		prologue.add(new OPER("ret", null, null));
 
 		return new Proc("PROCEDURE " + name.toString() + "\n", body, "END " + name.toString() + "\n");
 	}

@@ -26,6 +26,7 @@ import se.cortado.ir.tree.LABEL;
 import se.cortado.ir.tree.MEM;
 import se.cortado.ir.tree.MOVE;
 import se.cortado.ir.tree.NAME;
+import se.cortado.ir.tree.Print;
 import se.cortado.ir.tree.TEMP;
 import se.cortado.x86_64.frame.Hardware;
 
@@ -38,7 +39,7 @@ public class Codegen {
 		this.frame = frame;
 	}
 
-	public List<Instr> codegen(IR_StmList sl) {
+	public List<Instr> codegen(IR_StmList sl) {		
 		while (sl.tail != null) {
 			munchStm(sl.head);
 			sl = sl.tail;
@@ -258,7 +259,7 @@ public class Codegen {
 	 * munchLABEL
 	 */
 	private void munchLABEL(Label label) {
-		emit(new se.cortado.assem.LABEL("", label));
+		emit(new se.cortado.assem.LABEL(label + ":", label));
 	}
 
 	private Temp munchExp(IR_Exp e) {
