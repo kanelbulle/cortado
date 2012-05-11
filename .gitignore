@@ -14,3 +14,4 @@ res/runtime/libminijava.a
 res/runtime/runtime-opt.s
 res/runtime/runtime.o
 res/runtime/runtime.s
+mjc.jar
