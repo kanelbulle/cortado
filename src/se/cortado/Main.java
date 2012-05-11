@@ -37,6 +37,7 @@ public class Main {
 		IntermediateVisitor irVisitor = new IntermediateVisitor(symbolTable);
 
 		try {
+			System.out.println("==================== PARSING... NINJA STYLE! ====================");
 			Symbol s = p.parse();
 			Program prog = (Program) s.value;
 			printVisitor.visit(prog);
