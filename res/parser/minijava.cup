@@ -16,6 +16,11 @@ action code {:
 		return parser.current_symbol.left;
 	}
 	
+	public void isMain(String method) throws Exception {
+		if (!method.equals("main")) {
+			throw new Exception("Missing static main method!");
+		}
+	}
 			
 	
 :};
@@ -124,26 +129,26 @@ main_class 		::= CLASS IDENTIFIER:id LCURLY main_method:md RCURLY
 					;
 
 main_method 	::= PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING LBRACKET RBRACKET IDENTIFIER:id2 RPAREN LCURLY  RCURLY
-						{: 	
+						{: 	isMain(id1);
 							VarDeclList vd = new VarDeclList();
 							StatementList sl = new StatementList();
 							FormalList fl = new FormalList(new Formal(new StringArrayType(), new Identifier(id2, getReducedRow())));
 							RESULT = new MethodDecl(new VoidType(), new Identifier(id1, getReducedRow()), fl, vd, sl, new VoidExp());
 						:}	
 					| PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING LBRACKET RBRACKET IDENTIFIER:id2 RPAREN LCURLY stmt_list:sl RCURLY
-						{: 	
+						{: 	isMain(id1);
 							VarDeclList vd = new VarDeclList();
 							FormalList fl = new FormalList(new Formal(new StringArrayType(), new Identifier(id2, getReducedRow())));
 							RESULT = new MethodDecl(new VoidType(), new Identifier(id1, getReducedRow()), fl, vd, sl, new VoidExp());
 						:}	
 					| PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING LBRACKET RBRACKET IDENTIFIER:id2 RPAREN LCURLY var_decls:vd RCURLY
-						{: 	
+						{: 	isMain(id1);
 							StatementList sl = new StatementList();
 							FormalList fl = new FormalList(new Formal(new StringArrayType(), new Identifier(id2, getReducedRow())));
 							RESULT = new MethodDecl(new VoidType(), new Identifier(id1, getReducedRow()), fl, vd, sl, new VoidExp());
 						:}	
 					| PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING LBRACKET RBRACKET IDENTIFIER:id2 RPAREN LCURLY var_decls:vd stmt_list:sl RCURLY
-						{: 	
+						{: 	isMain(id1);
 							FormalList fl = new FormalList(new Formal(new StringArrayType(), new Identifier(id2, getReducedRow())));
 							RESULT = new MethodDecl(new VoidType(), new Identifier(id1, getReducedRow()), fl, vd, sl, new VoidExp());
 						:}
