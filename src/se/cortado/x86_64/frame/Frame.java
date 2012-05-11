@@ -161,7 +161,7 @@ public class Frame implements se.cortado.frame.Frame {
 
 		// push all callee saved regs
 		for (Temp t : Hardware.calleeSaves) {
-			prologue.add(new OPER("pushq `s0", null, new TempList(t, null)));
+			prologue.add(new OPER("pushq %`s0", null, new TempList(t, null)));
 		}
 
 		// move frame pointer to stack pointer reg
@@ -173,7 +173,7 @@ public class Frame implements se.cortado.frame.Frame {
 		List<Instr> epilogue = new ArrayList<Instr>();
 		for (int i = Hardware.calleeSaves.length - 1; i >= 0; i--) {
 			Temp t = Hardware.calleeSaves[i];
-			epilogue.add(new OPER("popq `d0", new TempList(t, null), null));
+			epilogue.add(new OPER("popq %`d0", new TempList(t, null), null));
 		}
 
 		// increment stack pointer
