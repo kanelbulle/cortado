@@ -22,7 +22,7 @@
 	<!-- run the lexer -->
 	<target name="lexer" depends="init">
 		<jflex
-		    file="res/lexer/minijava.jflex"
+		    file="src/se/cortado/lexer/minijava.jflex"
 		    destdir="gen/"
 		/>
 	</target>
@@ -30,17 +30,17 @@
 	<!-- run the parser -->
 	<target name="parser" depends="lexer">
 		<cup 
-			srcfile="res/parser/minijava.cup"
+			srcfile="src/se/cortado/parser/minijava.cup"
 		  	destdir="gen/se/cortado/"
 			package="se.cortado"
 			expect="0"
 			interface="true"
 		/>
 	</target>
-
 		
 	<!-- compile the code in src and gen to build folder -->
 	<target name="compile" depends="parser">
+		<mkdir dir="${gen}" />
 		<javac destdir="${build}" includeantruntime="false">
 			<src path="${src}" />
 			<src path="${gen}" />
