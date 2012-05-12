@@ -181,6 +181,9 @@ public class Frame implements se.cortado.frame.Frame {
 
 		List<Instr> epilogue = new ArrayList<Instr>();
 
+		// increment stack pointer
+		epilogue.add(new OPER("addq $" + size() + ", %`d0", new TempList(Hardware.SP, null), null));
+
 		if (mainFunction) {
 			epilogue.add(new OPER("popq %`d0", new TempList(Hardware.FP, null), null));
 		} else {
@@ -190,9 +193,6 @@ public class Frame implements se.cortado.frame.Frame {
 				epilogue.add(new OPER("popq %`d0", new TempList(t, null), null));
 			}
 		}
-
-		// increment stack pointer
-		epilogue.add(new OPER("addq $" + size() + ", %`d0", new TempList(Hardware.SP, null), null));
 		
 		epilogue.add(new OPER("ret", null, null));
 		body.addAll(0, prologue);
