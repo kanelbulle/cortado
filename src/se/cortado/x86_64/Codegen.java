@@ -125,7 +125,7 @@ public class Codegen {
 			TempList argTemps = munchArgs(0, call.args);
 			emit(new OPER("call " + name.label, Hardware.calldefs, argTemps));
 			// move return value to specified temp
-			emit(new se.cortado.assem.MOVE("movq %`d0, %`s0", t.temp, Hardware.RV));
+			emit(new se.cortado.assem.MOVE("movq %`s0, %`d0", t.temp, Hardware.RV));
 		} else if (dst instanceof TEMP && src instanceof CONST) {
 			// covers 3 nodes
 			TEMP t = (TEMP) dst;
@@ -312,7 +312,7 @@ public class Codegen {
 		TempList argTemps = munchArgs(0, args);
 		emit(new OPER("call " + name.label, Hardware.calldefs, argTemps));
 		// move return value to specified temp
-		emit(new se.cortado.assem.MOVE("movq %`d0, %`s0", t, Hardware.RV));
+		emit(new se.cortado.assem.MOVE("movq %`s0, %`d0", t, Hardware.RV));
 		
 		return t;
 	}
