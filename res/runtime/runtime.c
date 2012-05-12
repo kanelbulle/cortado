@@ -23,7 +23,7 @@
 */
 void *_minijavalib_allocate (size_t n)
 {
-  return malloc (n);
+  return calloc (n, 1);
 }
 
 /*
