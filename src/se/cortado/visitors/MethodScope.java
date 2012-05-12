@@ -151,6 +151,7 @@ public class MethodScope {
 	}
 
 	public void setLabelName(String labelName) {
+		System.out.println("setting label name " + labelName);
 		this.labelName = labelName;
 		frame.setLabel(new Label(labelName));
 	}

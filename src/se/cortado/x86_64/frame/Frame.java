@@ -158,7 +158,7 @@ public class Frame implements se.cortado.frame.Frame {
 
 		// append function name label
 		boolean mainFunction = false;
-		if (name.toString().equalsIgnoreCase("main0")) {
+		if (name.toString().equalsIgnoreCase("main")) {
 			prologue.add(new LABEL("_main:", name));
 			mainFunction = true;
 		} else {

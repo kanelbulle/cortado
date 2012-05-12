@@ -82,7 +82,7 @@ public class ClassScope {
 				}
 			}
 			
-			methodScope.setLabelName(method.identifier.s + scopes.size());
+			methodScope.setLabelName(getMethodLabelName(method.identifier.s, scopes.size()));
 
 			// if we reach this point without an exception thrown, then we can
 			// safely add the method scope to the list
@@ -93,7 +93,15 @@ public class ClassScope {
 			mList.add(methodScope);
 			methods.put(method.identifier.s, mList);
 			methods2.put(method, methodScope);
-			methodScope.setLabelName(method.identifier.s + "0");
+			methodScope.setLabelName(getMethodLabelName(method.identifier.s, 0));
+		}
+	}
+	
+	private String getMethodLabelName(String methodName, int scopeSize) {
+		if (methodName.equals("main")) {
+			return methodName;
+		} else {
+			return classDecl.i.s + "$" + methodName + scopeSize;
 		}
 	}
 

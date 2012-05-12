@@ -236,12 +236,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 		// get the label name for this method
 		ClassScope cs = symbolTable.get(curClass.i.s);
 		MethodScope ms = cs.getMethodMatching(node);
-		String labelname;
-		if (curClass instanceof MainClass) {
-			labelname = "main";
-		} else {
-			labelname = curClass.i.s + "$" + ms.getLabelName();
-		}
+		String labelname = ms.getLabelName();
 
 		ProcFragment fragment = new ProcFragment(bodyStm, curFrame, labelname);
 		curFrame.setMaxCallParams(maxCallParams);
@@ -536,7 +531,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 			maxCallParams = numParams;
 		}
 			
-		String s = node.cs.getClassDecl().i.s + "$" + node.ms.getLabelName();
+		String s = node.ms.getLabelName();
 
 		IR_Exp call = new CALL(new NAME(new Label(s)), paramList);
 
