@@ -88,11 +88,15 @@ public class IntermediateVisitor implements TranslateVisitor {
 	public ProcFragment getResult() {
 		return fragments;
 	}
+	
+	public void log(String s) {
+		//log(s);
+	}
 
 	/* -------------- ITERATE PROGRAM/CLASSES -------------- */
 	@Override
 	public Translate visit(Program node) {
-		System.out.println("IR: Accept Program");
+		log("IR: Accept Program");
 
 		node.mainClass.accept(this);
 		node.classDeclList.accept(this);
@@ -102,7 +106,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 	@Override
 	public Translate visit(ClassDeclList node) {
-		System.out.println("IR: Accept ClassDeclList");
+		log("IR: Accept ClassDeclList");
 		for (int i = 0; i < node.size(); ++i) {
 			node.elementAt(i).accept(this);
 		}
@@ -112,7 +116,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 	@Override
 	public Translate visit(ClassDecl node) {
-		// System.out.println("IR: Accept ClassDecl: " + node.i.s);
+		// log("IR: Accept ClassDecl: " + node.i.s);
 		// node.accept(this);
 
 		throw new Error(node.getClass().getCanonicalName() + ": Not implemented yet and/or not used");
@@ -120,7 +124,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 	@Override
 	public Translate visit(MainClass node) {
-		System.out.println("IR: Accept MainClass: " + node.i.s);
+		log("IR: Accept MainClass: " + node.i.s);
 		curClass = node;
 
 		return node.md.accept(this);
@@ -128,7 +132,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 	@Override
 	public Translate visit(ClassDeclSimple node) {
-		System.out.println("IR: Accept ClassDeclSimple: " + node.i.s);
+		log("IR: Accept ClassDeclSimple: " + node.i.s);
 		curClass = node;
 
 		return node.ml.accept(this);
@@ -136,14 +140,14 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 	@Override
 	public Translate visit(Statement node) {
-		System.out.println("IR: Accept Statement");
+		log("IR: Accept Statement");
 
 		return node.accept(this);
 	}
 
 	@Override
 	public Translate visit(StatementList node) {
-		System.out.println("IR: Accept StatementList");
+		log("IR: Accept StatementList");
 
 		IR_Stm res = null;
 		for (int i = 0; i < node.size(); ++i) {
@@ -166,14 +170,14 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 	@Override
 	public Translate visit(Exp node) {
-		System.out.println("IR: Accept Exp");
+		log("IR: Accept Exp");
 
 		return node.accept(this);
 	}
 
 	@Override
 	public Translate visit(ExpList node) {
-		System.out.println("IR: Accept ExpList");
+		log("IR: Accept ExpList");
 
 		IR_Exp res = null;
 		for (int i = 0; i < node.size(); ++i) {
@@ -191,14 +195,14 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 	@Override
 	public Translate visit(Formal node) {
-		System.out.println("IR: Accept Formal");
+		log("IR: Accept Formal");
 
 		throw new Error("FORMAL: Not implemented yet and/or not used");
 	}
 
 	@Override
 	public Translate visit(FormalList node) {
-		System.out.println("IR: Accept FormalList");
+		log("IR: Accept FormalList");
 		for (int i = 0; i < node.size(); ++i) {
 			node.elementAt(i).accept(this);
 		}
@@ -208,7 +212,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 	@Override
 	public Translate visit(MethodDecl node) {
-		System.out.println("IR: Method call: " + node.identifier.s);
+		log("IR: Method call: " + node.identifier.s);
 
 		curMethod = node;
 		curFrame = symbolTable.getFrame(curClass, curMethod);
@@ -246,16 +250,16 @@ public class IntermediateVisitor implements TranslateVisitor {
 		fragments = fragment;
 
 		// debug print
-		// System.out.println(node.identifier.s);
+		// log(node.identifier.s);
 		// irPrinter.prStm(bodyStm);
-		// System.out.println();
+		// log();
 
 		return body;
 	}
 
 	@Override
 	public Translate visit(MethodDeclList node) {
-		System.out.println("IR: Accept MethodDeclList");
+		log("IR: Accept MethodDeclList");
 		for (int i = 0; i < node.size(); ++i) {
 			node.elementAt(i).accept(this);
 		}
@@ -269,7 +273,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 	@Override
 	public Translate visit(While node) {
-		System.out.println("IR: While");
+		log("IR: While");
 
 		Label testLabel = new Label();
 		Label doneLabel = new Label();
@@ -292,7 +296,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 	 */
 	@Override
 	public Translate visit(Assign node) {
-		System.out.println("IR: Accept Assign");
+		log("IR: Accept Assign");
 
 		IR_Stm res;
 
@@ -312,14 +316,14 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 	@Override
 	public Translate visit(IntegerLiteral node) {
-		System.out.println("IR: Accept IntegerLiteral");
+		log("IR: Accept IntegerLiteral");
 
 		return new TR_Ex(new CONST(node.i));
 	}
 
 	@Override
 	public Translate visit(Minus node) {
-		System.out.println("IR: Accept Minus");
+		log("IR: Accept Minus");
 
 		Translate e1 = node.e1.accept(this);
 		Translate e2 = node.e2.accept(this);
@@ -331,7 +335,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 	@Override
 	public Translate visit(Plus node) {
-		System.out.println("IR: Accept Plus");
+		log("IR: Accept Plus");
 
 		Translate e1 = node.e1.accept(this);
 		Translate e2 = node.e2.accept(this);
@@ -343,7 +347,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 	@Override
 	public Translate visit(Times node) {
-		System.out.println("IR: Accept Times");
+		log("IR: Accept Times");
 		Translate e1 = node.e1.accept(this);
 		Translate e2 = node.e2.accept(this);
 
@@ -354,7 +358,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 	@Override
 	public Translate visit(ArrayAssign node) {
-		System.out.println("IR: Accept ArrayAssign");
+		log("IR: Accept ArrayAssign");
 
 		Translate index = node.e1.accept(this);
 		Translate array = node.i.accept(this);
@@ -374,7 +378,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 	@Override
 	public Translate visit(ArrayLength node) {
-		System.out.println("IR: Accept ArrayLength");
+		log("IR: Accept ArrayLength");
 
 		Translate array = node.e.accept(this);
 
@@ -385,7 +389,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 	@Override
 	public Translate visit(ArrayLookup node) {
-		System.out.println("IR: Accept ArrayLookup");
+		log("IR: Accept ArrayLookup");
 		Translate array = node.e1.accept(this);
 		Translate index = node.e2.accept(this);
 
@@ -402,21 +406,21 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 	@Override
 	public Translate visit(Block node) {
-		System.out.println("IR: Accept Block");
+		log("IR: Accept Block");
 
 		return node.sl.accept(this);
 	}
 
 	@Override
 	public Translate visit(False node) {
-		System.out.println("IR: Accept False");
+		log("IR: Accept False");
 
 		return new TR_Ex(new CONST(0));
 	}
 
 	@Override
 	public Translate visit(Identifier node) {
-		System.out.println("IR: Accept Identifier");
+		log("IR: Accept Identifier");
 
 		/*
 		 * If the identifier is a local variable in a method, return the value
@@ -449,7 +453,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 	// function? Then we cant look it up in symbol table.
 	@Override
 	public Translate visit(IdentifierExp node) {
-		System.out.println("IR: Accept IdentifierExp");
+		log("IR: Accept IdentifierExp");
 		IR_Exp res = symbolTable.getAccess(curClass, curMethod, node.s).exp(new TEMP(curFrame.FP()));
 
 		return new TR_Ex(res);
@@ -457,7 +461,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 	@Override
 	public Translate visit(If node) {
-		System.out.println("IR: Accept If");
+		log("IR: Accept If");
 
 		Label T = new Label();
 		Label F = new Label();
@@ -484,7 +488,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 	@Override
 	public Translate visit(LessThan node) {
-		System.out.println("IR: Accept LessThan");
+		log("IR: Accept LessThan");
 
 		Translate e1 = node.e1.accept(this);
 		Translate e2 = node.e2.accept(this);
@@ -494,14 +498,14 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 	@Override
 	public Translate visit(True node) {
-		System.out.println("IR: Accept True");
+		log("IR: Accept True");
 
 		return new TR_Ex(new CONST(1));
 	}
 
 	@Override
 	public Translate visit(And node) {
-		System.out.println("IR: Accept And");
+		log("IR: Accept And");
 
 		Translate e1 = node.e1.accept(this);
 		Translate e2 = node.e2.accept(this);
@@ -513,7 +517,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 	@Override
 	public Translate visit(Call node) {
-		System.out.println("IR: Accept Call");
+		log("IR: Accept Call");
 
 		Translate exp = node.e.accept(this);
 
@@ -540,7 +544,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 	@Override
 	public Translate visit(NewArray node) {
-		System.out.println("IR: Accept NewArray");
+		log("IR: Accept NewArray");
 
 		Translate l = node.e.accept(this);
 		IR_Exp numElem = new BINOP(BINOP.MUL, l.getValue(), new CONST(wordSize / 4));
@@ -557,7 +561,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 	 */
 	@Override
 	public Translate visit(NewObject node) {
-		System.out.println("IR: Accept NewObject");
+		log("IR: Accept NewObject");
 
 		ClassScope c = symbolTable.get(node.i.s);
 		int heapSize = (c.getVariables().size() + 1) * curFrame.wordSize();
@@ -569,7 +573,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 	@Override
 	public Translate visit(Not node) {
-		System.out.println("IR: Accept Not");
+		log("IR: Accept Not");
 
 		// this assumes that booleans are exactly 0 (false) or exactly 1 (true)
 		Translate t = node.e.accept(this);
@@ -580,7 +584,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 	@Override
 	public Translate visit(se.cortado.syntaxtree.Print node) {
-		System.out.println("IR: Accept Print");
+		log("IR: Accept Print");
 
 		Translate tr = node.e.accept(this);
 
@@ -592,7 +596,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 	@Override
 	public Translate visit(This node) {
-		System.out.println("IR: Accept This");
+		log("IR: Accept This");
 
 		Access thisAccess = symbolTable.getAccess(curClass, curMethod, "this");
 		// TODO returns the address of 'this', relative to what? what is the
@@ -604,7 +608,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 	@Override
 	public Translate visit(VoidExp node) {
-		System.out.println("IR: Accept VoidExp");
+		log("IR: Accept VoidExp");
 
 		return new TR_Ex(new CONST(0));
 	}

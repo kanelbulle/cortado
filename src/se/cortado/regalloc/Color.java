@@ -66,7 +66,6 @@ public class Color implements TempMap {
 			// initialize the precolored nodes
 			if (mInitial.tempMap(tl.head) != null) {
 				mColorMap.put(tl.head, tl.head);
-				System.out.println("adding precolored " + tl.head);
 			}
 
 			mColors.add(tl.head);
