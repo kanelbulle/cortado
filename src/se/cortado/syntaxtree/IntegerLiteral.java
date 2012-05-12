@@ -18,9 +18,15 @@ public class IntegerLiteral extends Exp {
 		
 		BigInteger bigInt = new BigInteger(s);
 		BigInteger maxInt = new BigInteger(Integer.toString(Integer.MAX_VALUE));
-		if (bigInt.compareTo(maxInt) == 1) {
+		BigInteger minInt = new BigInteger(Integer.toString(Integer.MIN_VALUE));
+		if (bigInt.compareTo(minInt) < 0) {
+			throw new Exception("Integer underflow!");
+		}
+		if (bigInt.compareTo(maxInt) > 0) {
 			throw new Exception("Integer overflow!");
 		}
+		
+		i = bigInt.intValue();
 	}
 
 	public void accept(Visitor v) {
