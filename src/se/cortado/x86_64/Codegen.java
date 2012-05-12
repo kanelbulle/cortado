@@ -101,6 +101,11 @@ public class Codegen {
 						String str = String.format("movq $%d, -%d(%%`d0)", constSrc.value, c.value);
 						emit(new OPER(str, L(t.temp), null));
 					}
+				} else {
+					Temp addr = munchExp(b);
+					
+					String str = String.format("movq $%d, 0(%%`d0)", constSrc.value);
+					emit(new OPER(str, L(addr), null));
 				}
 			}
 		} else if (dst instanceof TEMP && src instanceof CALL) {
