@@ -6,4 +6,4 @@ filename=$( basename $filename .java)
 
 as ${filename}.s -o ${filename}.o
 
-gcc ${filename}.o -o ${filename} -L lib/ -l minijavalib
+gcc ${filename}.o -o ${filename} -L lib/ -lminijava
