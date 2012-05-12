@@ -461,7 +461,7 @@ public class Codegen {
 			IR_Exp outLoc = access.exp(new TEMP(frame.FP()));
 
 			// munchMove contains code for moving stuff into registers, reuse
-			munchMOVE(outLoc, new TEMP(t));
+			munchMOVE(new TEMP(t), outLoc);
 
 			if (outLoc instanceof TEMP) {
 				TEMP res = (TEMP) outLoc;

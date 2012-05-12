@@ -81,7 +81,7 @@ public class Frame implements se.cortado.frame.Frame {
 		// the size of this frame depends on the number of outgoing parameters
 		// and the number of local variables
 
-		// return address + previous rbp value + maxOutgoing + numLocal
+		// previous rbp value + maxOutgoing + numLocal
 		int sz = wordSize() * (1 + 1 + maxOutgoing + numLocals + maxCallParams);
 
 		// stack frame size should be 16 byte aligned
@@ -152,6 +152,9 @@ public class Frame implements se.cortado.frame.Frame {
 
 	@Override
 	public Proc procEntryExit3(List<Instr> body) {
+		System.out.println("procEntryExit3 for " + name);
+		System.out.println("size: " + size());
+		
 		// prologue
 		// push all callee saved regs
 		List<Instr> prologue = new ArrayList<Instr>();

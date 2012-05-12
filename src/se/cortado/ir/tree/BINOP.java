@@ -8,7 +8,7 @@ public class BINOP extends IR_Exp {
 	public BINOP(int b, IR_Exp l, IR_Exp r) {
 		binop = b;
 		left = l;
-		right = r; 
+		right = r;
 	}
 	
 	public final static int 

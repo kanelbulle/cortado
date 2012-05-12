@@ -301,15 +301,10 @@ public class IntermediateVisitor implements TranslateVisitor {
 		IR_Stm res;
 
 		Access variableAccess = symbolTable.getAccess(curClass, curMethod, node.i.s);
-		IR_Exp e1 = variableAccess.exp(new TEMP(curFrame.FP()));
-		Translate e2 = node.e.accept(this);
-
-		if (e1 instanceof TEMP) {
-			res = new MOVE(e1, e2.getValue());
-		} else {
-			Temp z = new Temp();
-			res = new MOVE(new MEM(new BINOP(BINOP.PLUS, new TEMP(z), e1)), e2.getValue());
-		}
+		IR_Exp lhs = variableAccess.exp(new TEMP(curFrame.FP()));
+		Translate rhs = node.e.accept(this);
+		
+		res = new MOVE(lhs, rhs.getValue());
 
 		return new TR_Nx(res);
 	}

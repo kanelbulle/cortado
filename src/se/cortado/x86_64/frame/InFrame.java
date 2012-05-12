@@ -6,7 +6,7 @@ import se.cortado.ir.tree.IR_Exp;
 import se.cortado.ir.tree.MEM;
 
 class InFrame implements se.cortado.frame.Access {
-	private int offset;
+	private int	offset;
 
 	public InFrame(int offset) {
 		this.offset = offset;
@@ -22,11 +22,11 @@ class InFrame implements se.cortado.frame.Access {
 		if (basePointer == null) {
 			throw new Error("basePointer == null in InFrame");
 		}
-		
-		if (offset == 0)
+
+		if (offset == 0) {
 			return new MEM(basePointer);
-		else
-			return new MEM(
-					new BINOP(BINOP.MINUS, basePointer, new CONST(offset)));
+		} else {
+			return new MEM(new BINOP(BINOP.PLUS, basePointer, new CONST(offset)));
+		}
 	}
 }
