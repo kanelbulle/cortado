@@ -5,7 +5,7 @@ local.properties
 .metadata/
 *.class
 *.java~
-*.s
+/cortadoout
 gen/
 bin/
 docs/report/report.aux

@@ -135,7 +135,7 @@ public class Frame implements se.cortado.frame.Frame {
 
 	@Override
 	public IR_Exp externalCall(String func, IR_ExpList args) {
-		return new CALL(new NAME(new Label(func)), args);
+		return new CALL(new NAME(new Label("_" + func)), args);
 	}
 
 	@Override
@@ -157,11 +157,21 @@ public class Frame implements se.cortado.frame.Frame {
 		List<Instr> prologue = new ArrayList<Instr>();
 
 		// append function name label
-		prologue.add(new LABEL(name.toString(), name));
+		boolean mainFunction = false;
+		if (name.toString().equalsIgnoreCase("main0")) {
+			prologue.add(new LABEL("_main:", name));
+			mainFunction = true;
+		} else {
+			prologue.add(new LABEL(name.toString() + ":", name));
+		}
 
 		// push all callee saved regs
-		for (Temp t : Hardware.calleeSaves) {
-			prologue.add(new OPER("pushq %`s0", null, new TempList(t, null)));
+		if (mainFunction) {
+			prologue.add(new OPER("pushq %`s0", null, new TempList(Hardware.FP, null)));
+		} else {
+			for (Temp t : Hardware.calleeSaves) {
+				prologue.add(new OPER("pushq %`s0", null, new TempList(t, null)));
+			}
 		}
 
 		// move frame pointer to stack pointer reg
@@ -169,17 +179,22 @@ public class Frame implements se.cortado.frame.Frame {
 		// decrement stack pointer
 		prologue.add(new OPER("subq $" + size() + ", %`d0", new TempList(Hardware.SP, null), null));
 
-		// epilogue
 		List<Instr> epilogue = new ArrayList<Instr>();
-		for (int i = Hardware.calleeSaves.length - 1; i >= 0; i--) {
-			Temp t = Hardware.calleeSaves[i];
-			epilogue.add(new OPER("popq %`d0", new TempList(t, null), null));
+
+		if (mainFunction) {
+			epilogue.add(new OPER("popq %`d0", new TempList(Hardware.FP, null), null));
+		} else {
+			// pop all callee saved regs
+			for (int i = Hardware.calleeSaves.length - 1; i >= 0; i--) {
+				Temp t = Hardware.calleeSaves[i];
+				epilogue.add(new OPER("popq %`d0", new TempList(t, null), null));
+			}
 		}
 
 		// increment stack pointer
 		epilogue.add(new OPER("addq $" + size() + ", %`d0", new TempList(Hardware.SP, null), null));
-
-		prologue.add(new OPER("ret", null, null));
+		
+		epilogue.add(new OPER("ret", null, null));
 		body.addAll(0, prologue);
 		body.addAll(epilogue);
 
@@ -231,7 +246,7 @@ public class Frame implements se.cortado.frame.Frame {
 	@Override
 	public String tempMap(Temp t) {
 		String name = Hardware.tempName(t);
-		
+
 		return name;
 	}
 }

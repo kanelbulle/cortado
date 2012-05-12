@@ -121,11 +121,14 @@ public class Main {
 			}
 			Collections.reverse(revFragments);
 			
-			
 			// assume file ends in .java
 			fileName = fileName.substring(fileName.lastIndexOf("/") + 1);
 			fileName = fileName.substring(0, fileName.length() - 5) + ".s";
 			BufferedWriter fileWriter = new BufferedWriter(new FileWriter(fileName));
+			
+			fileWriter.write(".data\n\n");
+			fileWriter.write(".text\n\n");
+			fileWriter.write(".globl _main\n\n");
 			
 			for (ProcFragment proc : revFragments) {
 				for (Instr instr : proc.proc.body) {
@@ -138,7 +141,10 @@ public class Main {
 		} catch (Exception e) {
 			System.out.println("ERROR: " + e.getMessage());
 			e.printStackTrace();
-			System.exit(-1);
+			System.exit(1);
 		}
+		
+		// clean exit
+		System.exit(0);
 	}
 }

@@ -1,9 +1,18 @@
 #!/bin/bash
 mkdir cortadoout
+
+rm -f cortadoout/*.s
+rm -f cortadoout/*.o
+rm -f cortadoout/*.out
+
 java -cp mjc.jar:lib/JFlex.jar:lib/java-cup-11a.jar mjc.X86Main $1 -S
 filename=$( basename $1 )
 filename=$( basename $filename .java)
 
-as ${filename}.s -o ${filename}.o
+mv ${filename}.s cortadoout/
 
-gcc ${filename}.o -o ${filename} -L lib/ -lminijava
+as cortadoout/${filename}.s -o cortadoout/${filename}.o
+
+gcc -g cortadoout/${filename}.o -o cortadoout/${filename}.out -L lib/ -lminijava
+
+cortadoout/${filename}.out

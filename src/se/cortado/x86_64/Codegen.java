@@ -61,10 +61,6 @@ public class Codegen {
 		return new TempList(t1, new TempList(t2, null));
 	}
 
-	private TempList L(Temp h, TempList t) {
-		return new TempList(h, t);
-	}
-
 	private void munchStm(IR_Stm s) {
 		if (s instanceof MOVE) {
 			MOVE m = (MOVE) s;
