@@ -4,6 +4,7 @@ import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import se.cortado.assem.Instr;
 import se.cortado.assem.MOVE;
@@ -22,7 +23,7 @@ public class Liveness extends InterferenceGraph {
 	HashMap<Node, HashSet<Temp>>	mLiveIn		= new HashMap<Node, HashSet<Temp>>();
 	HashMap<Node, HashSet<Temp>>	mLiveOut	= new HashMap<Node, HashSet<Temp>>();
 
-	public Liveness(AssemFlowGraph flow) {
+	public Liveness(AssemFlowGraph flow, List<Instr> instrs) {
 
 		// iterate until we don't change anything in the maps
 		boolean changed = true;
@@ -59,7 +60,7 @@ public class Liveness extends InterferenceGraph {
 				changed = changed | setLiveOut(node, newOutSet);
 			}
 		}
-
+		
 		// process all nodes using the livein and liveout information
 		for (Node node : flow.nodes()) {
 			Instr instr = flow.instr(node);
@@ -116,6 +117,8 @@ public class Liveness extends InterferenceGraph {
 //				}
 //			}
 //		}
+		
+		
 	}
 
 	public HashSet<Temp> setFromList(TempList tl) {

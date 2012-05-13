@@ -47,10 +47,9 @@ public class Codegen {
 		return ilist;
 	}
 
-	private void emit(Instr inst) {
+	private void emit(Instr inst) {		
 		ilist.add(inst);
 		
-		inst.format(new DefaultMap());
 	}
 
 	private TempList L(Temp h) {
@@ -107,6 +106,8 @@ public class Codegen {
 					String str = String.format("movq $%d, 0(%%`d0)", constSrc.value);
 					emit(new OPER(str, L(addr), null));
 				}
+			} else {
+				throw new Error("Missed case");
 			}
 		} else if (dst instanceof TEMP && src instanceof CALL) {
 			// covers 3 nodes
@@ -135,8 +136,8 @@ public class Codegen {
 			// covers 3 nodes
 			Temp dstTemp = munchExp(dst);
 			Temp srcTemp = munchExp(src);
-
-			emit(new OPER("movq %`d0, %`s0", L(dstTemp), L(srcTemp)));
+			
+			emit(new OPER("movq %`s0, %`d0", L(dstTemp), L(srcTemp)));
 		}
 	}
 
@@ -376,32 +377,36 @@ public class Codegen {
 
 		// FIXME 'idivl' behaves different compared to the other ops
 
+		// copy dest to tmp to prevent destroying value
+		Temp tmp = new Temp();
 		if (left instanceof TEMP && right instanceof CONST) {
 			// covers 3 nodes
 			Temp t = munchExp(left);
 			CONST c = (CONST) right;
 
+			emit(new se.cortado.assem.MOVE("movq %`s0, %`d0", tmp, t));
 			String assem = String.format("%s $%d, %%`d0", instr, c.value);
-			emit(new OPER(assem, L(t), L(t)));
-			return t;
+			emit(new OPER(assem, L(tmp), L(t)));
 		}
 		if (left instanceof TEMP && right instanceof TEMP) {
 			// covers 3 nodes
 			TEMP l = (TEMP) left;
 			TEMP r = (TEMP) right;
 
+			emit(new se.cortado.assem.MOVE("movq %`s0, %`d0", tmp, l.temp));
 			String assem = String.format("%s %%`s0, %%`d0", instr);
-			emit(new OPER(assem, L(l.temp), L(r.temp)));
-			return l.temp;
+			emit(new OPER(assem, L(tmp), L(r.temp, tmp)));
 		} else {
 			// covers 1 node
 			Temp l = munchExp(left);
 			Temp r = munchExp(right);
-
+			
+			emit(new se.cortado.assem.MOVE("movq %`s0, %`d0", tmp, l));
 			String assem = String.format("%s %%`s0, %%`d0", instr);
-			emit(new OPER(assem, L(l), L(r)));
-			return l;
+			emit(new OPER(assem, L(tmp), L(r, tmp)));
 		}
+
+		return tmp;
 	}
 
 	/*

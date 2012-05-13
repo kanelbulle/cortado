@@ -93,12 +93,12 @@ public class Main {
 			while (fragments != null) {
 				AssemFlowGraph afg = new AssemFlowGraph(fragments.proc.body);
 				
-				afg.show(System.out);
-				System.out.println("\n\n");
+				//afg.show(System.out);
+				//System.out.println("\n\n");
 				
-				Liveness liveness = new Liveness(afg);
-				System.out.println("Interference graph: ");
-				liveness.show(System.out);
+				Liveness liveness = new Liveness(afg, fragments.proc.body);
+				//System.out.println("Interference graph: ");
+				//liveness.show(System.out);
 
 				fragments.liveness = liveness;
 				

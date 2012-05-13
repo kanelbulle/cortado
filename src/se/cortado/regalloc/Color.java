@@ -116,9 +116,9 @@ public class Color implements TempMap {
 		for (Node n : mLiveness.nodes()) {
 			Temp t = mLiveness.gtemp(n);
 			if (!precolored(t)) {
-				if (degree(n) >= K) {
-					throw new Error("Temp " + t + " interferes with " + degree(n) + " nodes. It is more than the maximum " + K + " nodes");
-				}
+//				if (degree(n) >= K) {
+//					throw new Error("Temp " + t + " interferes with " + degree(n) + " nodes. It is more than the maximum " + K + " nodes");
+//				}
 
 				mSimplifyWorklist.add(n);
 			}
@@ -146,12 +146,9 @@ public class Color implements TempMap {
 			HashSet<Temp> okColors = new HashSet<Temp>(mColors);
 
 			for (Temp w : mAdjList.get(tempNode)) {
-				if (mColoredNodes.contains(w)) {
+				if (mColoredNodes.contains(w) || precolored(w)) {
 					Temp color = mColorMap.get(w);
 					okColors.remove(color);
-				}
-				if (precolored(w)) {
-					okColors.remove(w);
 				}
 			}
 
