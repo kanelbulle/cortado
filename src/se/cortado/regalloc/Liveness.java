@@ -35,26 +35,28 @@ public class Liveness extends InterferenceGraph {
 
 				HashSet<Temp> useSet = setFromList(use);
 				HashSet<Temp> defSet = setFromList(def);
-				HashSet<Temp> outSet = new HashSet<Temp>();
+				HashSet<Temp> outSet = getLiveOut(node);
 
 				// calculate live in
 				// live in = use of node plus all variables in liveout of node
 				// but not in def of node
-				outSet.removeAll(defSet);
-				useSet.addAll(outSet);
+				HashSet<Temp> outCopy = new HashSet<Temp>(outSet);
+				outCopy.removeAll(defSet);
+				useSet.addAll(outCopy);
 				changed = changed | setLiveIn(node, useSet);
 
 				// calculate live out
 				// live out = union of all live-in sets of all successors of
 				// node
+				HashSet<Temp> newOutSet = new HashSet<Temp>();
 				for (NodeList snl = node.succ(); snl != null; snl = snl.tail) {
 					HashSet<Temp> livein = getLiveIn(snl.head);
 					if (livein != null) {
-						outSet.addAll(livein);
+						newOutSet.addAll(livein);
 					}
 				}
 
-				changed = changed | setLiveOut(node, outSet);
+				changed = changed | setLiveOut(node, newOutSet);
 			}
 		}
 
@@ -92,6 +94,28 @@ public class Liveness extends InterferenceGraph {
 				}
 			}
 		}
+		
+//		for (Node node : flow.nodes()) {
+//			Instr instr = flow.instr(node);
+//			TempList defTl = flow.defines(node);
+//			for (; defTl != null; defTl = defTl.tail) {
+//				Temp def = defTl.head;
+//				for (Temp temp : getLiveOut(node)) {
+//					if (!(instr instanceof MOVE) || def != temp) {
+//						Node defNode = tnode(def);
+//						Node tempNode = tnode(temp);
+//						addEdge(defNode, tempNode);
+//					}
+//				}
+//				for (Temp temp : getLiveIn(node)) {
+//					if (!(instr instanceof MOVE) || def != temp) {
+//						Node defNode = tnode(def);
+//						Node tempNode = tnode(temp);
+//						addEdge(defNode, tempNode);
+//					}
+//				}
+//			}
+//		}
 	}
 
 	public HashSet<Temp> setFromList(TempList tl) {
