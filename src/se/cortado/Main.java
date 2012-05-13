@@ -97,6 +97,7 @@ public class Main {
 				System.out.println("\n\n");
 				
 				Liveness liveness = new Liveness(afg);
+				System.out.println("Interference graph: ");
 				liveness.show(System.out);
 
 				fragments.liveness = liveness;

@@ -13,7 +13,7 @@ public class RegAlloc implements TempMap {
 	private Color		color;
 
 	public RegAlloc(Frame frame, List<Instr> instrList, Liveness liveness) {
-		color = new Color(liveness, frame, frame.registers());
+		color = new Color(liveness, frame, frame.registers(), instrList);
 	}
 
 	@Override

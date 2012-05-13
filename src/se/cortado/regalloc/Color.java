@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
+import se.cortado.assem.Instr;
 import se.cortado.ir.temp.Temp;
 import se.cortado.ir.temp.TempList;
 import se.cortado.ir.temp.TempMap;
@@ -42,8 +43,9 @@ public class Color implements TempMap {
 	}
 
 	TempMap						mInitial;
-	InterferenceGraph			mInterferenceGraph;
+	Liveness					mLiveness;
 	List<Temp>					mColors				= new ArrayList<Temp>();
+	List<Instr>					mInstrs;
 	final int					K;
 
 	HashMap<Temp, Temp>			mColorMap			= new HashMap<Temp, Temp>();
@@ -55,9 +57,10 @@ public class Color implements TempMap {
 	HashMap<Temp, List<Temp>>	mAdjList			= new HashMap<Temp, List<Temp>>();
 	HashMap<Node, Integer>		mDegree				= new HashMap<Node, Integer>();
 
-	public Color(InterferenceGraph ig, TempMap initial, TempList registers) {
-		mInterferenceGraph = ig;
+	public Color(Liveness liveness, TempMap initial, TempList registers, List<Instr> instrs) {
+		mLiveness = liveness;
 		mInitial = initial;
+		mInstrs = instrs;
 
 		// calc K and setup mColors and mColorMap
 		int c = 0;
@@ -73,8 +76,8 @@ public class Color implements TempMap {
 		K = c;
 
 		// create empty adjacency lists
-		for (Node node : ig.nodes()) {
-			mAdjList.put(ig.gtemp(node), new ArrayList<Temp>());
+		for (Node node : liveness.nodes()) {
+			mAdjList.put(liveness.gtemp(node), new ArrayList<Temp>());
 		}
 
 		// build edges
@@ -94,8 +97,8 @@ public class Color implements TempMap {
 
 	private void addEdge(Node u, Node v) {
 		if (u != v) {
-			Temp ut = mInterferenceGraph.gtemp(u);
-			Temp vt = mInterferenceGraph.gtemp(v);
+			Temp ut = mLiveness.gtemp(u);
+			Temp vt = mLiveness.gtemp(v);
 			if (mInitial.tempMap(ut) == null) {
 				// ut not precolored
 				mAdjList.get(ut).add(vt);
@@ -110,11 +113,11 @@ public class Color implements TempMap {
 	}
 
 	private void makeWorklist() {
-		for (Node n : mInterferenceGraph.nodes()) {
-			Temp t = mInterferenceGraph.gtemp(n);
+		for (Node n : mLiveness.nodes()) {
+			Temp t = mLiveness.gtemp(n);
 			if (!precolored(t)) {
 				if (degree(n) >= K) {
-					throw new Error("Temp " + t + " interferes with more than K nodes");
+					throw new Error("Temp " + t + " interferes with " + degree(n) + " nodes. It is more than the maximum " + K + " nodes");
 				}
 
 				mSimplifyWorklist.add(n);
@@ -123,7 +126,13 @@ public class Color implements TempMap {
 	}
 
 	private void build() {
-		for (Node node : mInterferenceGraph.nodes()) {
+		// for (int i = mInstrs.size() - 1; i >= 0; i--) {
+		// mLiveness.getLiveOut(mLiveness.tnode(mInstrs.get(mInstrs.size()))
+		// }
+
+		// mLiveness.getLiveOut()
+
+		for (Node node : mLiveness.nodes()) {
 			for (NodeList nl = node.adj(); nl != null; nl = nl.tail) {
 				addEdge(node, nl.head);
 			}
@@ -161,7 +170,7 @@ public class Color implements TempMap {
 		Node node = mSimplifyWorklist.iterator().next();
 		mSimplifyWorklist.remove(node);
 
-		mSelectStack.push(mInterferenceGraph.gtemp(node));
+		mSelectStack.push(mLiveness.gtemp(node));
 
 		for (NodeList nl = node.adj(); nl != null; nl = nl.tail) {
 			decrementDegree(nl.head);
@@ -198,7 +207,7 @@ public class Color implements TempMap {
 		String s = mInitial.tempMap(t);
 		if (s == null) {
 			Temp temp = mColorMap.get(t);
-			
+
 			s = Hardware.tempName(temp);
 		}
 		return s;
