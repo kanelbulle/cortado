@@ -54,17 +54,18 @@ import se.cortado.syntaxtree.While;
 public class JasminVisitor implements Visitor {
 
 	BufferedWriter	mWriter;
-	
-	SymbolTable mSymbolTable;
-	ClassScope mClassScope;
-	MethodScope mMethodScope;
-	
+
+	SymbolTable		mSymbolTable;
+	ClassScope		mClassScope;
+	MethodScope		mMethodScope;
+
 	public JasminVisitor(SymbolTable symbolTable) {
 		this.mSymbolTable = symbolTable;
 	}
 
 	public void write(String message) {
 		try {
+			System.out.println(message);
 			mWriter.write(message + "\n");
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -73,6 +74,64 @@ public class JasminVisitor implements Visitor {
 
 	public void writeind(String message) {
 		write("    " + message);
+	}
+
+	public String descriptorFromType(Type type) {
+		if (type instanceof BooleanType) {
+			return "B";
+		} else if (type instanceof IntegerType) {
+			return "I";
+		} else if (type instanceof IntArrayType) {
+			return "[I";
+		} else if (type instanceof IdentifierType) {
+			return "L" + ((IdentifierType) type).s + ";";
+		}
+
+		throw new Error("Unknown type: " + type);
+	}
+
+	public String t(Type type) {
+		if (type instanceof BooleanType) {
+			return "i";
+		} else if (type instanceof IntegerType) {
+			return "i";
+		} else if (type instanceof IntArrayType) {
+			return "a";
+		} else if (type instanceof IdentifierType) {
+			return "a";
+		} else if (type instanceof VoidType) {
+			return "";
+		}
+
+		throw new Error("Unknown type: " + type);
+	}
+
+	public String store(Type type, String local) {
+		if (type instanceof BooleanType) {
+			return "istore " + local;
+		} else if (type instanceof IntegerType) {
+			return "istore " + local;
+		} else if (type instanceof IntArrayType) {
+			return "astore " + local;
+		} else if (type instanceof IdentifierType) {
+			return "astore " + local;
+		}
+
+		throw new Error("Unknown type: " + type);
+	}
+
+	public String load(Type type, String local) {
+		if (type instanceof BooleanType) {
+			return "iload " + local;
+		} else if (type instanceof IntegerType) {
+			return "iload " + local;
+		} else if (type instanceof IntArrayType) {
+			return "aload " + local;
+		} else if (type instanceof IdentifierType) {
+			return "aload " + local;
+		}
+
+		throw new Error("Unknown type: " + type);
 	}
 
 	@Override
@@ -101,14 +160,25 @@ public class JasminVisitor implements Visitor {
 
 	@Override
 	public void visit(Assign node) {
-		// TODO Auto-generated method stub
-
+		String local = mMethodScope.getLocal(node.i.s);
+		if (local == null) {
+			// field assign
+			String dis = mMethodScope.getLocal("this");
+			writeind("aload " + dis);
+			node.e.accept(this);
+			String fType = descriptorFromType(mClassScope.getVariableType(node.i.s));
+			writeind("putfield " + mClassScope.getName() + "/" + node.i.s + " " + fType);
+		} else {
+			// local variable assign
+			Type varType = mMethodScope.getVariableType(node.i);
+			node.e.accept(this);
+			writeind(store(varType, local));
+		}
 	}
 
 	@Override
 	public void visit(Block node) {
-		// TODO Auto-generated method stub
-
+		node.sl.accept(this);
 	}
 
 	@Override
@@ -119,30 +189,28 @@ public class JasminVisitor implements Visitor {
 
 	@Override
 	public void visit(Call node) {
-		// TODO Auto-generated method stub
+		// push object reference onto stack
+		node.e.accept(this);
 
+		// push arguments onto stack
+		for (int i = node.el.size() - 1; i >= 0; i--) {
+			node.el.elementAt(i).accept(this);
+		}
+
+		String methodDesc = node.i.s + "(";
+		for (int i = 0; i < node.ms.getParameterList().size(); i++) {
+			Formal f = node.ms.getParameterList().elementAt(i);
+			methodDesc += descriptorFromType(f.t);
+		}
+		methodDesc += ")" + descriptorFromType(node.ms.getReturnType());
+
+		writeind("invokevirtual " + node.c + "/" + methodDesc);
 	}
 
 	@Override
 	public void visit(ClassDecl node) {
-		try {
-			// create file writer
-			mWriter = new BufferedWriter(new FileWriter(node.i.s + ".j"));
+		// TODO Auto-generated method stub
 
-			write(".class public " + node.i.s);
-			write(".super java/lang/Object");
-
-			// standard initializer
-			write(".method public <init>()V");
-			writeind("aload_0");
-			writeind("invokenonvirtual java/lang/Object/<init>()V");
-			writeind("return");
-			write(".end method");
-
-			mWriter.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	@Override
@@ -160,8 +228,36 @@ public class JasminVisitor implements Visitor {
 
 	@Override
 	public void visit(ClassDeclSimple node) {
-		// TODO Auto-generated method stub
+		mClassScope = mSymbolTable.get(node.i.s);
 
+		try {
+			// create file writer
+			mWriter = new BufferedWriter(new FileWriter(node.i.s + ".j"));
+
+			write(".class " + node.i.s);
+			write(".super java/lang/Object\n");
+
+			// declare fields
+			for (int i = 0; i < node.vl.size(); i++) {
+				VarDecl vd = node.vl.elementAt(i);
+				writeind(".field public " + vd.identifier.s + " " + descriptorFromType(vd.type));
+			}
+
+			// standard initializer
+			write(".method public <init>()V");
+			writeind("aload_0");
+			writeind("invokespecial java/lang/Object/<init>()V");
+			writeind("return");
+			write(".end method\n");
+
+			for (int i = 0; i < node.ml.size(); i++) {
+				node.ml.elementAt(i).accept(this);
+			}
+
+			mWriter.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -202,8 +298,21 @@ public class JasminVisitor implements Visitor {
 
 	@Override
 	public void visit(IdentifierExp node) {
-		// TODO Auto-generated method stub
-
+		String local = mMethodScope.getLocal(node.s);
+		if (local == null) {
+			// field load
+			String dis = mMethodScope.getLocal("this");
+			writeind("aload " + dis);
+			String fType = descriptorFromType(mClassScope.getVariableType(node.s));
+			writeind("getfield " + mClassScope.getName() + "/" + node.s + " " + fType);
+		} else {
+			// local variable load
+			Type vType = mMethodScope.getVariableType(node.s);
+			if (vType == null) {
+				vType = mMethodScope.getFormalType(node.s);
+			}
+			writeind(load(vType, local));
+		}
 	}
 
 	@Override
@@ -226,8 +335,7 @@ public class JasminVisitor implements Visitor {
 
 	@Override
 	public void visit(IntegerLiteral node) {
-		// TODO Auto-generated method stub
-
+		writeind("ldc " + node.i);
 	}
 
 	@Override
@@ -245,39 +353,73 @@ public class JasminVisitor implements Visitor {
 	@Override
 	public void visit(MainClass node) {
 		mClassScope = mSymbolTable.get(node.i.s);
-		
-		node.md.accept(this);
+
+		try {
+			// create file writer
+			mWriter = new BufferedWriter(new FileWriter(node.i.s + ".j"));
+
+			write(".class " + node.i.s);
+			write(".super java/lang/Object");
+
+			// standard initializer
+			write(".method public <init>()V");
+			writeind("aload_0");
+			writeind("invokenonvirtual java/lang/Object/<init>()V");
+			writeind("return");
+			write(".end method");
+
+			node.md.accept(this);
+
+			mWriter.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void visit(MethodDecl node) {
-		// TODO Auto-generated method stub
-
 		mMethodScope = mClassScope.getMethodMatching(node);
-		
-		if (mClassScope.getClassDecl() instanceof MainClass) {
+
+		boolean main = mClassScope.getClassDecl() instanceof MainClass;
+
+		if (main) {
 			write(".method public static main([Ljava/lang/String;)V");
 		} else {
-			//write(".method public " + node.identifier.s +)
+			String arglist = "";
+			for (int i = 0; i < node.formalList.size(); i++) {
+				Formal f = node.formalList.elementAt(i);
+				arglist += descriptorFromType(f.t) + "";
+			}
+
+			String retType = descriptorFromType(mMethodScope.getReturnType());
+
+			write(".method public " + node.identifier.s + "(" + arglist + ")" + retType);
 		}
-		
-		
-		
+
+		// TODO fix stack depth
+		writeind(".limit stack 10");
+		writeind(".limit locals " + mMethodScope.getNumLocals());
+
+		node.statementList.accept(this);
+
 		node.exp.accept(this);
-		
-		write(".end method");
+
+		writeind(t(node.type) + "return");
+		write(".end method\n");
 	}
 
 	@Override
 	public void visit(MethodDeclList node) {
-		// TODO Auto-generated method stub
-
+		for (int i = 0; i < node.size(); i++) {
+			node.elementAt(i).accept(this);
+		}
 	}
 
 	@Override
 	public void visit(Minus node) {
-		// TODO Auto-generated method stub
-
+		node.e1.accept(this);
+		node.e2.accept(this);
+		writeind("isub");
 	}
 
 	@Override
@@ -288,8 +430,9 @@ public class JasminVisitor implements Visitor {
 
 	@Override
 	public void visit(NewObject node) {
-		// TODO Auto-generated method stub
-
+		writeind("new " + node.i.s);
+		writeind("dup");
+		writeind("invokespecial " + node.i.s + "/<init>()V");
 	}
 
 	@Override
@@ -300,14 +443,16 @@ public class JasminVisitor implements Visitor {
 
 	@Override
 	public void visit(Plus node) {
-		// TODO Auto-generated method stub
-
+		node.e1.accept(this);
+		node.e2.accept(this);
+		writeind("iadd");
 	}
 
 	@Override
 	public void visit(Print node) {
-		// TODO Auto-generated method stub
-
+		writeind("getstatic java/lang/System/out Ljava/io/PrintStream;");
+		node.e.accept(this);
+		writeind("invokevirtual java/io/PrintStream/println(I)V");
 	}
 
 	@Override
@@ -318,13 +463,14 @@ public class JasminVisitor implements Visitor {
 
 	@Override
 	public void visit(Statement node) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void visit(StatementList node) {
-		// TODO Auto-generated method stub
+		for (int i = 0; i < node.size(); i++) {
+			node.elementAt(i).accept(this);
+		}
 	}
 
 	@Override
@@ -341,8 +487,9 @@ public class JasminVisitor implements Visitor {
 
 	@Override
 	public void visit(Times node) {
-		// TODO Auto-generated method stub
-
+		node.e1.accept(this);
+		node.e2.accept(this);
+		writeind("imul");
 	}
 
 	@Override

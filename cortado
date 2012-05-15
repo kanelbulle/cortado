@@ -3,16 +3,20 @@ mkdir cortadoout
 
 rm -f cortadoout/*.s
 rm -f cortadoout/*.o
+rm -f cortadoout/*.class
+rm -f cortadoout/*.j
 rm -f cortadoout/*.out
 
-java -cp mjc.jar:lib/JFlex.jar:lib/java-cup-11a.jar mjc.X86Main $1 -S
+java -cp mjc.jar:lib/JFlex.jar:lib/java-cup-11a.jar mjc.JVMMain $1 -S
 filename=$( basename $1 )
 filename=$( basename $filename .java)
 
-mv ${filename}.s cortadoout/
+mv *.j cortadoout/
+java -jar lib/jasmin.jar cortadoout/*.j -d cortadoout
+java -cp cortadoout/ ${filename}
 
-as cortadoout/${filename}.s -o cortadoout/${filename}.o
+#as cortadoout/${filename}.s -o cortadoout/${filename}.o
 
-gcc -g cortadoout/${filename}.o -o cortadoout/${filename}.out -L lib/ -lminijava
+#gcc -g cortadoout/${filename}.o -o cortadoout/${filename}.out -L lib/ -lminijava
 
-cortadoout/${filename}.out
+#cortadoout/${filename}.out

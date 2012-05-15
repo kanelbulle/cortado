@@ -132,6 +132,10 @@ public class ClassScope {
 	public HashMap<String, List<MethodScope>> getMethods() {
 		return methods;
 	}
+	
+	public String getName() {
+		return classDecl.i.s;
+	}
 
 	public MethodScope getMethodMatching(String methodName, List<Type> types) {
 		List<MethodScope> scopes = methods.get(methodName);

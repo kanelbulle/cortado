@@ -29,6 +29,7 @@ public class MethodScope {
 	private MethodDecl methodDecl;
 	private HashMap<String, Type> variables;
 	private HashMap<String, Access> accesses = new HashMap<String, Access>();
+	private HashMap<String, Integer> locals = new HashMap<String, Integer>();
 	private FormalList parameters;
 	private Type returnType;
 	private String labelName;
@@ -50,6 +51,7 @@ public class MethodScope {
 		// add "this" access
 		Access thisAccess = frame.allocLocal(false);
 		accesses.put("this", thisAccess);
+		locals.put("this", locals.size());
 		
 		parameters = new FormalList();
 		variables = new HashMap<String, Type>();
@@ -66,6 +68,11 @@ public class MethodScope {
 			Access f = frame.allocLocal(false);
 			accesses.put(param.i.s, f);
 			parameters.addElement(param);
+			
+			Integer l = locals.get(param.i.s);
+			if (l == null) {
+				locals.put(param.i.s, locals.size());
+			}
 		}
 	}
 
@@ -81,6 +88,11 @@ public class MethodScope {
 			Access f = frame.allocLocal(false);
 			accesses.put(variable.identifier.s, f);
 			variables.put(variable.identifier.s, type);
+			
+			Integer l = locals.get(variable.identifier.s);
+			if (l == null) {
+				locals.put(variable.identifier.s, locals.size());
+			}
 		}
 	}
 
@@ -97,10 +109,18 @@ public class MethodScope {
 	public Type getVariableType(Identifier id) {
 		return variables.get(id.s);
 	}
+	
+	public Type getVariableType(String s) {
+		return variables.get(s);
+	}
 
 	public Type getFormalType(Identifier id) {
+		return getFormalType(id.s);
+	}
+	
+	public Type getFormalType(String s) {
 		for (int i = 0; i < parameters.size(); i++) {
-			if (id.s.equals(parameters.elementAt(i).i.s)) {
+			if (s.equals(parameters.elementAt(i).i.s)) {
 				return parameters.elementAt(i).t;
 			}
 		}
@@ -144,6 +164,14 @@ public class MethodScope {
 
 	public Access getAccess(String variableName) {
 		return accesses.get(variableName);
+	}
+	
+	public String getLocal(String variableName) {
+		return "" + locals.get(variableName);
+	}
+	
+	public int getNumLocals() {
+		return locals.size();
 	}
 
 	public String getLabelName() {

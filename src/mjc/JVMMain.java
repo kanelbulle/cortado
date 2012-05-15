@@ -8,6 +8,7 @@ import se.cortado.Scanner;
 import se.cortado.parser;
 import se.cortado.syntaxtree.Program;
 import se.cortado.visitors.ASTPrintVisitor;
+import se.cortado.visitors.JasminVisitor;
 import se.cortado.visitors.ScopeVisitor;
 import se.cortado.visitors.SlowTypeVisitor;
 import se.cortado.visitors.SymbolTable;
@@ -44,6 +45,9 @@ public class JVMMain {
 			if (typeVisitor.errorOccurred) {
 				throw new Exception("Type check failed with errors.");
 			}
+			
+			JasminVisitor jv = new JasminVisitor(symbolTable);
+			prog.accept(jv);
 			
 		} catch (Exception e) {
 			System.out.println("ERROR: " + e.getMessage());
