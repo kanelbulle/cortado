@@ -142,8 +142,18 @@ public class JasminVisitor implements Visitor {
 
 	@Override
 	public void visit(And node) {
-		// TODO Auto-generated method stub
-
+		node.e1.accept(this);
+		node.e2.accept(this);
+		
+		String trueLabel = newLabel();
+		String endLabel = newLabel();
+		
+		writeind("if_icmpeq " + trueLabel);
+		writeind("iconst_0");
+		writeind("goto " + endLabel);
+		write(trueLabel + ":");
+		writeind("iconst_1");
+		write(endLabel + ":");
 	}
 
 	@Override
@@ -192,7 +202,6 @@ public class JasminVisitor implements Visitor {
 
 	@Override
 	public void visit(BooleanType node) {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -218,13 +227,11 @@ public class JasminVisitor implements Visitor {
 
 	@Override
 	public void visit(ClassDecl node) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void visit(ClassDeclExtends node) {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -271,13 +278,11 @@ public class JasminVisitor implements Visitor {
 
 	@Override
 	public void visit(Exp node) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void visit(ExpList node) {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -331,8 +336,6 @@ public class JasminVisitor implements Visitor {
 
 	@Override
 	public void visit(If node) {
-		// TODO Auto-generated method stub
-
 		node.e.accept(this);
 		
 		String trueLabel = newLabel();
@@ -371,19 +374,17 @@ public class JasminVisitor implements Visitor {
 
 	@Override
 	public void visit(LessThan node) {
-		node.e2.accept(this);
 		node.e1.accept(this);
+		node.e2.accept(this);
 		
-		String falseLabel = newLabel();
 		String trueLabel = newLabel();
 		String endLabel = newLabel();
 		
 		writeind("if_icmplt " + trueLabel);
-		write(falseLabel + ":");
-		writeind("iconst_1");
+		writeind("iconst_0");
 		writeind("goto " + endLabel);
 		write(trueLabel + ":");
-		writeind("iconst_0");
+		writeind("iconst_1");
 		write(endLabel + ":");
 	}
 
@@ -474,8 +475,9 @@ public class JasminVisitor implements Visitor {
 
 	@Override
 	public void visit(Not node) {
-		// TODO Auto-generated method stub
-
+		node.e.accept(this);
+		writeind("iconst_1");
+		writeind("ixor");
 	}
 
 	@Override
