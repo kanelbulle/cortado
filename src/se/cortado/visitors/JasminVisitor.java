@@ -1,7 +1,6 @@
 package se.cortado.visitors;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -72,7 +71,7 @@ public class JasminVisitor implements Visitor {
 		}
 	}
 
-	public void writei(String message) {
+	public void writeind(String message) {
 		write("    " + message);
 	}
 
@@ -133,10 +132,11 @@ public class JasminVisitor implements Visitor {
 			write(".class public " + node.i.s);
 			write(".super java/lang/Object");
 
+			// standard initializer
 			write(".method public <init>()V");
-			writei("aload_0");
-			writei("invokenonvirtual java/lang/Object/<init>()V");
-			writei("return");
+			writeind("aload_0");
+			writeind("invokenonvirtual java/lang/Object/<init>()V");
+			writeind("return");
 			write(".end method");
 
 			mWriter.close();
@@ -153,8 +153,9 @@ public class JasminVisitor implements Visitor {
 
 	@Override
 	public void visit(ClassDeclList node) {
-		// TODO Auto-generated method stub
-
+		for (int i = 0; i < node.size(); i++) {
+			node.elementAt(i).accept(this);
+		}
 	}
 
 	@Override
