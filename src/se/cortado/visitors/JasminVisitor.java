@@ -50,6 +50,7 @@ import se.cortado.syntaxtree.VarDecl;
 import se.cortado.syntaxtree.VarDeclList;
 import se.cortado.syntaxtree.VoidType;
 import se.cortado.syntaxtree.While;
+import sun.security.action.GetLongAction;
 
 public class JasminVisitor implements Visitor {
 
@@ -58,6 +59,8 @@ public class JasminVisitor implements Visitor {
 	SymbolTable		mSymbolTable;
 	ClassScope		mClassScope;
 	MethodScope		mMethodScope;
+
+	int				mLabelCount;
 
 	public JasminVisitor(SymbolTable symbolTable) {
 		this.mSymbolTable = symbolTable;
@@ -74,6 +77,10 @@ public class JasminVisitor implements Visitor {
 
 	public void writeind(String message) {
 		write("    " + message);
+	}
+	
+	public String newLabel() {
+		return "L" + mLabelCount++;
 	}
 
 	public String descriptorFromType(Type type) {
@@ -307,7 +314,7 @@ public class JasminVisitor implements Visitor {
 			writeind(load(vType, local));
 		}
 	}
-	
+
 	@Override
 	public void visit(Identifier node) {
 		loadVariable(node.s);
@@ -327,6 +334,21 @@ public class JasminVisitor implements Visitor {
 	public void visit(If node) {
 		// TODO Auto-generated method stub
 
+		node.e.accept(this);
+		
+		String trueLabel = newLabel();
+		String falseLabel = newLabel();
+		String endLabel = newLabel();
+		
+		writeind("ifeq " + falseLabel);
+		
+		write(trueLabel + ":");
+		node.s1.accept(this);
+		writeind("goto " + endLabel);
+		
+		write(falseLabel + ":");
+		node.s2.accept(this);
+		write(endLabel + ":");
 	}
 
 	@Override
@@ -350,8 +372,20 @@ public class JasminVisitor implements Visitor {
 
 	@Override
 	public void visit(LessThan node) {
-		// TODO Auto-generated method stub
-
+		node.e2.accept(this);
+		node.e1.accept(this);
+		
+		String trueLabel = newLabel();
+		String falseLabel = newLabel();
+		String endLabel = newLabel();
+		
+		writeind("if_icmplt " + falseLabel);
+		write(trueLabel + ":");
+		writeind("iconst_1");
+		writeind("goto " + endLabel);
+		write(falseLabel + ":");
+		writeind("iconst_0");
+		write(endLabel + ":");
 	}
 
 	@Override
