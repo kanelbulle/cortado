@@ -50,7 +50,6 @@ import se.cortado.syntaxtree.VarDecl;
 import se.cortado.syntaxtree.VarDeclList;
 import se.cortado.syntaxtree.VoidType;
 import se.cortado.syntaxtree.While;
-import sun.security.action.GetLongAction;
 
 public class JasminVisitor implements Visitor {
 
@@ -375,15 +374,15 @@ public class JasminVisitor implements Visitor {
 		node.e2.accept(this);
 		node.e1.accept(this);
 		
-		String trueLabel = newLabel();
 		String falseLabel = newLabel();
+		String trueLabel = newLabel();
 		String endLabel = newLabel();
 		
-		writeind("if_icmplt " + falseLabel);
-		write(trueLabel + ":");
+		writeind("if_icmplt " + trueLabel);
+		write(falseLabel + ":");
 		writeind("iconst_1");
 		writeind("goto " + endLabel);
-		write(falseLabel + ":");
+		write(trueLabel + ":");
 		writeind("iconst_0");
 		write(endLabel + ":");
 	}
@@ -555,8 +554,17 @@ public class JasminVisitor implements Visitor {
 
 	@Override
 	public void visit(While node) {
-		// TODO Auto-generated method stub
+		String startLabel = newLabel();
+		String endLabel = newLabel();
 
+		write(startLabel + ":");
+		node.e.accept(this);
+		writeind("ifeq " + endLabel);
+		
+		node.s.accept(this);
+		writeind("goto " + startLabel);
+
+		write(endLabel + ":");
 	}
 
 }
