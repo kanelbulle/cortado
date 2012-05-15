@@ -142,20 +142,23 @@ public class JasminVisitor implements Visitor {
 
 	@Override
 	public void visit(ArrayAssign node) {
-		// TODO Auto-generated method stub
-
+		node.i.accept(this);
+		node.e1.accept(this);
+		node.e2.accept(this);
+		writeind("iastore");
 	}
 
 	@Override
 	public void visit(ArrayLength node) {
-		// TODO Auto-generated method stub
-
+		node.e.accept(this);
+		writeind("arraylength");
 	}
 
 	@Override
 	public void visit(ArrayLookup node) {
-		// TODO Auto-generated method stub
-
+		node.e1.accept(this);
+		node.e2.accept(this);
+		writeind("iaload");
 	}
 
 	@Override
@@ -274,50 +277,49 @@ public class JasminVisitor implements Visitor {
 
 	@Override
 	public void visit(False node) {
-		// TODO Auto-generated method stub
-
+		writeind("iconst_0");
 	}
 
 	@Override
 	public void visit(Formal node) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void visit(FormalList node) {
-		// TODO Auto-generated method stub
 
 	}
 
-	@Override
-	public void visit(Identifier node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void visit(IdentifierExp node) {
-		String local = mMethodScope.getLocal(node.s);
+	public void loadVariable(String var) {
+		String local = mMethodScope.getLocal(var);
 		if (local == null) {
 			// field load
 			String dis = mMethodScope.getLocal("this");
 			writeind("aload " + dis);
-			String fType = descriptorFromType(mClassScope.getVariableType(node.s));
-			writeind("getfield " + mClassScope.getName() + "/" + node.s + " " + fType);
+			String fType = descriptorFromType(mClassScope.getVariableType(var));
+			writeind("getfield " + mClassScope.getName() + "/" + var + " " + fType);
 		} else {
 			// local variable load
-			Type vType = mMethodScope.getVariableType(node.s);
+			Type vType = mMethodScope.getVariableType(var);
 			if (vType == null) {
-				vType = mMethodScope.getFormalType(node.s);
+				vType = mMethodScope.getFormalType(var);
 			}
 			writeind(load(vType, local));
 		}
 	}
+	
+	@Override
+	public void visit(Identifier node) {
+		loadVariable(node.s);
+	}
+
+	@Override
+	public void visit(IdentifierExp node) {
+		loadVariable(node.s);
+	}
 
 	@Override
 	public void visit(IdentifierType node) {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -329,18 +331,20 @@ public class JasminVisitor implements Visitor {
 
 	@Override
 	public void visit(IntArrayType node) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void visit(IntegerLiteral node) {
-		writeind("ldc " + node.i);
+		if (node.i >= 0 && node.i < 5) {
+			writeind("iconst_" + node.i);
+		} else {
+			writeind("ldc " + node.i);
+		}
 	}
 
 	@Override
 	public void visit(IntegerType node) {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -424,8 +428,8 @@ public class JasminVisitor implements Visitor {
 
 	@Override
 	public void visit(NewArray node) {
-		// TODO Auto-generated method stub
-
+		node.e.accept(this);
+		writeind("newarray int");
 	}
 
 	@Override
@@ -475,14 +479,12 @@ public class JasminVisitor implements Visitor {
 
 	@Override
 	public void visit(StringArrayType node) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void visit(This node) {
-		// TODO Auto-generated method stub
-
+		writeind("aload_0");
 	}
 
 	@Override
@@ -494,31 +496,26 @@ public class JasminVisitor implements Visitor {
 
 	@Override
 	public void visit(True node) {
-		// TODO Auto-generated method stub
-
+		writeind("iconst_1");
 	}
 
 	@Override
 	public void visit(Type node) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void visit(VarDecl node) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void visit(VarDeclList node) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void visit(VoidType node) {
-		// TODO Auto-generated method stub
 
 	}
 
