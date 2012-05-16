@@ -82,7 +82,7 @@ import java_cup.runtime.*;
 
 NEWLINE = \r|\n|\r\n
 WS = [ \t\f]
-COMMENT   = "/*" [^*] ~"*/" | "/*" "*"+ "/" | \/\/.*\n
+COMMENT   = "/*" ~"*/" | "/*" "*"+ "/" | \/\/.*\n
 
 %% /* ---------------- LEXICAL RULES ---------------- */
 "class" 						{ return token(sym.CLASS); }
