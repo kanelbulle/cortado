@@ -1,11 +1,10 @@
-
 class Main
 {
 	public static void main(String[] args)
 	{
 		Fraction pi;
 		int i;
-		pi = new Fraction().set(657408909, 209259755); // Almost
+		pi = new Fraction().set(312689, 99532); // Almost
 		i = 0;
 		while (i < 10)
 		{

@@ -159,7 +159,7 @@ class MeanTest {
 		int [  ] arr;
 		int baa;
 		baa=0;
-		i=40000;
+		i=7000;
 		ii=0;
 		arr = new int[i];
 		t = new MeanTest();

@@ -41,7 +41,7 @@ class Full{
 			CsToEconomy cse;
 			int asdasd;
 			cse = new CsToEconomy();
-			asdasd = cse.init(45000);
+			asdasd = cse.init(7000);
 			asdasd = cse.badSolve();
 			System.out.println(asdasd);
 		}
@@ -54,7 +54,8 @@ class Scope {
 		a = 1;
 		System.out.println(a);
 		{
-			int a = 2;
+		    int a;
+		    a = 2;
 			System.out.println(a);
 		}
 		System.out.println(a);
@@ -64,19 +65,6 @@ class Scope {
 
 class ExtendsTest{
 
-	public int ExtendsTestMethod(A a){
-		int ret;
-
-		ret = a.print();
-		{
-			int ab;
-			ab= 9898000;
-			ret = ab;
-
-		}
-
-		return ret;
-	}
 	public int ExtendsTestMethod(B a){
 		int ret;
 

@@ -1,5 +1,5 @@
-//EXT: LONG
-//EXT: CNE
+//EXT:LONG
+//EXT:CNE
 
 class ArrayTest {
 	public static void main(String[] args) {

@@ -1,8 +1,8 @@
-//EXT: CLE
-//EXT: CGT
-//EXT: CGE
-//EXT: CEQ
-//EXT: CNE
+//EXT:CLE
+//EXT:CGT
+//EXT:CGE
+//EXT:CEQ
+//EXT:CNE
 
 class CmpTest {
 	public static void main(String[] a) {
