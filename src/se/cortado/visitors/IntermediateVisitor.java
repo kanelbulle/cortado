@@ -3,7 +3,6 @@ package se.cortado.visitors;
 import se.cortado.frame.Access;
 import se.cortado.frame.Frame;
 import se.cortado.ir.temp.Label;
-import se.cortado.ir.temp.Temp;
 import se.cortado.ir.translate.ProcFragment;
 import se.cortado.ir.translate.TR_Ex;
 import se.cortado.ir.translate.TR_Nx;
