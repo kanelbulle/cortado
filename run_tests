@@ -74,8 +74,14 @@ do
 			CUR_BIN=$(cat $CUR_FILE | egrep '.*class[[:space:]][A-Z][A-Z|a-z]*' | head -n 1 | cut -f1 -d'{' | cut -c7-300 | cut -f1 -d' ')
 			OUT_FILE=$(echo $CUR_FILE | cut -f1 -d'.' )".out"
 			java -cp cortadoout/$EXECUTE_DIR/$CUR_DIR $CUR_BIN -S 2> /dev/null > cortadoout/$EXECUTE_DIR/$CUR_DIR/$CUR_BIN.out2
-			if diff cortadoout/$EXECUTE_DIR/$CUR_DIR/$CUR_BIN.out2 $OUT_FILE >/dev/null; then
-				echo "OK!"	
+			if [ "$?" == 0 ]; then
+				if diff cortadoout/$EXECUTE_DIR/$CUR_DIR/$CUR_BIN.out2 $OUT_FILE >/dev/null; then
+					echo "OK!"	
+				else
+					# Update failed tests, adds whitespace as separator
+					FAILED_TESTS=$FAILED_TESTS$CUR_FILE" "
+					echo "FAIL!"
+				fi
 			else
 				# Update failed tests, adds whitespace as separator
 				FAILED_TESTS=$FAILED_TESTS$CUR_FILE" "
