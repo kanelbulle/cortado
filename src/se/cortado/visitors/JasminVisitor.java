@@ -189,6 +189,7 @@ public class JasminVisitor implements Visitor {
 			writeind("putfield " + mClassScope.getName() + "/" + node.i.s + " " + fType);
 		} else {
 			// local variable assign
+			System.out.println("getting type of variable " + node.i.s + " in method " + mMethodScope.getLabelName() + " class " + mClassScope.getName());
 			Type varType = mMethodScope.getVariableType(node.i);
 			node.e.accept(this);
 			writeind(store(varType, local));

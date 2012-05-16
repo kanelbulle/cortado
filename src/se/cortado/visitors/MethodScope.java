@@ -60,6 +60,7 @@ public class MethodScope {
 	}
 
 	public void addParameter(Formal param, Type type) throws Exception {
+		System.out.println("ADDING PARAMETER: " + param.i.s);
 		if (parameters.contains(param.i.s)) {
 			throw new Exception("Duplicate parameter \"" + param.i
 					+ "\" on line: " + param.i.row);
@@ -68,9 +69,10 @@ public class MethodScope {
 			Access f = frame.allocLocal(false);
 			accesses.put(param.i.s, f);
 			parameters.addElement(param);
+			variables.put(param.i.s, type);
 			
-			Integer l = locals.get(param.i.s);
-			if (l == null) {
+			System.out.println("existing type: " + getLocal(param.i.s));
+			if (getLocal(param.i.s) == null) {
 				locals.put(param.i.s, locals.size());
 			}
 		}
@@ -167,7 +169,12 @@ public class MethodScope {
 	}
 	
 	public String getLocal(String variableName) {
-		return "" + locals.get(variableName);
+		Integer loc = locals.get(variableName);
+		if (loc == null) {
+			return null;
+		} else {
+			return "" + loc;
+		}
 	}
 	
 	public int getNumLocals() {
