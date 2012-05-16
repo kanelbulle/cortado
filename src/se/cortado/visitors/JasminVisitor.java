@@ -199,7 +199,7 @@ public class JasminVisitor implements Visitor {
 			writeind("aload " + dis);
 			node.e.accept(this);
 			String fType = descriptorFromType(mClassScope.getVariableType(node.i.s));
-			writeind("putfield " + mClassScope.getName() + "/" + node.i.s + " " + fType);
+			writeind("putfield '" + mClassScope.getName() + "/" + node.i.s + "' " + fType);
 		} else {
 			// local variable assign
 			Type varType = mMethodScope.getVariableType(node.i);
@@ -235,7 +235,7 @@ public class JasminVisitor implements Visitor {
 		}
 		methodDesc += ")" + descriptorFromType(node.ms.getReturnType());
 
-		writeind("invokevirtual " + node.c + "/" + methodDesc);
+		writeind("invokevirtual '" + node.c + "/" + methodDesc + "'");
 	}
 
 	@Override
@@ -263,13 +263,13 @@ public class JasminVisitor implements Visitor {
 			// create file writer
 			mWriter = new BufferedWriter(new FileWriter(node.i.s + ".j"));
 
-			write(".class " + node.i.s);
+			write(".class '" + node.i.s + "'");
 			write(".super java/lang/Object\n");
 
 			// declare fields
 			for (int i = 0; i < node.vl.size(); i++) {
 				VarDecl vd = node.vl.elementAt(i);
-				writeind(".field public " + vd.identifier.s + " " + descriptorFromType(vd.type));
+				writeind(".field public '" + vd.identifier.s + "' " + descriptorFromType(vd.type));
 			}
 
 			// standard initializer
@@ -321,7 +321,7 @@ public class JasminVisitor implements Visitor {
 			String dis = mMethodScope.getLocal("this");
 			writeind("aload " + dis);
 			String fType = descriptorFromType(mClassScope.getVariableType(var));
-			writeind("getfield " + mClassScope.getName() + "/" + var + " " + fType);
+			writeind("getfield '" + mClassScope.getName() + "/" + var + "' " + fType);
 		} else {
 			// local variable load
 			Type vType = mMethodScope.getVariableType(var);
@@ -419,7 +419,7 @@ public class JasminVisitor implements Visitor {
 			// create file writer
 			mWriter = new BufferedWriter(new FileWriter(node.i.s + ".j"));
 
-			write(".class " + node.i.s);
+			write(".class '" + node.i.s + "'");
 			write(".super java/lang/Object");
 
 			// standard initializer
@@ -495,9 +495,9 @@ public class JasminVisitor implements Visitor {
 	public void visit(NewObject node) {
 		writeline(node.line);
 
-		writeind("new " + node.i.s);
+		writeind("new '" + node.i.s + "'");
 		writeind("dup");
-		writeind("invokespecial " + node.i.s + "/<init>()V");
+		writeind("invokespecial '" + node.i.s + "/<init>()V'");
 	}
 
 	@Override
