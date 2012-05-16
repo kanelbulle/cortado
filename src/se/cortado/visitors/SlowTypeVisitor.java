@@ -344,7 +344,7 @@ public class SlowTypeVisitor implements TypeVisitor {
 
 	@Override
 	public Type visit(Identifier node) {
-		currentLine = node.row;
+		currentLine = node.line;
 
 		return null;
 	}

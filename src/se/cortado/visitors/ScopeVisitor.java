@@ -107,7 +107,7 @@ public class ScopeVisitor implements Visitor {
 	@Override
 	public void visit(ClassDeclSimple node) {
 		if (symbolTable.containsKey(node.i.s)) {
-			errors.add("Redeclaration of class \"" + node.i.s + "\" on line: " + node.i.row);
+			errors.add("Redeclaration of class \"" + node.i.s + "\" on line: " + node.i.line);
 		} else {
 			CUR_CLASS = node;
 			symbolTable.put(node.i.s, new ClassScope(node));

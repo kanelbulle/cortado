@@ -64,6 +64,10 @@ public class JasminVisitor implements Visitor {
 	public JasminVisitor(SymbolTable symbolTable) {
 		this.mSymbolTable = symbolTable;
 	}
+	
+	public void writeline(int line) {
+		write(".line " + line);
+	}
 
 	public void write(String message) {
 		try {
@@ -189,6 +193,7 @@ public class JasminVisitor implements Visitor {
 			writeind("putfield " + mClassScope.getName() + "/" + node.i.s + " " + fType);
 		} else {
 			// local variable assign
+			System.out.println("getting type of variable " + node.i.s + " in method " + mMethodScope.getLabelName() + " class " + mClassScope.getName());
 			Type varType = mMethodScope.getVariableType(node.i);
 			node.e.accept(this);
 			writeind(store(varType, local));
@@ -321,11 +326,15 @@ public class JasminVisitor implements Visitor {
 
 	@Override
 	public void visit(Identifier node) {
+		writeline(node.line);
+		
 		loadVariable(node.s);
 	}
 
 	@Override
 	public void visit(IdentifierExp node) {
+		writeline(node.line);
+		
 		loadVariable(node.s);
 	}
 
@@ -336,6 +345,8 @@ public class JasminVisitor implements Visitor {
 
 	@Override
 	public void visit(If node) {
+		writeline(node.line);
+		
 		node.e.accept(this);
 		
 		String trueLabel = newLabel();
@@ -360,6 +371,8 @@ public class JasminVisitor implements Visitor {
 
 	@Override
 	public void visit(IntegerLiteral node) {
+		writeline(node.line);
+		
 		if (node.i >= 0 && node.i < 5) {
 			writeind("iconst_" + node.i);
 		} else {
@@ -374,6 +387,8 @@ public class JasminVisitor implements Visitor {
 
 	@Override
 	public void visit(LessThan node) {
+		writeline(node.line);
+		
 		node.e1.accept(this);
 		node.e2.accept(this);
 		
@@ -435,7 +450,7 @@ public class JasminVisitor implements Visitor {
 		}
 
 		// TODO fix stack depth
-		writeind(".limit stack 10");
+		writeind(".limit stack 1000");
 		writeind(".limit locals " + mMethodScope.getNumLocals());
 
 		node.statementList.accept(this);
@@ -462,12 +477,16 @@ public class JasminVisitor implements Visitor {
 
 	@Override
 	public void visit(NewArray node) {
+		writeline(node.line);
+		
 		node.e.accept(this);
 		writeind("newarray int");
 	}
 
 	@Override
 	public void visit(NewObject node) {
+		writeline(node.line);
+		
 		writeind("new " + node.i.s);
 		writeind("dup");
 		writeind("invokespecial " + node.i.s + "/<init>()V");
@@ -475,6 +494,8 @@ public class JasminVisitor implements Visitor {
 
 	@Override
 	public void visit(Not node) {
+		writeline(node.line);
+		
 		node.e.accept(this);
 		writeind("iconst_1");
 		writeind("ixor");
@@ -482,6 +503,8 @@ public class JasminVisitor implements Visitor {
 
 	@Override
 	public void visit(Plus node) {
+		writeline(node.line);
+		
 		node.e1.accept(this);
 		node.e2.accept(this);
 		writeind("iadd");
@@ -556,6 +579,8 @@ public class JasminVisitor implements Visitor {
 
 	@Override
 	public void visit(While node) {
+		writeline(node.line);
+		
 		String startLabel = newLabel();
 		String endLabel = newLabel();
 
