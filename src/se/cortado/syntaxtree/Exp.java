@@ -9,4 +9,10 @@ public abstract class Exp extends Node {
 	public abstract void accept(Visitor v);
 	public abstract Type accept(TypeVisitor v);
 	public abstract Translate accept(TranslateVisitor v);
+	
+	@Override
+	public Exp setLine(int line) {
+		this.line = line;
+		return this;
+	}
 }

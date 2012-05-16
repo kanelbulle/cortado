@@ -269,43 +269,43 @@ stmt 			::=	LCURLY stmt_list_opt:sl RCURLY
 				
 expr 			::= /* Multidimensional arrays are not supported, try to detect subsets of multi arrays and trigger error */
 					NEW IDENTIFIER:id LBRACKET expr:e1 RBRACKET LBRACKET expr:e2 RBRACKET
-						{: RESULT = new TwoDimensionalArrayType(); :}
+						{: RESULT = new TwoDimensionalArrayType().setLine(getReducedRow()); :}
 					| NEW INT LBRACKET expr:e1 RBRACKET LBRACKET expr:e2 RBRACKET
-						{: RESULT = new TwoDimensionalArrayType(); :}
+						{: RESULT = new TwoDimensionalArrayType().setLine(getReducedRow()); :}
 					| expr:e0 LBRACKET expr:e1 RBRACKET LBRACKET expr:e2 RBRACKET
-						{: RESULT = new TwoDimensionalArrayType(); :}
+						{: RESULT = new TwoDimensionalArrayType().setLine(getReducedRow()); :}
 					| expr:e1 PLUS expr:e2 
-						{: RESULT = new Plus(e1, e2); :}
+						{: RESULT = new Plus(e1, e2).setLine(getReducedRow()); :}
 					| expr:e1 MINUS expr:e2
-						{: RESULT = new Minus(e1, e2); :}
+						{: RESULT = new Minus(e1, e2).setLine(getReducedRow()); :}
 					| expr:e1 MULTIPLY expr:e2
-						{: RESULT = new Times(e1, e2); :}
+						{: RESULT = new Times(e1, e2).setLine(getReducedRow()); :}
 					| expr:e1 LESS expr:e2
-						{: RESULT = new LessThan(e1, e2); :}
+						{: RESULT = new LessThan(e1, e2).setLine(getReducedRow()); :}
 					| expr:e1 AND expr:e2
-						{: RESULT = new And(e1, e2); :}
+						{: RESULT = new And(e1, e2).setLine(getReducedRow()); :}
 					| expr:e1 LBRACKET expr:e2 RBRACKET
-						{: RESULT = new ArrayLookup(e1, e2); :}
+						{: RESULT = new ArrayLookup(e1, e2).setLine(getReducedRow()); :}
 					| expr:e1 DOT LENGTH
-						{: RESULT = new ArrayLength(e1); :}
+						{: RESULT = new ArrayLength(e1).setLine(getReducedRow()); :}
 					| expr:e1 DOT IDENTIFIER:id LPAREN expr_list_opt:el RPAREN
-						{: RESULT = new Call(e1, new Identifier(id, getReducedRow()), el); :}
+						{: RESULT = new Call(e1, new Identifier(id, getReducedRow()), el).setLine(getReducedRow()); :}
 					| INTEGER:i
-						{: RESULT = new IntegerLiteral((String) i); :}
+						{: RESULT = new IntegerLiteral((String) i).setLine(getReducedRow()); :}
 					| TRUE
-						{: RESULT = new True(); :}
+						{: RESULT = new True().setLine(getReducedRow()); :}
 					| FALSE
-						{: RESULT = new False(); :}
+						{: RESULT = new False().setLine(getReducedRow()); :}
 					| IDENTIFIER:id
-						{: RESULT = new IdentifierExp((String) id); :}
+						{: RESULT = new IdentifierExp((String) id).setLine(getReducedRow()); :}
 					| THIS
-						{: RESULT = new This(); :}
+						{: RESULT = new This().setLine(getReducedRow()); :}
 					| NEW INT LBRACKET expr:e1 RBRACKET
-						{: RESULT = new NewArray(e1); :}
+						{: RESULT = new NewArray(e1).setLine(getReducedRow()); :}
 					| NEW IDENTIFIER:id LPAREN RPAREN
-						{: RESULT = new NewObject(new Identifier(id, getReducedRow())); :}
+						{: RESULT = new NewObject(new Identifier(id, getReducedRow())).setLine(getReducedRow()); :}
 					| BANG expr:e1
-						{: RESULT = new Not(e1); :}
+						{: RESULT = new Not(e1).setLine(getReducedRow()); :}
 					| LPAREN expr:e RPAREN
 						{: RESULT = e; :}
 					;
