@@ -6,6 +6,7 @@ local.properties
 *.class
 *.java~
 /cortadoout
+/cortado_mjc
 gen/
 bin/
 docs/report/report.aux
