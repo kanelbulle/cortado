@@ -7,7 +7,6 @@ import se.cortado.assem.Instr;
 import se.cortado.assem.OPER;
 import se.cortado.frame.Access;
 import se.cortado.frame.Frame;
-import se.cortado.ir.temp.DefaultMap;
 import se.cortado.ir.temp.Label;
 import se.cortado.ir.temp.LabelList;
 import se.cortado.ir.temp.Temp;

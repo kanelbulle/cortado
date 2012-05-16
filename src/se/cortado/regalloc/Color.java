@@ -186,10 +186,10 @@ public class Color implements TempMap {
 		mDegree.put(node, degree + 1);
 	}
 
-	private int degree(Node node) {
-		Integer d = mDegree.get(node);
-		return d == null ? 0 : d;
-	}
+//	private int degree(Node node) {
+//		Integer d = mDegree.get(node);
+//		return d == null ? 0 : d;
+//	}
 
 	private boolean precolored(Temp t) {
 		return mInitial.tempMap(t) != null;

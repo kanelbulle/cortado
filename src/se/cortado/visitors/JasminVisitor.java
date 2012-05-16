@@ -66,7 +66,7 @@ public class JasminVisitor implements Visitor {
 	}
 	
 	public void writeline(int line) {
-		write(".line " + line);
+		//write(".line " + line);
 	}
 
 	public void write(String message) {
@@ -146,11 +146,15 @@ public class JasminVisitor implements Visitor {
 
 	@Override
 	public void visit(And node) {
-		node.e1.accept(this);
-		node.e2.accept(this);
 		
 		String trueLabel = newLabel();
 		String endLabel = newLabel();
+
+		node.e1.accept(this);
+		writeind("dup");
+		writeind("ifeq " + endLabel);
+		
+		node.e2.accept(this);
 		
 		writeind("if_icmpeq " + trueLabel);
 		writeind("iconst_0");
@@ -216,7 +220,7 @@ public class JasminVisitor implements Visitor {
 		node.e.accept(this);
 
 		// push arguments onto stack
-		for (int i = node.el.size() - 1; i >= 0; i--) {
+		for (int i = 0; i < node.el.size(); i++) {
 			node.el.elementAt(i).accept(this);
 		}
 
