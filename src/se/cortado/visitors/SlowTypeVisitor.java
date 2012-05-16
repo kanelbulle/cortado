@@ -562,6 +562,10 @@ public class SlowTypeVisitor implements TypeVisitor {
 
 	@Override
 	public Type visit(This node) {
+		if (currentClass instanceof MainClass) {
+			addError("Accessing 'this' in main", "");
+		}
+		
 		return new IdentifierType(currentClass.i.s);
 	}
 
