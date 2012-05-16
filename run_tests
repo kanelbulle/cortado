@@ -21,7 +21,7 @@ do
 		if [ "$EXTENSIONS" != "" ]; then
 			continue
 		fi
-		echo -n "Testing: " $CUR_FILE"..."
+		echo -n "Testing: (COMPILE)" $CUR_FILE"..."
 		$CORTADO $CUR_FILE > /dev/null 2> /dev/null
 		if [ "$?" = 0 ]; then
 			echo "OK!"
@@ -44,7 +44,7 @@ do
 		if [ "$EXTENSIONS" != "" ]; then
 			continue
 		fi
-		echo -n "Testing: " $CUR_FILE"..."
+		echo -n "Testing: (NONCOMPILE) " $CUR_FILE"..."
 		$CORTADO $CUR_FILE > /dev/null 2> /dev/null
 		if [ "$?" != 0 ]; then
 			echo "OK!"
@@ -67,18 +67,19 @@ do
 		if [ "$EXTENSIONS" != "" ]; then
 			continue
 		fi
-		echo -n "Testing: " $CUR_FILE"..."
-		#$CORTADO $EXECUTE_DIR/$CUR_DIR/$CUR_FILE > /dev/null 2> /dev/null
+		echo -n "Testing (EXECUTE):" $CORTADO $CUR_FILE"..."
+		$CORTADO $CUR_FILE > /dev/null 2> /dev/null
 		if [ "$?" = 0 ]; then
 			# Compile is ok, compare with output..
+			CUR_BIN=$(cat $CUR_FILE | egrep '.*class[[:space:]][A-Z][A-Z|a-z]*' | head -n 1 | cut -f1 -d'{' | cut -c7-300 | cut -f1 -d' ')
 			OUT_FILE=$(echo $CUR_FILE | cut -f1 -d'.' )".out"
-			TEST_OUT=$(java $CUR_BIN)
-			if [ $(diff $TEST_OUT $OUT_FILE) != 0]; then
+			java -cp cortadoout/$EXECUTE_DIR/$CUR_DIR $CUR_BIN -S 2> /dev/null > cortadoout/$EXECUTE_DIR/$CUR_DIR/$CUR_BIN.out2
+			if diff cortadoout/$EXECUTE_DIR/$CUR_DIR/$CUR_BIN.out2 $OUT_FILE >/dev/null; then
+				echo "OK!"	
+			else
 				# Update failed tests, adds whitespace as separator
 				FAILED_TESTS=$FAILED_TESTS$CUR_FILE" "
 				echo "FAIL!"
-			else
-				echo "OK!"
 			fi
 		else
 			# Update failed tests, adds whitespace as separator
