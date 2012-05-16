@@ -146,11 +146,14 @@ public class JasminVisitor implements Visitor {
 
 	@Override
 	public void visit(And node) {
-		node.e1.accept(this);
-		node.e2.accept(this);
 		
 		String trueLabel = newLabel();
 		String endLabel = newLabel();
+
+		node.e1.accept(this);
+		writeind("ifeq " + endLabel);
+		
+		node.e2.accept(this);
 		
 		writeind("if_icmpeq " + trueLabel);
 		writeind("iconst_0");
