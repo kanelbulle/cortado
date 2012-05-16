@@ -151,6 +151,7 @@ public class JasminVisitor implements Visitor {
 		String endLabel = newLabel();
 
 		node.e1.accept(this);
+		writeind("dup");
 		writeind("ifeq " + endLabel);
 		
 		node.e2.accept(this);
