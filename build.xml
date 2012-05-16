@@ -60,5 +60,14 @@
 			</manifest>
 		</jar>
 	</target>
+	
+	<target name="clean">
+		<delete dir="cortadoout" failonerror="false" />
+		<delete dir="bin" failonerror="false" />
+		<delete dir="gen" failonerror="false" />
+		<delete failonerror="false">
+			<fileset file="mjc.jar" />
+		</delete>
+	</target>
 
 </project>
