@@ -36,7 +36,7 @@ public class Main {
 
 		ASTPrintVisitor printVisitor = new ASTPrintVisitor();
 		SymbolTable symbolTable = new SymbolTable();
-		ScopeVisitor scopeVisitor = new ScopeVisitor(symbolTable);
+		ScopeVisitor scopeVisitor = new ScopeVisitor(symbolTable, true);
 		SlowTypeVisitor typeVisitor = new SlowTypeVisitor();
 		IntermediateVisitor irVisitor = new IntermediateVisitor(symbolTable);
 

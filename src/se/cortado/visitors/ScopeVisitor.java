@@ -61,9 +61,18 @@ public class ScopeVisitor implements Visitor {
 	private ClassDecl CUR_CLASS;
 	private MethodDecl CUR_METHOD;
 	
-	public ScopeVisitor(SymbolTable symbolTable) {		
+	private boolean mPrint;
+	
+	public ScopeVisitor(SymbolTable symbolTable, boolean print) {
+		mPrint = print;
 		this.symbolTable = symbolTable;
 		errors = new LinkedList<String>();
+	}
+	
+	public void log(String message) {
+		if (mPrint) {
+			System.out.println(message);
+		}
 	}
 	
 	@Override
@@ -74,9 +83,9 @@ public class ScopeVisitor implements Visitor {
 
 		/* Last: print ALL errors encounterd during type/scope check */
 		if (errors.size() != 0) {
-			System.out.println("\n\n=== Detected: " + errors.size() + " problem(s), please fix these and recompile ===");
+			log("\n\n=== Detected: " + errors.size() + " problem(s), please fix these and recompile ===");
 			for (String error : errors) {
-				System.out.println("ERROR: " + error);
+				log("ERROR: " + error);
 			}
 			
 			errorOccurred = true;
@@ -85,7 +94,7 @@ public class ScopeVisitor implements Visitor {
 	
 	@Override
 	public void visit(MainClass node) {
-		System.out.println("-- MAIN CLASS: " + node.i.s);
+		log("-- MAIN CLASS: " + node.i.s);
 		if (symbolTable.containsKey(node.i.s)) {
 			errors.add("Redeclaration of class");
 		} else {
@@ -118,7 +127,7 @@ public class ScopeVisitor implements Visitor {
 	
 	@Override
 	public void visit(VarDeclList node) {
-		System.out.println("-- " + CUR_CLASS.i.s);
+		log("-- " + CUR_CLASS.i.s);
 		for (int i = 0; i < node.size(); ++i) {
 			node.elementAt(i).accept(this);
 		}
@@ -127,7 +136,7 @@ public class ScopeVisitor implements Visitor {
 	@Override
 	public void visit(VarDecl node) {
 		try {
-			System.out.println("\tClass variable: " + node.identifier.s);
+			log("\tClass variable: " + node.identifier.s);
 			symbolTable.get(CUR_CLASS.i.s).addVariable(node, node.type);
 		} catch (Exception e) {
 			errors.add(e.getMessage());
@@ -145,13 +154,13 @@ public class ScopeVisitor implements Visitor {
 	@Override
 	public void visit(MethodDecl node) {
 		MethodScope ms = new MethodScope(node.type, node);
-		System.out.println("\tMethod: " + node.identifier.s);
+		log("\tMethod: " + node.identifier.s);
 		
 		/* Add method parameters */
 		for (int i = 0; i < node.formalList.size(); ++i) {
 			Formal curParameter = node.formalList.elementAt(i);
 			try {
-				System.out.println("\t\tParameter: " + curParameter.i.s);
+				log("\t\tParameter: " + curParameter.i.s);
 				ms.addParameter(curParameter, curParameter.t);
 			} catch (Exception e) {
 				errors.add(e.getMessage());
@@ -162,7 +171,7 @@ public class ScopeVisitor implements Visitor {
 		for (int i = 0; i < node.varDeclList.size(); ++i) {
 			VarDecl curVar = node.varDeclList.elementAt(i);
 			try {
-				System.out.println("\t\tLocal variable: " + curVar.identifier.s);
+				log("\t\tLocal variable: " + curVar.identifier.s);
 				ms.addVariable(curVar, curVar.type);
 			} catch (Exception e) {
 				errors.add(e.getMessage());
