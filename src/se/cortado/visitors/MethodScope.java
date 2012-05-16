@@ -60,7 +60,6 @@ public class MethodScope {
 	}
 
 	public void addParameter(Formal param, Type type) throws Exception {
-		System.out.println("ADDING PARAMETER: " + param.i.s);
 		if (parameters.contains(param.i.s)) {
 			throw new Exception("Duplicate parameter \"" + param.i
 					+ "\" on line: " + param.i.line);
@@ -71,7 +70,6 @@ public class MethodScope {
 			parameters.addElement(param);
 			variables.put(param.i.s, type);
 			
-			System.out.println("existing type: " + getLocal(param.i.s));
 			if (getLocal(param.i.s) == null) {
 				locals.put(param.i.s, locals.size());
 			}
@@ -186,7 +184,6 @@ public class MethodScope {
 	}
 
 	public void setLabelName(String labelName) {
-		System.out.println("setting label name " + labelName);
 		this.labelName = labelName;
 		frame.setLabel(new Label(labelName));
 	}

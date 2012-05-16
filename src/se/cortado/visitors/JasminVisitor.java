@@ -61,17 +61,22 @@ public class JasminVisitor implements Visitor {
 
 	int				mLabelCount;
 
-	public JasminVisitor(SymbolTable symbolTable) {
+	boolean			mPrint;
+
+	public JasminVisitor(SymbolTable symbolTable, boolean print) {
 		this.mSymbolTable = symbolTable;
+		this.mPrint = print;
 	}
-	
+
 	public void writeline(int line) {
-		//write(".line " + line);
+		// write(".line " + line);
 	}
 
 	public void write(String message) {
 		try {
-			System.out.println(message);
+			if (mPrint) {
+				System.out.println(message);
+			}
 			mWriter.write(message + "\n");
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -81,7 +86,7 @@ public class JasminVisitor implements Visitor {
 	public void writeind(String message) {
 		write("    " + message);
 	}
-	
+
 	public String newLabel() {
 		return "L" + mLabelCount++;
 	}
@@ -146,16 +151,16 @@ public class JasminVisitor implements Visitor {
 
 	@Override
 	public void visit(And node) {
-		
+
 		String trueLabel = newLabel();
 		String endLabel = newLabel();
 
 		node.e1.accept(this);
 		writeind("dup");
 		writeind("ifeq " + endLabel);
-		
+
 		node.e2.accept(this);
-		
+
 		writeind("if_icmpeq " + trueLabel);
 		writeind("iconst_0");
 		writeind("goto " + endLabel);
@@ -197,7 +202,6 @@ public class JasminVisitor implements Visitor {
 			writeind("putfield " + mClassScope.getName() + "/" + node.i.s + " " + fType);
 		} else {
 			// local variable assign
-			System.out.println("getting type of variable " + node.i.s + " in method " + mMethodScope.getLabelName() + " class " + mClassScope.getName());
 			Type varType = mMethodScope.getVariableType(node.i);
 			node.e.accept(this);
 			writeind(store(varType, local));
@@ -331,14 +335,14 @@ public class JasminVisitor implements Visitor {
 	@Override
 	public void visit(Identifier node) {
 		writeline(node.line);
-		
+
 		loadVariable(node.s);
 	}
 
 	@Override
 	public void visit(IdentifierExp node) {
 		writeline(node.line);
-		
+
 		loadVariable(node.s);
 	}
 
@@ -350,19 +354,19 @@ public class JasminVisitor implements Visitor {
 	@Override
 	public void visit(If node) {
 		writeline(node.line);
-		
+
 		node.e.accept(this);
-		
+
 		String trueLabel = newLabel();
 		String falseLabel = newLabel();
 		String endLabel = newLabel();
-		
+
 		writeind("ifeq " + falseLabel);
-		
+
 		write(trueLabel + ":");
 		node.s1.accept(this);
 		writeind("goto " + endLabel);
-		
+
 		write(falseLabel + ":");
 		node.s2.accept(this);
 		write(endLabel + ":");
@@ -376,7 +380,7 @@ public class JasminVisitor implements Visitor {
 	@Override
 	public void visit(IntegerLiteral node) {
 		writeline(node.line);
-		
+
 		if (node.i >= 0 && node.i < 5) {
 			writeind("iconst_" + node.i);
 		} else {
@@ -392,13 +396,13 @@ public class JasminVisitor implements Visitor {
 	@Override
 	public void visit(LessThan node) {
 		writeline(node.line);
-		
+
 		node.e1.accept(this);
 		node.e2.accept(this);
-		
+
 		String trueLabel = newLabel();
 		String endLabel = newLabel();
-		
+
 		writeind("if_icmplt " + trueLabel);
 		writeind("iconst_0");
 		writeind("goto " + endLabel);
@@ -482,7 +486,7 @@ public class JasminVisitor implements Visitor {
 	@Override
 	public void visit(NewArray node) {
 		writeline(node.line);
-		
+
 		node.e.accept(this);
 		writeind("newarray int");
 	}
@@ -490,7 +494,7 @@ public class JasminVisitor implements Visitor {
 	@Override
 	public void visit(NewObject node) {
 		writeline(node.line);
-		
+
 		writeind("new " + node.i.s);
 		writeind("dup");
 		writeind("invokespecial " + node.i.s + "/<init>()V");
@@ -499,7 +503,7 @@ public class JasminVisitor implements Visitor {
 	@Override
 	public void visit(Not node) {
 		writeline(node.line);
-		
+
 		node.e.accept(this);
 		writeind("iconst_1");
 		writeind("ixor");
@@ -508,7 +512,7 @@ public class JasminVisitor implements Visitor {
 	@Override
 	public void visit(Plus node) {
 		writeline(node.line);
-		
+
 		node.e1.accept(this);
 		node.e2.accept(this);
 		writeind("iadd");
@@ -584,14 +588,14 @@ public class JasminVisitor implements Visitor {
 	@Override
 	public void visit(While node) {
 		writeline(node.line);
-		
+
 		String startLabel = newLabel();
 		String endLabel = newLabel();
 
 		write(startLabel + ":");
 		node.e.accept(this);
 		writeind("ifeq " + endLabel);
-		
+
 		node.s.accept(this);
 		writeind("goto " + startLabel);
 
