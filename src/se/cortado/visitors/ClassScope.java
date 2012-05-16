@@ -37,7 +37,7 @@ public class ClassScope {
 		if (variables.containsKey(variable.identifier.s)) {
 			throw new Exception("Redeclaration of local class variable \""
 					+ variable.identifier + "\" on line: "
-					+ variable.identifier.row);
+					+ variable.identifier.line);
 		} else {
 			Access access = record.allocField();
 			accesses.put(variable.identifier.s, access);
@@ -65,7 +65,7 @@ public class ClassScope {
 				if (method.formalList.size() == 0 && otherParams.size() == 0) {
 					throw new Exception("Redeclaration class method \""
 							+ method.identifier + "\" on line: "
-							+ method.identifier.row);
+							+ method.identifier.line);
 				}
 				
 				if (otherParams.size() == method.formalList.size()) {
@@ -76,7 +76,7 @@ public class ClassScope {
 						if (method.formalList.elementAt(i).t.equals(otherParams.elementAt(i).t)) {
 							throw new Exception("Redeclaration class method \""
 									+ method.identifier + "\" on line: "
-									+ method.identifier.row);
+									+ method.identifier.line);
 						}
 					}
 				}

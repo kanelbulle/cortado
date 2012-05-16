@@ -8,11 +8,11 @@ import se.cortado.visitors.Visitor;
 
 public class Identifier {
 	public String s;
-	public int row;
+	public int line;
 
 	public Identifier(String as, int row) {
 		s = as;
-		this.row = row;
+		this.line = row;
 	}
 
 	public void accept(Visitor v) {

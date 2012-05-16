@@ -63,7 +63,7 @@ public class MethodScope {
 		System.out.println("ADDING PARAMETER: " + param.i.s);
 		if (parameters.contains(param.i.s)) {
 			throw new Exception("Duplicate parameter \"" + param.i
-					+ "\" on line: " + param.i.row);
+					+ "\" on line: " + param.i.line);
 		} else {
 			// add local variable to frame
 			Access f = frame.allocLocal(false);
@@ -84,7 +84,7 @@ public class MethodScope {
 		} else if (variables.containsKey(variable.identifier.s)) {
 			throw new Exception("Redeclaration of local variable \""
 					+ variable.identifier + "\" on line: "
-					+ variable.identifier.row);
+					+ variable.identifier.line);
 		} else {
 			// add local variable to frame
 			Access f = frame.allocLocal(false);
