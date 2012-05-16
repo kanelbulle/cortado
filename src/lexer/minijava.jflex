@@ -112,7 +112,7 @@ COMMENT   = "/*" [^*] ~"*/" | "/*" "*"+ "/" | \/\/.*\n
 "int" 							{ return token(sym.INT); }
 String							{ return token(sym.STRING); }
 "boolean" 						{ return token(sym.BOOLEAN); }
-[a-zA-Z]([0-9a-zA-Z] | _)* 		{ return token(sym.IDENTIFIER); }
+[a-zA-Z_]([0-9a-zA-Z_])* 	{ return token(sym.IDENTIFIER); }
 
 /* Operators */
 "(" 							{ return token(sym.LPAREN); }
