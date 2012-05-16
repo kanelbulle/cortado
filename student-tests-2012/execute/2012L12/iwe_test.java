@@ -1,4 +1,4 @@
-//EXT: IWE
+//EXT:IWE
 
 class IweTest  {
 	public static void main(String[] a) {

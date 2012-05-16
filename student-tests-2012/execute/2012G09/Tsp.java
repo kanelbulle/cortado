@@ -1,6 +1,6 @@
 
 /*
- * Should output 34
+ * Should output 14
  */
 
 // EXT:CEQ
@@ -15,8 +15,8 @@ class TspMC {
 		int[] y;
 
 		tsp = new Tsp();
-		x = new int[9];
-		y = new int[9];
+		x = new int[6];
+		y = new int[6];
 
 		x[0] = 0;
 		y[0] = 0;
@@ -35,16 +35,7 @@ class TspMC {
 
 		x[5] = 6;
 		y[5] = 2;
-
-		x[6] = 6;
-		y[6] = 0;
-
-		x[7] = 19;
-		y[7] = 6;
-
-		x[8] = 14;
-		y[8] = 0-5;
-
+		
 		System.out.println(tsp.tspDis(x, y));
 	}
 }

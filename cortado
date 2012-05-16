@@ -6,7 +6,7 @@ rm -f cortadoout/*.class
 rm -f cortadoout/*.j
 rm -f cortadoout/*.out
 
-java -cp mjc.jar:lib/JFlex.jar:lib/java-cup-11a.jar mjc.JVMMain $1 -S > /dev/null 2> /dev/null
+java -cp mjc.jar:lib/JFlex.jar:lib/java-cup-11a.jar mjc.JVMMain $1 -S
 # filename=$( basename $1 )
 # filename=$( basename $filename .java)
 #

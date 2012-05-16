@@ -1,9 +1,9 @@
-//EXT: LONG
-//EXT: NBD
-//EXT: CNE
-//EXT: ISC
-//EXT: ICG
-//EXT: IWE
+//EXT:LONG
+//EXT:NBD
+//EXT:CNE
+//EXT:ISC
+//EXT:ICG
+//EXT:IWE
 
 class Main {
    public static void main(String[] args) {
@@ -14,13 +14,13 @@ class Main {
       stack = new StackOperator();
       item = new Stackable();
       tmp = item.set(10L);
-      stack.init(item);
+      tmp = stack.init(item);
 
       item = new Stackable();
       tmp = item.set(100L);
-      stack.push(item);
+      tmp = stack.push(item);
 
-      stack.push(new AddOperator());
+      tmp = stack.push(new AddOperator());
 
       item = stack.exec();
       System.out.println(item.value());
@@ -32,18 +32,18 @@ class Main {
 
       item = new Stackable();
       tmp = item.set(100L);
-      stack.push(item);
+      tmp = stack.push(item);
 
       item = new Stackable();
       tmp = item.set(100L);
-      stack.push(item);
+      tmp = stack.push(item);
 
       item = new Stackable();
       tmp = item.set(100L);
-      stack.push(item);
+      tmp = stack.push(item);
 
-      stack.push(new AddOperator());
-      stack.push(new AddOperator());
+      tmp = stack.push(new AddOperator());
+      tmp = stack.push(new AddOperator());
 
       item = stack.exec();
       System.out.println(item.value());
