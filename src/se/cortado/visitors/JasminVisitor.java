@@ -66,7 +66,7 @@ public class JasminVisitor implements Visitor {
 	}
 	
 	public void writeline(int line) {
-		write(".line " + line);
+		//write(".line " + line);
 	}
 
 	public void write(String message) {
@@ -216,7 +216,7 @@ public class JasminVisitor implements Visitor {
 		node.e.accept(this);
 
 		// push arguments onto stack
-		for (int i = node.el.size() - 1; i >= 0; i--) {
+		for (int i = 0; i < node.el.size(); i++) {
 			node.el.elementAt(i).accept(this);
 		}
 
