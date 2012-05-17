@@ -1,5 +1,9 @@
 package se.cortado.syntaxtree;
-import se.cortado.syntax.visitor.*;
+
+import se.cortado.ir.translate.Translate;
+import se.cortado.visitors.TranslateVisitor;
+import se.cortado.visitors.TypeVisitor;
+import se.cortado.visitors.Visitor;
 
 public class MethodDecl {
 	public Type type;
@@ -9,7 +13,8 @@ public class MethodDecl {
 	public StatementList statementList;
 	public Exp exp;
 
-	public MethodDecl(Type at, Identifier ai, FormalList afl, VarDeclList avl, StatementList asl, Exp ae) {
+	public MethodDecl(Type at, Identifier ai, FormalList afl, VarDeclList avl,
+			StatementList asl, Exp ae) {
 		type = at;
 		identifier = ai;
 		formalList = afl;
@@ -20,5 +25,13 @@ public class MethodDecl {
 
 	public void accept(Visitor v) {
 		v.visit(this);
+	}
+
+	public Type accept(TypeVisitor v) {
+		return v.visit(this);
+	}
+	
+	public Translate accept(TranslateVisitor v) {
+		return v.visit(this);
 	}
 }

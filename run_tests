@@ -1,0 +1,144 @@
+#!/bin/bash
+
+CORTADO=./cortado
+TEST_DIR=student-tests-2012
+
+COMPILE_DIR=$TEST_DIR/compile
+NONCOMPILE_DIR=$TEST_DIR/noncompile
+EXECUTE_DIR=$TEST_DIR/execute
+NONEXECUTE_DIR=$TEST_DIR/nonexecute
+
+FAILED_TESTS=""
+
+# Testing files that should be possible to compile
+for CUR_DIR in $(ls $COMPILE_DIR)
+do
+	FILES=$(ls $COMPILE_DIR/$CUR_DIR/*.java)
+	for CUR_FILE in $FILES
+	do
+		# Skipping files with MiniJava extensions
+		EXTENSIONS=$(cat $CUR_FILE | egrep "[[:space:]]*//[[:space:]]*EXT")
+		if [ "$EXTENSIONS" != "" ]; then
+			continue
+		fi
+		echo -n "Testing: (COMPILE)" $CUR_FILE"..."
+		$CORTADO $CUR_FILE > /dev/null 2> /dev/null
+		if [ "$?" = 0 ]; then
+			echo "OK!"
+		else
+			# Update failed tests, adds whitespace as separator
+			FAILED_TESTS=$FAILED_TESTS$CUR_FILE" "
+			echo "FAIL!"
+		fi
+	done
+done
+
+# Testing files that should NOT be possible to compile
+for CUR_DIR in $(ls $NONCOMPILE_DIR)
+do
+	FILES=$(ls $NONCOMPILE_DIR/$CUR_DIR/*.java)
+	for CUR_FILE in $FILES
+	do
+		# Skipping files with MiniJava extensions
+		EXTENSIONS=$(cat $CUR_FILE | egrep "[[:space:]]*//[[:space:]]*EXT")
+		if [ "$EXTENSIONS" != "" ]; then
+			continue
+		fi
+		echo -n "Testing: (NONCOMPILE) " $CUR_FILE"..."
+		$CORTADO $CUR_FILE > /dev/null 2> /dev/null
+		if [ "$?" != 0 ]; then
+			echo "OK!"
+		else
+			# Update failed tests, adds whitespace as separator
+			FAILED_TESTS=$FAILED_TESTS$CUR_FILE" "
+			echo "FAIL!"
+		fi
+	done
+done
+
+# Test files that should execute and be correct comparing to output
+for CUR_DIR in $(ls $EXECUTE_DIR)
+do
+	FILES=$(ls $EXECUTE_DIR/$CUR_DIR/*.java)
+	for CUR_FILE in $FILES
+	do
+		# Skipping files with MiniJava extensions
+		EXTENSIONS=$(cat $CUR_FILE | egrep "[[:space:]]*//[[:space:]]*EXT")
+		if [ "$EXTENSIONS" != "" ]; then
+			continue
+		fi
+		echo -n "Testing (EXECUTE):" $CORTADO $CUR_FILE"..."
+		$CORTADO $CUR_FILE > /dev/null 2> /dev/null
+		if [ "$?" = 0 ]; then
+			# Compile is ok, compare with output..
+			CUR_BIN=$(cat $CUR_FILE | egrep '.*class[[:space:]][A-Z][A-Z|a-z]*' | head -n 1 | cut -f1 -d'{' | cut -c7-300 | cut -f1 -d' ')
+			OUT_FILE=$(echo $CUR_FILE | cut -f1 -d'.' )".out"
+			java -cp cortadoout/$EXECUTE_DIR/$CUR_DIR $CUR_BIN -S 2> /dev/null > cortadoout/$EXECUTE_DIR/$CUR_DIR/$CUR_BIN.out2
+			if [ "$?" == 0 ]; then
+				if diff cortadoout/$EXECUTE_DIR/$CUR_DIR/$CUR_BIN.out2 $OUT_FILE >/dev/null; then
+					echo "OK!"	
+				else
+					# Update failed tests, adds whitespace as separator
+					FAILED_TESTS=$FAILED_TESTS$CUR_FILE" "
+					echo "FAIL!"
+				fi
+			else
+				# Update failed tests, adds whitespace as separator
+				FAILED_TESTS=$FAILED_TESTS$CUR_FILE" "
+				echo "FAIL!"
+			fi
+		else
+			# Update failed tests, adds whitespace as separator
+			FAILED_TESTS=$FAILED_TESTS$CUR_FILE" "
+			echo "FAIL!"
+		fi
+	done
+done
+
+# Test files that should execute and be correct comparing to output
+for CUR_DIR in $(ls $NONEXECUTE_DIR)
+do
+	FILES=$(ls $NONEXECUTE_DIR/$CUR_DIR/*.java)
+	for CUR_FILE in $FILES
+	do
+		# Skipping files with MiniJava extensions
+		EXTENSIONS=$(cat $CUR_FILE | egrep "[[:space:]]*//[[:space:]]*EXT")
+		if [ "$EXTENSIONS" != "" ]; then
+			continue
+		fi
+		echo -n "Testing (NON_EXECUTE):" $CORTADO $CUR_FILE"..."
+		$CORTADO $CUR_FILE > /dev/null 2> /dev/null
+		if [ "$?" = 0 ]; then
+			# Compile is ok, compare with output..
+			CUR_BIN=$(cat $CUR_FILE | egrep '.*class[[:space:]][A-Z][A-Z|a-z]*' | head -n 1 | cut -f1 -d'{' | cut -c7-300 | cut -f1 -d' ')
+			OUT_FILE=$(echo $CUR_FILE | cut -f1 -d'.' )".out"
+			java -cp cortadoout/$NONEXECUTE_DIR/$CUR_DIR $CUR_BIN -S 2> /dev/null > cortadoout/$NONEXECUTE_DIR/$CUR_DIR/$CUR_BIN.out2
+			if [ "$?" != 0 ]; then
+				echo "OK!"	
+			else
+				# Update failed tests, adds whitespace as separator
+				FAILED_TESTS=$FAILED_TESTS$CUR_FILE" "
+				echo "FAIL!"
+			fi
+		else
+			# Update failed tests, adds whitespace as separator
+			FAILED_TESTS=$FAILED_TESTS$CUR_FILE" "
+			echo "FAIL!"
+		fi
+	done
+done
+
+# Summary statistics
+echo ""
+echo ""
+
+if [ "$FAILED_TESTS" = "" ]; then
+	echo "ALL OK!"
+else
+	echo "Following tests failed:"
+	echo "------------------------------------------------------------"
+	for T in $FAILED_TESTS 
+	do
+		echo $T
+	done
+fi

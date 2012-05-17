@@ -1,16 +1,28 @@
 package se.cortado.syntaxtree;
-import se.cortado.syntax.visitor.*;
 
-public class MainClass {
-	public Identifier i1,i2;
+import se.cortado.ir.translate.Translate;
+import se.cortado.visitors.TranslateVisitor;
+import se.cortado.visitors.TypeVisitor;
+import se.cortado.visitors.Visitor;
+
+public class MainClass extends ClassDecl {
 	public MethodDecl md;
 
-	public MainClass(Identifier ai1, MethodDecl md) {
-		i1=ai1; this.md=md;
+	public MainClass(Identifier ai, MethodDecl md) {
+		i = ai;
+		this.md = md;
 	}
 
 	public void accept(Visitor v) {
 		v.visit(this);
 	}
-}
 
+	@Override
+	public Type accept(TypeVisitor v) {
+		return v.visit(this);
+	}
+	
+	public Translate accept(TranslateVisitor v) {
+		return v.visit(this);
+	}
+}

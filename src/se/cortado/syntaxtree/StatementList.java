@@ -1,15 +1,19 @@
 package se.cortado.syntaxtree;
 
-import se.cortado.syntax.visitor.*;
 import java.util.Vector;
 
-public class StatementList {
+import se.cortado.ir.translate.Translate;
+import se.cortado.visitors.TranslateVisitor;
+import se.cortado.visitors.TypeVisitor;
+import se.cortado.visitors.Visitor;
+
+public class StatementList extends Node {
 	private Vector<Statement> list;
-	
+
 	public StatementList() {
 		list = new Vector<Statement>();
 	}
-	
+
 	public StatementList(Statement n) {
 		list = new Vector<Statement>();
 		addElement(n);
@@ -19,15 +23,23 @@ public class StatementList {
 		list.addElement(n);
 	}
 
-	public Statement elementAt(int i)  { 
-		return (Statement)list.elementAt(i); 
+	public Statement elementAt(int i) {
+		return (Statement) list.elementAt(i);
 	}
 
-	public int size() { 
-		return list.size(); 
+	public int size() {
+		return list.size();
 	}
-	
+
 	public void accept(Visitor v) {
 		v.visit(this);
+	}
+
+	public Type accept(TypeVisitor v) {
+		return v.visit(this);
+	}
+	
+	public Translate accept(TranslateVisitor v) {
+		return v.visit(this);
 	}
 }

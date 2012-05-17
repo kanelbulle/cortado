@@ -1,40 +1,21 @@
 class Superklasse {
 	public static void main(String[] args) {
+		MyClass m;
+		int j;
+		m = new MyClass();
+		j = m.set(4711);
 	}
 }
 
-class Halvklasse {
-
-	public int fnurf() {
-		return 1;
-	}
-}
-
-class IfAnd
-{
-    public int main(int a){
-		System.out.println(new Test().go());
-		return 1;
-    }
-}
-
-
-class Test {
-    int a; // asdf
-
-    public int go() {
-		a = 17;
-		
-// hej
-		 // detta e en kommentar
-		
-		if (a < 12) {
-			a = 1;
-		} else {
-			a = 2;
-		}
+class MyClass {
+	int i;
 	
-		a = 4711;
-		return true;
-    }
+	public int set(int val) {
+		i = val;
+		return i;
+	}
+	public int pr() {
+		System.out.println(i);
+		return 0;
+	}
 }

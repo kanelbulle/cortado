@@ -1,0 +1,54 @@
+package se.cortado.visitors;
+
+import se.cortado.syntaxtree.*;
+import se.cortado.ir.translate.Translate;
+
+public interface TranslateVisitor {
+	public Translate visit(And node);
+	public Translate visit(ArrayAssign node);
+	public Translate visit(ArrayLength node);
+	public Translate visit(ArrayLookup node);
+	public Translate visit(Assign node);
+	public Translate visit(Block node);
+//	public TR_Exp visit(BooleanType node);
+	public Translate visit(Call node);
+	public Translate visit(ClassDecl node);
+//	public TR_Exp visit(ClassDeclExtends node);
+	public Translate visit(ClassDeclList node);
+	public Translate visit(ClassDeclSimple node);
+	public Translate visit(Exp node);
+	public Translate visit(ExpList node);
+	public Translate visit(False node);
+	public Translate visit(Formal node);
+	public Translate visit(FormalList node);
+	public Translate visit(Identifier node);
+	public Translate visit(IdentifierExp node);
+//	public TR_Exp visit(IdentifierType node);
+	public Translate visit(If node);
+//	public TR_Exp visit(IntArrayType node);
+	public Translate visit(IntegerLiteral node);
+//	public TR_Exp visit(IntegerType node);
+	public Translate visit(LessThan node);
+	public Translate visit(MainClass node);
+	public Translate visit(MethodDecl node);
+	public Translate visit(MethodDeclList node);
+	public Translate visit(Minus node);
+	public Translate visit(NewArray node);
+	public Translate visit(NewObject node);
+	public Translate visit(Not node);
+	public Translate visit(Plus node);
+	public Translate visit(Print node);
+	public Translate visit(Program node);
+	public Translate visit(Statement node);
+	public Translate visit(StatementList node);
+//	public TR_Exp visit(StringArrayType node);
+	public Translate visit(This node);
+	public Translate visit(Times node);
+	public Translate visit(True node);
+//	public TR_Exp visit(Type node);
+//	public TR_Exp visit(VarDecl node);
+//	public TR_Exp visit(VarDeclList node);
+//	public TR_Exp visit(VoidType node);
+	public Translate visit(VoidExp node);
+	public Translate visit(While node);
+}
