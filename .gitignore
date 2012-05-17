@@ -2,5 +2,8 @@
 .classpath
 .project
 local.properties
-
+.metadata/
+*.class
+*.java~
+gen/
 bin/

@@ -1,0 +1,28 @@
+package se.cortado.syntaxtree;
+
+import java.util.Vector;
+
+public class ExpList {
+   private Vector<Exp> list;
+
+   public ExpList() {
+      list = new Vector<Exp>();
+   }
+   
+   public ExpList(Exp n) {
+      list = new Vector<Exp>();
+      addElement(n);
+   }
+
+   public void addElement(Exp n) {
+      list.addElement(n);
+   }
+
+   public Exp elementAt(int i)  { 
+      return (Exp)list.elementAt(i); 
+   }
+
+   public int size() { 
+      return list.size(); 
+   }
+}

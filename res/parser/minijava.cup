@@ -1,0 +1,309 @@
+import java_cup.runtime.*;
+
+import java.io.*;
+import java.util.Stack;
+
+import se.cortado.Scanner;
+import se.cortado.syntaxtree.*;
+import se.cortado.sym;
+
+
+/* Preliminaries to set up and use the scanner.  */
+
+parser code {:
+	private Scanner scanner;
+	private File file;
+	
+	Symbol current_symbol;
+	
+	Stack<FormalList> formalLists = new Stack<FormalList>();
+
+	public void syntax_error(Symbol cur_token){
+		System.out.println("Error on line " + cur_token.left);
+	}
+:};
+
+scan with {:
+	current_symbol = getScanner().next_token();
+	return current_symbol;
+:};
+
+/* ======== Terminals (tokens RESULTed by the scanner) ======== */
+
+/* MISC */
+terminal					PUBLIC, STATIC, VOID, CLASS, COMMA, DOT, NEW, RETURN;
+
+/* Statements */
+terminal If 				IF;
+terminal While 				WHILE;
+terminal Print 				SYSOUT;
+terminal 					ELSE;
+
+/* Expressions */
+terminal 					LENGTH;
+terminal 					TRUE;
+terminal  					FALSE;
+terminal 					THIS;
+terminal 					BANG;
+terminal 					INTEGER;
+
+/* Datatypes */
+terminal String				IDENTIFIER;
+terminal 					INT, BOOLEAN, STRING_ARRAY;
+
+/* Operators */
+terminal Plus 				PLUS;
+terminal Minus 				MINUS;
+terminal Times 				MULTIPLY;
+terminal And				AND;
+terminal LessThan 			LESS;
+terminal		 			ASSIGN;
+
+terminal 					LPAREN, RPAREN, LBRACKET, RBRACKET, LCURLY, RCURLY;
+
+terminal 					SEMI;
+
+/* Non terminals */
+
+/* ======== Declarations ======== */
+non terminal Program 		program;
+non terminal MainClass 		main_class;
+non terminal MethodDecl 	main_method;
+non terminal MethodDecl		method_decl;
+non terminal ClassDecl		class_decl;
+non terminal VarDecl		var_decl;
+
+/* ======== List declarations ======== */
+non terminal ClassDeclList	class_decls_opt;
+non terminal ClassDeclList 	class_decls;
+non terminal MethodDeclList	method_decls;
+non terminal FormalList 	formal_list_opt;
+non terminal FormalList 	formal_list;
+non terminal VarDeclList 	var_decls;
+non terminal StatementList	stmt_list_opt;
+non terminal StatementList 	stmt_list;
+non terminal ExpList		expr_list_opt;
+non terminal ExpList 		expr_list;
+
+/* ======== Near terminals ======== */
+non terminal Statement		stmt;
+non terminal Exp 			expr;
+non terminal Formal			formal;
+non terminal Type			type;
+non terminal Exp			returnExp;
+non terminal 				empty;
+
+/* Precedences */
+precedence left BANG;
+precedence left PLUS, MINUS;
+precedence left MULTIPLY;
+precedence left AND, LESS, DOT;
+
+/* State to start with */
+start with program;
+
+
+/* ======== Declarations ======== */
+
+
+program 		::= main_class:mc class_decls_opt:cdl
+						{: RESULT = new Program(mc, cdl); :}
+					;
+
+main_class 		::= CLASS IDENTIFIER:id LCURLY main_method:md RCURLY 
+						{: RESULT = new MainClass(new Identifier(id), md); :}
+					;
+
+main_method 	::= PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING_ARRAY IDENTIFIER:id2 RPAREN LCURLY  RCURLY
+						{: 	VarDeclList vd = new VarDeclList();
+							StatementList sl = new StatementList();
+							FormalList fl = new FormalList(new Formal(new StringArrayType(), new Identifier(id2)));
+							RESULT = new MethodDecl(new VoidType(), new Identifier(id1), fl, vd, sl, new IdentifierExp("voidType"));
+						:}	
+					| PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING_ARRAY IDENTIFIER:id2 RPAREN LCURLY stmt_list:sl RCURLY
+						{: 	
+							VarDeclList vd = new VarDeclList();
+							FormalList fl = new FormalList(new Formal(new StringArrayType(), new Identifier(id2)));
+							RESULT = new MethodDecl(new VoidType(), new Identifier(id1), fl, vd, sl, new IdentifierExp("voidType"));
+						:}	
+					| PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING_ARRAY IDENTIFIER:id2 RPAREN LCURLY var_decls:vd RCURLY
+						{: 	
+							StatementList sl = new StatementList();
+							FormalList fl = new FormalList(new Formal(new StringArrayType(), new Identifier(id2)));
+							RESULT = new MethodDecl(new VoidType(), new Identifier(id1), fl, vd, sl, new IdentifierExp("voidType"));
+						:}	
+					| PUBLIC STATIC VOID IDENTIFIER:id1 LPAREN STRING_ARRAY IDENTIFIER:id2 RPAREN LCURLY var_decls:vd stmt_list:sl RCURLY
+						{: 	
+							FormalList fl = new FormalList(new Formal(new StringArrayType(), new Identifier(id2)));
+							RESULT = new MethodDecl(new VoidType(), new Identifier(id1), fl, vd, sl, new IdentifierExp("voidType"));
+						:}
+					;
+				
+method_decl 	::= PUBLIC type:t IDENTIFIER:id LPAREN formal_list_opt:fl RPAREN LCURLY returnExp:e SEMI RCURLY
+						{: 	VarDeclList vls = new VarDeclList();
+							StatementList sl = new StatementList();
+							RESULT = new MethodDecl(t, new Identifier(id), fl, vls, sl, e); :}
+					| PUBLIC type:t IDENTIFIER:id LPAREN formal_list_opt:fl RPAREN LCURLY stmt_list:sl returnExp:e SEMI RCURLY
+						{: 	VarDeclList vls = new VarDeclList();
+							RESULT = new MethodDecl(t, new Identifier(id), fl, vls, sl, e); :}
+					| PUBLIC type:t IDENTIFIER:id LPAREN formal_list_opt:fl RPAREN LCURLY var_decls:vls returnExp:e SEMI RCURLY
+						{: 	StatementList sl = new StatementList();
+							RESULT = new MethodDecl(t, new Identifier(id), fl, vls, sl, e); :}
+					| PUBLIC type:t IDENTIFIER:id LPAREN formal_list_opt:fl RPAREN LCURLY var_decls:vls stmt_list:sl returnExp:e SEMI RCURLY
+						{: RESULT = new MethodDecl(t, new Identifier(id), fl, vls, sl, e); :}
+					;
+				
+class_decl 		::= CLASS IDENTIFIER:id LCURLY RCURLY
+						{:	VarDeclList vls = new VarDeclList();
+							MethodDeclList mls = new MethodDeclList();
+							RESULT = new ClassDeclSimple(new Identifier(id), vls, mls); :}
+					| CLASS IDENTIFIER:id LCURLY var_decls:vls RCURLY
+						{:	MethodDeclList mls = new MethodDeclList();
+							RESULT = new ClassDeclSimple(new Identifier(id), vls, mls); :}	
+					| CLASS IDENTIFIER:id LCURLY method_decls:mls RCURLY
+						{:	VarDeclList vls = new VarDeclList();
+							RESULT = new ClassDeclSimple(new Identifier(id), vls, mls); :}
+					| CLASS IDENTIFIER:id LCURLY var_decls:vls method_decls:mls RCURLY
+						{:	RESULT = new ClassDeclSimple(new Identifier(id), vls, mls); :}
+					;
+					
+var_decl 		::= type:t IDENTIFIER:id SEMI
+						{: RESULT = new VarDecl(t, new Identifier(id)); :}
+					;
+
+
+/* ======== List declarations ======== */
+
+class_decls_opt	::= empty
+						{: RESULT = new ClassDeclList(); :}
+					| class_decls:cdl
+						{: RESULT = cdl; :}
+					;
+
+class_decls 	::= class_decl:cd
+						{: RESULT = new ClassDeclList(cd); :}
+					| class_decls:cdl class_decl:cd
+						{: cdl.addElement(cd); RESULT = cdl; :}
+					;				
+
+method_decls 	::= method_decls:mls method_decl:md
+						{: mls.addElement(md); RESULT = mls; :}
+					| method_decl:md
+						{: RESULT = new MethodDeclList(md); :}
+					;
+
+formal_list_opt	::= empty
+						{: RESULT = new FormalList(); :}
+					| formal_list:fl
+						{: RESULT = fl; :}
+					;
+
+formal_list 	::= formal_list:fl COMMA formal:f
+						{: fl.addElement(f); RESULT = fl; :}
+					| formal:f 
+						{: RESULT = new FormalList(f); :}
+					;
+
+var_decls 		::= var_decls:vds var_decl:vd
+						{: vds.addElement(vd); RESULT = vds; :}
+					| var_decl:vd
+						{: RESULT = new VarDeclList(vd); :}
+					;
+
+stmt_list_opt	::= empty
+						{: RESULT = new StatementList(); :}
+					| stmt_list:sl
+						{: RESULT = sl; :}
+					;
+
+stmt_list 		::= stmt_list:sl stmt:s
+						{: sl.addElement(s); RESULT = sl; :}
+					| stmt:s
+						{: RESULT = new StatementList(s); :}
+					;
+
+expr_list_opt	::= empty
+						{: RESULT = new ExpList(); :}
+					| expr_list:el
+						{: RESULT = el; :}
+					;
+
+expr_list 		::= expr_list:el COMMA expr:e1
+						{: el.addElement(e1); RESULT = el; :}
+					| expr:e 
+						{: RESULT = new ExpList(e); :}
+					;
+
+
+/* ======== Near terminals ======== */
+
+
+stmt 			::=	LCURLY stmt_list_opt:sl RCURLY 
+						{: RESULT = new Block(sl); :}
+					| IF LPAREN expr:e RPAREN stmt:s1 ELSE stmt:s2
+						{: RESULT = new If(e, s1, s2); :}
+					| WHILE LPAREN expr:e RPAREN stmt:s
+						{: RESULT = new While(e, s); :}
+					| SYSOUT LPAREN expr:e RPAREN SEMI
+						{: RESULT = new Print(e); :}
+					| IDENTIFIER:id ASSIGN expr:e SEMI
+						{: RESULT = new Assign(new Identifier(id), e); :}
+					| IDENTIFIER:id LBRACKET expr:e1 RBRACKET ASSIGN expr:e2 SEMI
+						{: RESULT = new ArrayAssign(new Identifier(id), e1, e2); :}
+					;
+				
+expr 			::= expr:e1 PLUS expr:e2 
+						{: RESULT = new Plus(e1, e2); :}
+					| expr:e1 MINUS expr:e2
+						{: RESULT = new Minus(e1, e2); :}
+					| expr:e1 MULTIPLY expr:e2
+						{: RESULT = new Times(e1, e2); :}
+					| expr:e1 AND expr:e2
+						{: RESULT = new And(e1, e2); :}
+					| expr:e1 LESS expr:e2
+						{: RESULT = new LessThan(e1, e2); :}
+					| expr:e1 LBRACKET expr:e2 RBRACKET
+						{: RESULT = new ArrayLookup(e1, e2); :}
+					| expr:e1 DOT LENGTH
+						{: RESULT = new ArrayLength(e1); :}
+					| expr:e1 DOT IDENTIFIER:id LPAREN expr_list_opt:el RPAREN
+						{: RESULT = new Call(e1, new Identifier(id), el); :}
+					| INTEGER:i
+						{: RESULT = new IntegerLiteral((String) i); :}
+					| TRUE
+						{: RESULT = new True(); :}
+					| FALSE
+						{: RESULT = new False(); :}
+					| IDENTIFIER:id
+						{: RESULT = new IdentifierExp((String) id); :}
+					| THIS
+						{: RESULT = new This(); :}
+					| NEW INT LBRACKET expr:e1 RBRACKET
+						{: RESULT = new NewArray(e1); :}
+					| NEW IDENTIFIER:id LPAREN RPAREN
+						{: RESULT = new NewObject(new Identifier(id)); :}
+					| BANG expr:e1
+						{: RESULT = new Not(e1); :}
+					| LPAREN expr:e RPAREN
+						{: RESULT = e; :}
+					;
+				
+formal 			::= type:t IDENTIFIER:id
+						{: RESULT = new Formal(t, new Identifier(id)); :}
+					;
+
+type 			::= INT
+						{: RESULT = new IntegerType(); :} 
+					| INT LBRACKET RBRACKET
+						{: RESULT = new IntArrayType(); :}
+					| BOOLEAN
+						{: RESULT = new BooleanType(); :}
+					| IDENTIFIER:id
+						{: RESULT = new IdentifierType(id); :}
+					;
+	
+returnExp		::= RETURN expr:e
+						{: RESULT = e; :} 
+					| empty;
+
+empty ::= ;
