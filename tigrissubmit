@@ -31,7 +31,7 @@ if uuencode x </dev/null >/dev/null
     exit 1
   fi
 
-tmpdir="cortado_mjc/"
+tmpdir="tmpVSCDtk/"
 rm -rf $tmpdir
 mkdir $tmpdir
 
@@ -39,8 +39,11 @@ cp -r build.xml $tmpdir
 cp -r DESC $tmpdir
 cp -r src $tmpdir
 cp -r lib $tmpdir
+cp -r README $tmpdir
 cp -r report.pdf $tmpdir
 
 tar cf - $tmpdir | gzip | uuencode x > submission.txt
+
+rm -rf $tmpdir
 
 exit 0
