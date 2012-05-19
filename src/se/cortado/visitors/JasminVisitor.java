@@ -3,6 +3,9 @@ package se.cortado.visitors;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 import se.cortado.syntaxtree.And;
 import se.cortado.syntaxtree.ArrayAssign;
@@ -35,6 +38,7 @@ import se.cortado.syntaxtree.MethodDeclList;
 import se.cortado.syntaxtree.Minus;
 import se.cortado.syntaxtree.NewArray;
 import se.cortado.syntaxtree.NewObject;
+import se.cortado.syntaxtree.Node;
 import se.cortado.syntaxtree.Not;
 import se.cortado.syntaxtree.Plus;
 import se.cortado.syntaxtree.Print;
@@ -48,12 +52,13 @@ import se.cortado.syntaxtree.True;
 import se.cortado.syntaxtree.Type;
 import se.cortado.syntaxtree.VarDecl;
 import se.cortado.syntaxtree.VarDeclList;
+import se.cortado.syntaxtree.VoidExp;
 import se.cortado.syntaxtree.VoidType;
 import se.cortado.syntaxtree.While;
 
-public class JasminVisitor implements Visitor {
+public class JasminVisitor {
 
-	BufferedWriter	mWriter;
+	List<String>	mOutput;
 
 	SymbolTable		mSymbolTable;
 	ClassScope		mClassScope;
@@ -66,32 +71,71 @@ public class JasminVisitor implements Visitor {
 	public JasminVisitor(SymbolTable symbolTable, boolean print) {
 		this.mSymbolTable = symbolTable;
 		this.mPrint = print;
+		this.mOutput = new ArrayList<String>();
 	}
 
-	public void writeline(int line) {
+	private void writeline(int line) {
 		// write(".line " + line);
 	}
 
-	public void write(String message) {
+	private void writeToFile(String file) {
 		try {
-			if (mPrint) {
-				System.out.println(message);
+			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+
+			for (String s : mOutput) {
+				if (mPrint) {
+					System.out.print(s);
+				}
+				writer.write(s);
 			}
-			mWriter.write(message + "\n");
+
+			writer.close();
+
+			mOutput.clear();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void writeind(String message) {
+	private void write(String message) {
+		mOutput.add(message + "\n");
+	}
+
+	private int max(int a, int b) {
+		return Math.max(a, b);
+	}
+
+	private int max(int a, int b, int c) {
+		return max(max(a, b), c);
+	}
+
+	private int max(int a, int b, int c, int d) {
+		return max(max(a, b), max(c, d));
+	}
+
+	private int callSpecific(Node node) {
+		try {
+			Class<? extends JasminVisitor> jClass = this.getClass();
+			Method method = jClass.getMethod("visit", node.getClass());
+			Integer depth = (Integer) method.invoke(this, node);
+
+			return depth.intValue();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return -1;
+	}
+
+	private void writeind(String message) {
 		write("    " + message);
 	}
 
-	public String newLabel() {
+	private String newLabel() {
 		return "L" + mLabelCount++;
 	}
 
-	public String descriptorFromType(Type type) {
+	private String descriptorFromType(Type type) {
 		if (type instanceof BooleanType) {
 			return "B";
 		} else if (type instanceof IntegerType) {
@@ -105,7 +149,7 @@ public class JasminVisitor implements Visitor {
 		throw new Error("Unknown type: " + type);
 	}
 
-	public String t(Type type) {
+	private String t(Type type) {
 		if (type instanceof BooleanType) {
 			return "i";
 		} else if (type instanceof IntegerType) {
@@ -121,7 +165,7 @@ public class JasminVisitor implements Visitor {
 		throw new Error("Unknown type: " + type);
 	}
 
-	public String store(Type type, String local) {
+	private String store(Type type, String local) {
 		if (type instanceof BooleanType) {
 			return "istore " + local;
 		} else if (type instanceof IntegerType) {
@@ -135,7 +179,7 @@ public class JasminVisitor implements Visitor {
 		throw new Error("Unknown type: " + type);
 	}
 
-	public String load(Type type, String local) {
+	private String load(Type type, String local) {
 		if (type instanceof BooleanType) {
 			return "iload " + local;
 		} else if (type instanceof IntegerType) {
@@ -149,17 +193,16 @@ public class JasminVisitor implements Visitor {
 		throw new Error("Unknown type: " + type);
 	}
 
-	@Override
-	public void visit(And node) {
+	public int visit(And node) {
 
 		String trueLabel = newLabel();
 		String endLabel = newLabel();
 
-		node.e1.accept(this);
+		int d1 = visit(node.e1);
 		writeind("dup");
 		writeind("ifeq " + endLabel);
 
-		node.e2.accept(this);
+		int d2 = visit(node.e2);
 
 		writeind("if_icmpeq " + trueLabel);
 		writeind("iconst_0");
@@ -167,65 +210,72 @@ public class JasminVisitor implements Visitor {
 		write(trueLabel + ":");
 		writeind("iconst_1");
 		write(endLabel + ":");
+
+		return Math.max(d1, d2) + 2;
 	}
 
-	@Override
-	public void visit(ArrayAssign node) {
-		node.i.accept(this);
-		node.e1.accept(this);
-		node.e2.accept(this);
+	public int visit(ArrayAssign node) {
+		int d1 = visit(node.i);
+		int d2 = visit(node.e1);
+		int d3 = visit(node.e2);
 		writeind("iastore");
+
+		return max(d1, d2, d3, 3);
 	}
 
-	@Override
-	public void visit(ArrayLength node) {
-		node.e.accept(this);
+	public int visit(ArrayLength node) {
+		int d = visit(node.e);
 		writeind("arraylength");
+
+		return d;
 	}
 
-	@Override
-	public void visit(ArrayLookup node) {
-		node.e1.accept(this);
-		node.e2.accept(this);
+	public int visit(ArrayLookup node) {
+		int d1 = visit(node.e1);
+		int d2 = visit(node.e2);
 		writeind("iaload");
+
+		return max(d1, d2, 2);
 	}
 
-	@Override
-	public void visit(Assign node) {
+	public int visit(Assign node) {
 		String local = mMethodScope.getLocal(node.i.s);
 		if (local == null) {
 			// field assign
 			String dis = mMethodScope.getLocal("this");
 			writeind("aload " + dis);
-			node.e.accept(this);
+			int d = visit(node.e);
 			String fType = descriptorFromType(mClassScope.getVariableType(node.i.s));
 			writeind("putfield '" + mClassScope.getName() + "/" + node.i.s + "' " + fType);
+
+			return 1 + d;
 		} else {
 			// local variable assign
 			Type varType = mMethodScope.getVariableType(node.i);
-			node.e.accept(this);
+			int d = visit(node.e);
 			writeind(store(varType, local));
+
+			return d;
 		}
 	}
 
-	@Override
-	public void visit(Block node) {
-		node.sl.accept(this);
+	public int visit(Block node) {
+		return visit(node.sl);
 	}
 
-	@Override
-	public void visit(BooleanType node) {
-
+	public int visit(BooleanType node) {
+		return 0;
 	}
 
-	@Override
-	public void visit(Call node) {
+	public int visit(Call node) {
 		// push object reference onto stack
-		node.e.accept(this);
+		int d1 = visit(node.e);
 
 		// push arguments onto stack
+		int d2 = -1;
 		for (int i = 0; i < node.el.size(); i++) {
-			node.el.elementAt(i).accept(this);
+			int d = visit(node.el.elementAt(i));
+			d2 = max(d2, d + i + 1);
 		}
 
 		String methodDesc = node.i.s + "(";
@@ -236,82 +286,77 @@ public class JasminVisitor implements Visitor {
 		methodDesc += ")" + descriptorFromType(node.ms.getReturnType());
 
 		writeind("invokevirtual '" + node.c + "/" + methodDesc + "'");
+
+		return d1 + d2;
 	}
 
-	@Override
-	public void visit(ClassDecl node) {
-
+	public int visit(ClassDecl node) {
+		return callSpecific(node);
 	}
 
-	@Override
-	public void visit(ClassDeclExtends node) {
-
+	public int visit(ClassDeclExtends node) {
+		return 0;
 	}
 
-	@Override
-	public void visit(ClassDeclList node) {
+	public int visit(ClassDeclList node) {
 		for (int i = 0; i < node.size(); i++) {
-			node.elementAt(i).accept(this);
+			visit(node.elementAt(i));
 		}
+
+		return 0;
 	}
 
-	@Override
-	public void visit(ClassDeclSimple node) {
+	public int visit(ClassDeclSimple node) {
 		mClassScope = mSymbolTable.get(node.i.s);
 
-		try {
-			// create file writer
-			mWriter = new BufferedWriter(new FileWriter(node.i.s + ".j"));
+		// create file writer
+		// mWriter = new BufferedWriter(new FileWriter(node.i.s + ".j"));
 
-			write(".class '" + node.i.s + "'");
-			write(".super java/lang/Object\n");
+		write(".class '" + node.i.s + "'");
+		write(".super java/lang/Object\n");
 
-			// declare fields
-			for (int i = 0; i < node.vl.size(); i++) {
-				VarDecl vd = node.vl.elementAt(i);
-				writeind(".field public '" + vd.identifier.s + "' " + descriptorFromType(vd.type));
-			}
-
-			// standard initializer
-			write(".method public <init>()V");
-			writeind("aload_0");
-			writeind("invokespecial java/lang/Object/<init>()V");
-			writeind("return");
-			write(".end method\n");
-
-			for (int i = 0; i < node.ml.size(); i++) {
-				node.ml.elementAt(i).accept(this);
-			}
-
-			mWriter.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+		// declare fields
+		for (int i = 0; i < node.vl.size(); i++) {
+			VarDecl vd = node.vl.elementAt(i);
+			writeind(".field public '" + vd.identifier.s + "' " + descriptorFromType(vd.type));
 		}
+
+		// standard initializer
+		write(".method public <init>()V");
+		writeind("aload_0");
+		writeind("invokespecial java/lang/Object/<init>()V");
+		writeind("return");
+		write(".end method\n");
+
+		for (int i = 0; i < node.ml.size(); i++) {
+			visit(node.ml.elementAt(i));
+		}
+
+		writeToFile(node.i.s + ".j");
+
+		return 0;
 	}
 
-	@Override
-	public void visit(Exp node) {
-
+	public int visit(Exp node) {
+		return callSpecific(node);
 	}
 
-	@Override
-	public void visit(ExpList node) {
-
+	public int visit(ExpList node) {
+		return 0;
 	}
 
-	@Override
-	public void visit(False node) {
+	public int visit(False node) {
 		writeind("iconst_0");
+
+		return 1;
 	}
 
-	@Override
-	public void visit(Formal node) {
-
+	public int visit(Formal node) {
+		return 0;
 	}
 
-	@Override
-	public void visit(FormalList node) {
-
+	public int visit(FormalList node) {
+		return 0;
 	}
 
 	public void loadVariable(String var) {
@@ -332,30 +377,30 @@ public class JasminVisitor implements Visitor {
 		}
 	}
 
-	@Override
-	public void visit(Identifier node) {
+	public int visit(Identifier node) {
 		writeline(node.line);
 
 		loadVariable(node.s);
+
+		return 1;
 	}
 
-	@Override
-	public void visit(IdentifierExp node) {
+	public int visit(IdentifierExp node) {
 		writeline(node.line);
 
 		loadVariable(node.s);
+
+		return 1;
 	}
 
-	@Override
-	public void visit(IdentifierType node) {
-
+	public int visit(IdentifierType node) {
+		return 0;
 	}
 
-	@Override
-	public void visit(If node) {
+	public int visit(If node) {
 		writeline(node.line);
 
-		node.e.accept(this);
+		int d1 = visit(node.e);
 
 		String trueLabel = newLabel();
 		String falseLabel = newLabel();
@@ -364,21 +409,21 @@ public class JasminVisitor implements Visitor {
 		writeind("ifeq " + falseLabel);
 
 		write(trueLabel + ":");
-		node.s1.accept(this);
+		int d2 = visit(node.s1);
 		writeind("goto " + endLabel);
 
 		write(falseLabel + ":");
-		node.s2.accept(this);
+		int d3 = visit(node.s2);
 		write(endLabel + ":");
+
+		return max(d1, d2, d3);
 	}
 
-	@Override
-	public void visit(IntArrayType node) {
-
+	public int visit(IntArrayType node) {
+		return 0;
 	}
 
-	@Override
-	public void visit(IntegerLiteral node) {
+	public int visit(IntegerLiteral node) {
 		writeline(node.line);
 
 		if (node.i >= 0 && node.i < 5) {
@@ -386,19 +431,19 @@ public class JasminVisitor implements Visitor {
 		} else {
 			writeind("ldc " + node.i);
 		}
+
+		return 1;
 	}
 
-	@Override
-	public void visit(IntegerType node) {
-
+	public int visit(IntegerType node) {
+		return 0;
 	}
 
-	@Override
-	public void visit(LessThan node) {
+	public int visit(LessThan node) {
 		writeline(node.line);
 
-		node.e1.accept(this);
-		node.e2.accept(this);
+		int d1 = visit(node.e1);
+		int d2 = visit(node.e2);
 
 		String trueLabel = newLabel();
 		String endLabel = newLabel();
@@ -409,36 +454,31 @@ public class JasminVisitor implements Visitor {
 		write(trueLabel + ":");
 		writeind("iconst_1");
 		write(endLabel + ":");
+
+		return max(d1, d2, 1);
 	}
 
-	@Override
-	public void visit(MainClass node) {
+	public int visit(MainClass node) {
 		mClassScope = mSymbolTable.get(node.i.s);
 
-		try {
-			// create file writer
-			mWriter = new BufferedWriter(new FileWriter(node.i.s + ".j"));
+		write(".class '" + node.i.s + "'");
+		write(".super java/lang/Object");
 
-			write(".class '" + node.i.s + "'");
-			write(".super java/lang/Object");
+		// standard initializer
+		write(".method public <init>()V");
+		writeind("aload_0");
+		writeind("invokenonvirtual java/lang/Object/<init>()V");
+		writeind("return");
+		write(".end method");
 
-			// standard initializer
-			write(".method public <init>()V");
-			writeind("aload_0");
-			writeind("invokenonvirtual java/lang/Object/<init>()V");
-			writeind("return");
-			write(".end method");
+		visit(node.md);
 
-			node.md.accept(this);
-
-			mWriter.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		writeToFile(node.i.s + ".j");
+		
+		return 0;
 	}
 
-	@Override
-	public void visit(MethodDecl node) {
+	public int visit(MethodDecl node) {
 		mMethodScope = mClassScope.getMethodMatching(node);
 
 		boolean main = mClassScope.getClassDecl() instanceof MainClass;
@@ -458,148 +498,166 @@ public class JasminVisitor implements Visitor {
 		}
 
 		// TODO fix stack depth
-		writeind(".limit stack 1000");
+		int stackDepthIndex = mOutput.size(); 
 		writeind(".limit locals " + mMethodScope.getNumLocals());
 
-		node.statementList.accept(this);
-
-		node.exp.accept(this);
+		int d1 = visit(node.statementList);
+		int d2 = visit(node.exp);
+		
+		// insert stack depth 
+		String stackLimit = "    .limit stack " + (2 + max(d1, d2)) + "\n";
+		mOutput.add(stackDepthIndex, stackLimit);
 
 		writeind(t(node.type) + "return");
 		write(".end method\n");
+
+		return 0;
 	}
 
-	@Override
-	public void visit(MethodDeclList node) {
+	public int visit(MethodDeclList node) {
 		for (int i = 0; i < node.size(); i++) {
-			node.elementAt(i).accept(this);
+			visit(node.elementAt(i));
 		}
+
+		return 0;
 	}
 
-	@Override
-	public void visit(Minus node) {
-		node.e1.accept(this);
-		node.e2.accept(this);
+	public int visit(Minus node) {
+		int d1 = visit(node.e1);
+		int d2 = visit(node.e2);
 		writeind("isub");
+
+		return max(d1, d2, 2);
 	}
 
-	@Override
-	public void visit(NewArray node) {
+	public int visit(NewArray node) {
 		writeline(node.line);
 
-		node.e.accept(this);
+		int d = visit(node.e);
 		writeind("newarray int");
+
+		return max(d, 1);
 	}
 
-	@Override
-	public void visit(NewObject node) {
+	public int visit(NewObject node) {
 		writeline(node.line);
 
 		writeind("new '" + node.i.s + "'");
 		writeind("dup");
 		writeind("invokespecial '" + node.i.s + "/<init>()V'");
+
+		return 2;
 	}
 
-	@Override
-	public void visit(Not node) {
+	public int visit(Not node) {
 		writeline(node.line);
 
-		node.e.accept(this);
+		int d = visit(node.e);
 		writeind("iconst_1");
 		writeind("ixor");
+
+		return max(d, 2);
 	}
 
-	@Override
-	public void visit(Plus node) {
+	public int visit(Plus node) {
 		writeline(node.line);
 
-		node.e1.accept(this);
-		node.e2.accept(this);
+		int d1 = visit(node.e1);
+		int d2 = visit(node.e2);
 		writeind("iadd");
+
+		return max(d1, d2, 2);
 	}
 
-	@Override
-	public void visit(Print node) {
+	public int visit(Print node) {
 		writeind("getstatic java/lang/System/out Ljava/io/PrintStream;");
-		node.e.accept(this);
+		int d = visit(node.e);
 		writeind("invokevirtual java/io/PrintStream/println(I)V");
+
+		return max(d, 2);
 	}
 
-	@Override
-	public void visit(Program node) {
-		node.mainClass.accept(this);
-		node.classDeclList.accept(this);
+	public int visit(Program node) {
+		visit(node.mainClass);
+		visit(node.classDeclList);
+
+		return 0;
 	}
 
-	@Override
-	public void visit(Statement node) {
-
+	public int visit(Statement node) {
+		return callSpecific(node);
 	}
 
-	@Override
-	public void visit(StatementList node) {
+	public int visit(StatementList node) {
+		int d = -1;
 		for (int i = 0; i < node.size(); i++) {
-			node.elementAt(i).accept(this);
+			int d1 = visit(node.elementAt(i));
+			d = max(d, d1);
 		}
+
+		return d;
 	}
 
-	@Override
-	public void visit(StringArrayType node) {
-
+	public int visit(StringArrayType node) {
+		return 0;
 	}
 
-	@Override
-	public void visit(This node) {
+	public int visit(This node) {
 		writeind("aload_0");
+
+		return 1;
 	}
 
-	@Override
-	public void visit(Times node) {
-		node.e1.accept(this);
-		node.e2.accept(this);
+	public int visit(Times node) {
+		int d1 = visit(node.e1);
+		int d2 = visit(node.e2);
 		writeind("imul");
+
+		return max(d1, d2, 2);
 	}
 
-	@Override
-	public void visit(True node) {
+	public int visit(True node) {
 		writeind("iconst_1");
+
+		return 1;
 	}
 
-	@Override
-	public void visit(Type node) {
-
+	public int visit(Type node) {
+		return 0;
 	}
 
-	@Override
-	public void visit(VarDecl node) {
-
+	public int visit(VarDecl node) {
+		return 0;
 	}
 
-	@Override
-	public void visit(VarDeclList node) {
-
+	public int visit(VarDeclList node) {
+		return 0;
 	}
 
-	@Override
-	public void visit(VoidType node) {
-
+	public int visit(VoidType node) {
+		return 0;
 	}
 
-	@Override
-	public void visit(While node) {
+	public int visit(VoidExp node) {
+		return 0;
+	}
+
+	public int visit(While node) {
 		writeline(node.line);
 
 		String startLabel = newLabel();
 		String endLabel = newLabel();
 
 		write(startLabel + ":");
-		node.e.accept(this);
+		int d1 = visit(node.e);
 		writeind("ifeq " + endLabel);
 
-		node.s.accept(this);
+		int d2 = visit(node.s);
 		writeind("goto " + startLabel);
 
 		write(endLabel + ":");
+
+		return max(d1, d2);
 	}
 
 }
