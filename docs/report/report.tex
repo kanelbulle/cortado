@@ -66,18 +66,17 @@ Both JFlex and JavaCUP works as follows: each tool takes an input file consistin
 
 Though learning how to use both JFlex and JavaCUP can be a bit tricky in the beginning the benefit gained is \textit{much} easier maintenance and development since the alternative, building the automatons\cite{automata} yourself, is considered way more advanced.
 
-The output form the lexing and parsing phase is a tree created and linked together by various subclasses in the \texttt{syntaxtree} package. These correspond to a top-level object called \textit{Program} consisting of \textit{Classes} which in turn consists of \textit{Methods} and so on corresponding to the grammar given for MiniJava\cite{grammar}.
+The output from the lexing and parsing phase is a tree created and linked together by various subclasses in the \texttt{syntaxtree} package. These correspond to a top-level object called \textit{Program} consisting of \textit{Classes} which in turn consists of \textit{Methods} and so on corresponding to the grammar given for MiniJava\cite{grammar}.
 
-Input specifications for lexing and parsing resides in the \textit{res/} folder of the project and output is generated in \texttt{gen/}. Classes used to create the syntax tree is located in the \texttt{syntaxtree} package.
+Input specifications for lexing and parsing resides in the \texttt{src/lexer} and \texttt{src/parser} folders of the project and output is generated in \texttt{gen/}. Classes used to create the syntax tree is located in the \texttt{syntaxtree} package.
 
 \section{Scope and Type Checking}
-If the parser is successful, it returns the abstract syntax tree (AST) representing the program. The next step is to verify that variables are declared before use and that the types of variables are consistent with what they are assigned. Scope and type checking is done as a two pass process. The first pass reads the classes and methods of each class. A representation containing information about each class and method is saved in the classes \texttt{ClassScope} and \texttt{MethodScope}. In each \texttt{MethodScope} the list of parameters and their type is saved. The local variables are also saved. The first pass is now done.
+	If the parser is successful, it returns the abstract syntax tree (\textit{AST}) representing the program. The next step is to verify that variables are declared before use and that the types of variables are consistent with what they are assigned. Scope and type checking is done as a two pass procedure. The first pass reads the classes and methods of each class. A representation containing information about each class and method is saved in the classes \texttt{ClassScope} and \texttt{MethodScope}. In each \texttt{MethodScope} the list of parameters and their type is saved. The local variables are also saved. The first pass is now done.
 
 The second pass is implemented in the class \texttt{SlowTypeVisitor}. It verifies that the types in assignments, method calls and expressions are correct. If the left hand side of an assignment has type \textit{A}, the \texttt{SlowTypeVisitor} verifies that the right hand side is also of type \textit{A}. This is done using a visitor pattern, where the type of a node is returned in each visit. Figure ~\ref{fig:timestypecheck} illustrates an example for how this type checking is done in a typical node in the tree.
 
-\begin{figure}[H]
-\label{fig:timestypecheck}
-\begin{verbatim}
+	\begin{figure}[H]
+		\begin{verbatim}
 Type visit(Times node) {
     if not node.e1.accept() is of type Integer
         error "Left hand side not of type Integer"
@@ -86,40 +85,42 @@ Type visit(Times node) {
 
     return IntegerType
 }
-\end{verbatim}
-\caption{Simplified visit example in JasminVisitor}
-\end{figure}
+		\end{verbatim}
+		\caption{Simplified visit example in JasminVisitor}
+		\label{fig:timestypecheck}
+	\end{figure}
 
 \section{Translation to Jasmin}
-One of MiniJava compiler backend targets is the JVM. The JVM target requires Jasmin\cite{jasmin} output which is then compiled into .class files that Java can run. The MiniJava compiler implements the Jasmin code generation in a single class called \texttt{JasminVisitor}. It outputs one \texttt{.j} file for each class in the input file.
+	One of the MiniJava compiler backend targets is the JVM. The JVM target requires Jasmin\cite{jasmin} output which is then compiled into .class files that Java can run. The MiniJava compiler implements the Jasmin code generation in a single class called \texttt{JasminVisitor}. It outputs one \texttt{.j} file for each class in the input file.
+>>>>>>> Stashed changes
 
 The whole program is at this point represented in the form of an abstract syntax tree (AST). The \texttt{JasminVisitor} works by visiting the AST in a depth-first fashion. Each visit of a node outputs the corresponding Jasmin code. Visiting a node expects that to leave the calculated value (if any) on the stack. An example of visiting a \texttt{Times} node is shown in figure ~\ref{fig:timesexample}. The \texttt{Times} node has a left and a right expression. After the left and right have been visited their resulting values are expected to be found on the stack. The instruction \texttt{imul} multiplies the two top elements on the stack and replaces them with the result.
 
-\begin{figure}[H]
-\label{fig:timesexample}
-\begin{verbatim}
-visit(Times node) {
-    visit(node.e1);
-    visit(node.e2);
-    write("imul");
-}
-\end{verbatim}
-\caption{Simplified visit example in JasminVisitor}
-\end{figure}
+	\begin{figure}[H]
+		\begin{verbatim}
+		visit(Times node) {
+		    visit(node.e1);
+		    visit(node.e2);
+		    write("imul");
+		}
+		\end{verbatim}
+		\caption{Simplified visit example in JasminVisitor}
+		\label{fig:timesexample}
+	\end{figure}
 
 The JVM requires a minimal stack depth to be specified for each method and thus the Jasmin interpreter also requires a stack depth to be specified per method. This depth is calculated while visiting the nodes. Each visit method returns the depth required to perform the calculation. The two visit calls in the \texttt{Times} example in figure ~\ref{fig:timesexample} return their required depth. The depth of the \texttt{Times} visit itself is then the maximal value of the two depths -- plus the depth required to store the intermediate value. 
 
 \section{Translation to Intermediate Code}
-All stages up to, and partly including, the stage of intermediate code generation is commonly referred to as the \textit{frontend}, the stages following current stages is referred to as the \textit{backend}, intermediate code is what separates the two. Intermediate code (IR) is a sort of pseudo assembler and used to make the translation several different architectures easier. 
+All stages up to, and partly including, the stage of intermediate code generation is commonly referred to as the \textit{front end}, the stages following current stages is referred to as the \textit{back end}, intermediate code is what separates the two. Intermediate code (IR) is a sort of pseudo assembler and used to make the translation several different architectures easier. 
 
 What we do during this stage is to transform the incoming program being compiled (now in the form of a tree where scope and type errors should be non existent) and transform it into a \textit{linear structure}. This new structure should mimic that of a real processor which means that all abstract constructions, such as: \texttt{int x = 3+4;}, have to be converted into a series of instructions of \textit{how} a processor actually would carry out the, in this case, addition.
 
-To implement this procedure we have utilize an additional structure called a \textit{Translator}. The reason for this, and what the translator does, is due to that some constructs, such as conditional statements, need to be translated using several \texttt{jump} instructions. It is possible at later stages of the compilation to detect that some of these \texttt{jump}'s is unnecessary or could be rearranged in a more efficient order depending on if the statement need to return a value of not. Using a translator we can instead create a 'meta' statement and at a later stage when the context for this statement is know the translator can easily convert the statement in a efficient way by optimizing it to a, for instance, statement that returns a value. The translator is located in the \texttt{se.cortado.ir.translate} package.
+To implement this procedure we have utilized an additional structure called a \textit{Translator}. The reason for this, and what the translator does, is due to that some constructs, such as conditional statements, need to be translated using several \texttt{jump} instructions. It is possible at later stages of the compilation to detect that some of these \texttt{jump}'s is unnecessary or could be rearranged in a more efficient order depending on if the statement need to return a value of not. Using a translator we can instead create a 'meta' statement and at a later stage when the context for this statement is known the translator can easily convert the statement in a efficient way by optimizing it to a, for instance, statement that returns a value. The translator is located in the \texttt{se.cortado.ir.translate} package.
 
 \section{Code generation}
 There's now an intermediate tree representation of the program. Each node in this tree is simpler compared to the nodes in the \textit{AST}. The nodes also correspond more closely to instruction commonly found in CPUs, which makes it possible at this point to generate assembler for the program.
 
-The class \texttt{Codegen} is an implementation of Maximal munch\cite{appel} algorithm. It recursively visits all the nodes in the IR tree and outputs instructions for a set of nodes. It tries to minimize the amount of instructions and registers used by 'tiling' the tree. Each tile corresponds to one instruction. Certain assembler instructions can perform enough calculations to cover several nodes, meaning that there is not necessarily exactly one instruction per node in the IR tree. The Maximal munch algorithm is defined as greedily covering as many nodes as possible per instruction, starting from the root node. The IR tree nodes are either subclasses of  \texttt{IR\_Stm} or \texttt{IR\_Exp}. In \texttt{Codegen} there are two recursive methods called \texttt{munchStm} and \texttt{munchExp}, that consumes the nodes. \texttt{munchExp} returns a \texttt{Temp}. Each \texttt{Temp} represents a register. At this point there is no limit to how many registers are used.
+The class \texttt{Codegen} is an implementation of Maximal munch\cite{appel} algorithm. It recursively visits all the nodes in the IR tree and outputs instructions for a set of nodes at a time. It tries to minimize the amount of instructions and registers used by 'tiling' the tree. Each tile corresponds to one instruction. Certain assembler instructions can perform enough calculations to cover several nodes, meaning that there is not necessarily exactly one instruction per node in the IR tree. The Maximal munch algorithm is defined as greedily covering as many nodes as possible per instruction, starting from the root node. The IR tree nodes are either subclasses of  \texttt{IR\_Stm} or \texttt{IR\_Exp}. In \texttt{Codegen} there are two recursive methods called \texttt{munchStm} and \texttt{munchExp}, that consumes the nodes. \texttt{munchExp} returns a \texttt{Temp}. Each \texttt{Temp} represents a register. At this point there is no limit to how many registers are used.
 
 When munching, instructions are emitted and stored in a list. Each instruction is a subclass of \texttt{Instr}. An instruction is made up partly by the actual assembler instruction, but also a list of \texttt{Temp}'s used and defined in the instruction. The used \texttt{Temp}'s are the ones that are read by this instruction. The defined \texttt{Temp}'s are the temporaries that are written by this instruction. The used and defined values are used later in the analysis of the program.
 
@@ -147,7 +148,7 @@ If one where to compare the development efforts required to implement the differ
 
 First regarding the literature used, the book we followed to complete the project, \textit{Modern Compiler Implementation in Java, 2nd edition} by Appel\cite{appel} is bad. Lets just get that out of our system. Appel tries too much without actually explaining anything with enough detail to actually be usable. The criticism is targeted towards the chapters about: IR code translation and code generation.
 
-A big difference between a JVM backend and x86 is an additional constraint that comes with generating x86 code namely, register allocation and the requirement for a perfect linear program. Using Jasmin you can completely ignore those constraints and just emit code for each method separately and let the Jasmin translator care about that the code block are ordered in an executable fashion (i.e. creating \textit{traces}). Since Jasmin using a stack, one per method, you also don't need to bother about register allocation and thereby the translation of temporaries used to hold variables is straight forward, just push them on the stack.
+A big difference between a JVM backend and x86 is an additional constraint that comes with generating x86 code namely, register allocation and the requirement for a perfect linear program. Using Jasmin you can completely ignore those constraints and just emit code for each method separately and let the Jasmin translator care about that the code block are ordered in an executable fashion (i.e. creating \textit{traces}). Since Jasmin uses a stack, one per method, you also don't need to bother about register allocation and thereby the translation of temporaries used to hold variables is straight forward, just push them on the stack.
 
 On the whole a compiler is a very complicated piece of machinery but due to strong modularization into different stages it is fairly easy to get a good understanding of the totality by considering one module at a time. Good theory lead to good programs. For the front end of the compiler the theories used (for lexing, parsing) can be considered sound and implementation is easy. For the backend the theories, as explained in the course literature, can not be considered complete and an analogy suitable here is "stumbling a bit in the dark".
 
