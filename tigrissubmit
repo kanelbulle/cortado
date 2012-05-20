@@ -36,6 +36,7 @@ cp -r src $tmpdir
 cp -r lib $tmpdir
 cp -r README $tmpdir
 cp -r docs/report/Report.pdf $tmpdir/report.pdf
+cp -r cortado $tmpdir
 
 tar cf - $tmpdir | gzip | uuencode x > submission.txt
 
