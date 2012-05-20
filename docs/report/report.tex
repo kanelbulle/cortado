@@ -62,7 +62,7 @@ JFLex is a scanner generator that scans a text file and transforms input, matche
 
 A natural companion to JFlex is JavaCUP (Constructor of Useful Parsers) which is a parser generator that creates LALR parsers\cite{appel}.
 
-Both JFlex and JavaCUP works as follows: each tool take an input file consisting of instructions, specified according to the syntax of the tool, of how the to perform its actions. Running the tool in question on the corresponding file generates a new Java \textit{source code file} that is later included and instantiated as an object in the framework for the compiler. 
+Both JFlex and JavaCUP works as follows: each tool takes an input file consisting of instructions, specified according to the syntax of the tool, of how to perform its actions. Running the tool in question on the corresponding file generates a new Java \textit{source code file} that is later included and instantiated as an object in the framework for the compiler. 
 
 Though learning how to use both JFlex and JavaCUP can be a bit tricky in the beginning the benefit gained is \textit{much} easier maintenance and development since the alternative, building the automatons\cite{automata} yourself, is considered way more advanced.
 
@@ -76,7 +76,6 @@ Input specifications for lexing and parsing resides in the \textit{res/} folder 
 	The second pass is implemented in the class \texttt{SlowTypeVisitor}. It verifies that the types in assignments, method calls and expressions are correct. If the left hand side of an assignment has type \textit{A}, the \texttt{SlowTypeVisitor} verifies that the right hand side is also of type \textit{A}. This is done using a visitor pattern, where the type of a node is returned in each visit. Figure ~\ref{fig:timestypecheck} illustrates how this type checking is done per node in the tree.
 
 	\begin{figure}[H]
-		\label{fig:timestypecheck}
 		\begin{lstlisting}
 Type visit(Times node) {
 	if not node.e1.accept() is of type Integer
@@ -88,6 +87,7 @@ Type visit(Times node) {
 }
 		\end{lstlisting}
 		\caption{Simplified visit example in JasminVisitor}
+		\label{fig:timestypecheck}
 	\end{figure}
 
 \section{Translation to Jasmin}
@@ -96,7 +96,6 @@ Type visit(Times node) {
 	The whole program is at this point represented in the form of an abstract syntax tree (AST). The \texttt{JasminVisitor} works by visiting the AST in a depth-first fashion. Each visit of a node outputs the corresponding Jasmin code. Visiting a node expects that to leave the calculated value (if any) on the stack. An example of visiting a \texttt{Times} node is shown in figure ~\ref{fig:timesexample}. The \texttt{Times} node has a left and a right expression. After the left and right have been visited their resulting values are expected to be found on the stack. The instruction \texttt{imul} multiplies the two top elements on the stack and replaces them with the result.
 
 	\begin{figure}[H]
-		\label{fig:timesexample}
 		\begin{lstlisting}
 visit(Times node) {
 	visit(node.e1);
@@ -105,6 +104,7 @@ visit(Times node) {
 }
 		\end{lstlisting}
 		\caption{Simplified visit example in JasminVisitor}
+		\label{fig:timesexample}
 	\end{figure}
 
 	The JVM requires a minimal stack depth to be specified for each method and thus the Jasmin interpreter also requires a stack depth to be specified per method. This depth is calculated while visiting the nodes. Each visit method returns the depth required to perform the calculation. The two visit calls in the \texttt{Times} example in figure ~\ref{fig:timesexample} return their required depth. The depth of the \texttt{Times} visit itself is then the maximal value of the two depths -- plus the depth required to store the intermediate value. 
