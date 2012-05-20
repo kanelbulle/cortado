@@ -11,16 +11,11 @@ if [ ! -d "$compdir" ]
 
 cd $compdir
 
-if [ -f build.xml ] && [ -f DESC ] && [ -d src ] && [ -d lib ] && [ -f report.pdf ]
+if [ -f build.xml ] && [ -f DESC ] && [ -d src ] && [ -d lib ]
   then true
   else
     echo "error: missing files in \"$compdir\"."
     exit
-  fi
-
-if [ ! -s report.pdf ]
-  then
-    echo "NOTE: Empty report.pdf--need to resubmit before oral presentation"
   fi
 
 if uuencode x </dev/null >/dev/null
@@ -40,10 +35,9 @@ cp -r DESC $tmpdir
 cp -r src $tmpdir
 cp -r lib $tmpdir
 cp -r README $tmpdir
-cp -r report.pdf $tmpdir
+cp -r docs/report/Report.pdf $tmpdir/report.pdf
 
 tar cf - $tmpdir | gzip | uuencode x > submission.txt
 
-rm -rf $tmpdir
 
 exit 0
