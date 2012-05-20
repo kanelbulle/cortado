@@ -211,7 +211,7 @@ public class JasminVisitor {
 		writeind("iconst_1");
 		write(endLabel + ":");
 
-		return Math.max(d1, d2) + 2;
+		return max(d1, d2 + 1, 2);
 	}
 
 	public int visit(ArrayAssign node) {
@@ -220,7 +220,7 @@ public class JasminVisitor {
 		int d3 = visit(node.e2);
 		writeind("iastore");
 
-		return max(d1, d2, d3, 3);
+		return max(d1, d2 + 1, d3 + 2, 3);
 	}
 
 	public int visit(ArrayLength node) {
@@ -235,7 +235,7 @@ public class JasminVisitor {
 		int d2 = visit(node.e2);
 		writeind("iaload");
 
-		return max(d1, d2, 2);
+		return max(d1, d2 + 1, 2);
 	}
 
 	public int visit(Assign node) {
@@ -272,7 +272,7 @@ public class JasminVisitor {
 		int d1 = visit(node.e);
 
 		// push arguments onto stack
-		int d2 = -1;
+		int d2 = 0;
 		for (int i = 0; i < node.el.size(); i++) {
 			int d = visit(node.el.elementAt(i));
 			d2 = max(d2, d + i + 1);
@@ -455,7 +455,7 @@ public class JasminVisitor {
 		writeind("iconst_1");
 		write(endLabel + ":");
 
-		return max(d1, d2, 1);
+		return max(d1, d2 + 1, 1);
 	}
 
 	public int visit(MainClass node) {
@@ -474,7 +474,7 @@ public class JasminVisitor {
 		visit(node.md);
 
 		writeToFile(node.i.s + ".j");
-		
+
 		return 0;
 	}
 
@@ -497,15 +497,14 @@ public class JasminVisitor {
 			write(".method public " + node.identifier.s + "(" + arglist + ")" + retType);
 		}
 
-		// TODO fix stack depth
-		int stackDepthIndex = mOutput.size(); 
+		int stackDepthIndex = mOutput.size();
 		writeind(".limit locals " + mMethodScope.getNumLocals());
 
 		int d1 = visit(node.statementList);
 		int d2 = visit(node.exp);
-		
-		// insert stack depth 
-		String stackLimit = "    .limit stack " + (2 + max(d1, d2)) + "\n";
+
+		// insert stack depth
+		String stackLimit = "    .limit stack " + (max(d1, d2 + 1)) + "\n";
 		mOutput.add(stackDepthIndex, stackLimit);
 
 		writeind(t(node.type) + "return");
@@ -527,7 +526,7 @@ public class JasminVisitor {
 		int d2 = visit(node.e2);
 		writeind("isub");
 
-		return max(d1, d2, 2);
+		return max(d1, d2 + 1, 2);
 	}
 
 	public int visit(NewArray node) {
@@ -556,7 +555,7 @@ public class JasminVisitor {
 		writeind("iconst_1");
 		writeind("ixor");
 
-		return max(d, 2);
+		return max(d + 1, 2);
 	}
 
 	public int visit(Plus node) {
@@ -566,7 +565,7 @@ public class JasminVisitor {
 		int d2 = visit(node.e2);
 		writeind("iadd");
 
-		return max(d1, d2, 2);
+		return max(d1, d2 + 1, 2);
 	}
 
 	public int visit(Print node) {
@@ -574,7 +573,7 @@ public class JasminVisitor {
 		int d = visit(node.e);
 		writeind("invokevirtual java/io/PrintStream/println(I)V");
 
-		return max(d, 2);
+		return max(1 + d, 2);
 	}
 
 	public int visit(Program node) {
@@ -613,7 +612,7 @@ public class JasminVisitor {
 		int d2 = visit(node.e2);
 		writeind("imul");
 
-		return max(d1, d2, 2);
+		return max(d1, d2 + 1, 2);
 	}
 
 	public int visit(True node) {
@@ -657,7 +656,7 @@ public class JasminVisitor {
 
 		write(endLabel + ":");
 
-		return max(d1, d2);
+		return max(d1, d2 + 1);
 	}
 
 }

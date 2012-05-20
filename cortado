@@ -14,7 +14,8 @@ dir=$( dirname $1 )
 mkdir -p cortadoout/$dir 2> /dev/null
 mv *.j cortadoout/$dir
 java -jar lib/jasmin.jar cortadoout/$dir/*.j -d cortadoout/$dir
-# java -cp cortadoout/ ${filename}
+
+#java -cp cortadoout/ ${filename}
 
 #as cortadoout/${filename}.s -o cortadoout/${filename}.o
 
