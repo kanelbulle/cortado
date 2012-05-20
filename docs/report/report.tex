@@ -121,6 +121,15 @@ The result of this procedure is an \textit{interference graph} which is a graph 
 During the finalization of the interference graph it is still assumed that the number of registers is unlimited, what we done so far is simply to determine the minimal subset of variables than \textit{must} be live at each point in time. For this we use the \textit{graph coloring} procedure evaluated with \textit{K} colors, where \textit{K} is the number of registers available. If we allocate the registers according to the graph coloring scheme we will be guaranteed that variables that are live at the same time never will interfere with each other by, possibly, overwrite each others values.
 
 \section{Conclusions}
+If one where to compare the development efforts required to implement the different backends (here comparing x86 with JVM implemented through Jasmin) we can conclude that creating an executable using Jasmin is several magnitudes easier than creating an backend for x86. This is due to several reasons.
+
+First regarding the literature used, the book we followed to complete the project, \textit{Modern Compiler Implementation in Java, 2nd edition} by Appel\cite{appel} is bad. Lets just get that out of our system. Appel tries to much without actually explaining anything with enough detail to actually be usable. The criticism is targeted towards the chapters about: IR code translation and code generation.
+
+A big difference between a JVM backend and x86 is an additional constraint that comes with generating x86 code namely, register allocation and the requirement for a perfect linear program. Using Jasmin you can completely ignore those constraints and just emit code for each method separately and let the Jasmin translator care about that the code block are ordered in an executable fashion (i.e. creating \textit{traces}). Since Jasmin using a stack, one per method, you also don't need to bother about register allocation and thereby the translation of temporaries used to hold variables is straight forward, just push them on the stack.
+
+On the whole a compiler is a very complicated piece of machinery but due to strong modularization into different stages it is fairly easy to get a good understanding of the totality by considering one module at a time. Good theory lead to good programs. For the frontend of the compiler the theories used (for lexing, parsing) can be considered sound and implementation is easy. For the backend the theories, as explained in the course literature, can not be considered complete and an analogy suitable here is "stumbling a bit in the dark".
+
+The negative side of heavy modularization is that you get a bigger code base. More code is not always a bad thing and we consider the tradeoff between the two in favor for modularization because it gives a far better understanding of the inner workings of the compiler which we deem most important as it makes maintenance and verification easier, both important parts due to the requirement for (hopefully) absolute correctness.
 
 \begin{thebibliography}{9}
 
