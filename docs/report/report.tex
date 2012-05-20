@@ -58,22 +58,22 @@ The target architecture i.e. the platform for with assembler instructions will b
 \section{Lexing and Parsing}
 The first phase of the compiler consists of transforming the input source into tokens and parsing these against the grammar for MiniJava to discover possible syntax errors. At this stage we utilize two different tools: JFlex and JavaCUP. 
 
-JFLex is a scanner generator that scans a textfile and transforms input, matched against patterns written using regular expressions, to tokens (also called \textit{lexing}). This is the first point of error checking, if any invalid MiniJava characters or strings are encountered the compilation is halted.
+JFLex is a scanner generator that scans a text file and transforms input, matched against patterns written using regular expressions, to tokens (also called \textit{lexing}). This is the first point of error checking, if any invalid MiniJava characters or strings are encountered the compilation is halted.
 
 A natural companion to JFlex is JavaCUP (Constructor of Useful Parsers) which is a parser generator that creates LALR parsers\cite{appel}.
 
 Both JFlex and JavaCUP works as follows: each tool take an input file consisting of instructions, specified according to the syntax of the tool, of how the to perform its actions. Running the tool in question on the corresponding file generates a new Java \textit{source code file} that is later included and instantiated as an object in the framework for the compiler. 
 
-Even though learning how to use both JFlex and JavaCUP can be a bit tricky in the beginning the benefit gained is \textit{much} easier maintenance and development since the alternative, building the automatons\cite{automata} yourself, is considered way more advanced.
+Though learning how to use both JFlex and JavaCUP can be a bit tricky in the beginning the benefit gained is \textit{much} easier maintenance and development since the alternative, building the automatons\cite{automata} yourself, is considered way more advanced.
 
-The output form the lexing and parsing phase is a tree created and linked together by various subclasses in the \texttt{syntaxtree} package. These corespond to a top-level object called \textit{Program} consisting of \textit{Classes} which in turn consists of \textit{Methods} and so on corresponding to the grammar given for MiniJava\cite{grammar}.
+The output form the lexing and parsing phase is a tree created and linked together by various subclasses in the \texttt{syntaxtree} package. These correspond to a top-level object called \textit{Program} consisting of \textit{Classes} which in turn consists of \textit{Methods} and so on corresponding to the grammar given for MiniJava\cite{grammar}.
 
 Input specifications for lexing and parsing resides in the \textit{res/} folder of the project and output is generated in \texttt{gen/}. Classes used to create the syntax tree is located in the \texttt{syntaxtree} package.
 
 \section{Scope and Type Checking}
 	If the parser is successful, it returns the abstract syntax tree (AST) representing the program. The next step is to verify that variables are declared before use and that the types of variables are consistent with what they are assigned. Scope and type checking is done as a two pass process. The first pass reads the classes and methods of each class. A representation containing information about each class and method is saved in the classes \texttt{ClassScope} and \texttt{MethodScope}. In each \texttt{MethodScope} the list of parameters and their type is saved. The local variables are also saved. The first pass is now done.
 
-	The second pass is implemented in the class \texttt{SlowTypeVisitor}. It verifies that the types in assignments, method calls and expressions are correct. If the left hand side of an assignemnt has type \textit{A}, the \texttt{SlowTypeVisitor} verifies that the right hand side is also of type \textit{A}. This is done using a visitor pattern, where the type of a node is returned in each visit. Figure ~\ref{fig:timestypecheck} illustrates how this type checking is done per node in the tree.
+	The second pass is implemented in the class \texttt{SlowTypeVisitor}. It verifies that the types in assignments, method calls and expressions are correct. If the left hand side of an assignment has type \textit{A}, the \texttt{SlowTypeVisitor} verifies that the right hand side is also of type \textit{A}. This is done using a visitor pattern, where the type of a node is returned in each visit. Figure ~\ref{fig:timestypecheck} illustrates how this type checking is done per node in the tree.
 
 	\begin{figure}[H]
 		\label{fig:timestypecheck}
@@ -119,6 +119,7 @@ To implement this procedure we have utilize an additional structure called a \te
 \section{Code generation}
 
 
+
 \section{Liveness and Register Allocation}
 Through out the compilation process so far virtual temporaries have been used to hold variable. Since on a real CPU all calculations have to be performed on variables located either in memory, or preferably, in registers we need to link these temporaries to real registers, the problem is that the number of registers is limited and we need to determine at any point in time which variables is currently needed and need to be placed in registers.
 
@@ -145,7 +146,7 @@ First regarding the literature used, the book we followed to complete the projec
 
 A big difference between a JVM backend and x86 is an additional constraint that comes with generating x86 code namely, register allocation and the requirement for a perfect linear program. Using Jasmin you can completely ignore those constraints and just emit code for each method separately and let the Jasmin translator care about that the code block are ordered in an executable fashion (i.e. creating \textit{traces}). Since Jasmin using a stack, one per method, you also don't need to bother about register allocation and thereby the translation of temporaries used to hold variables is straight forward, just push them on the stack.
 
-On the whole a compiler is a very complicated piece of machinery but due to strong modularization into different stages it is fairly easy to get a good understanding of the totality by considering one module at a time. Good theory lead to good programs. For the frontend of the compiler the theories used (for lexing, parsing) can be considered sound and implementation is easy. For the backend the theories, as explained in the course literature, can not be considered complete and an analogy suitable here is "stumbling a bit in the dark".
+On the whole a compiler is a very complicated piece of machinery but due to strong modularization into different stages it is fairly easy to get a good understanding of the totality by considering one module at a time. Good theory lead to good programs. For the front end of the compiler the theories used (for lexing, parsing) can be considered sound and implementation is easy. For the backend the theories, as explained in the course literature, can not be considered complete and an analogy suitable here is "stumbling a bit in the dark".
 
 The negative side of heavy modularization is that you get a bigger code base. More code is not always a bad thing and we consider the tradeoff between the two in favor for modularization because it gives a far better understanding of the inner workings of the compiler which we deem most important as it makes maintenance and verification easier, both important parts due to the requirement for (hopefully) absolute correctness.
 
