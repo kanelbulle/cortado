@@ -71,43 +71,43 @@ The output form the lexing and parsing phase is a tree created and linked togeth
 Input specifications for lexing and parsing resides in the \textit{res/} folder of the project and output is generated in \texttt{gen/}. Classes used to create the syntax tree is located in the \texttt{syntaxtree} package.
 
 \section{Scope and Type Checking}
-	If the parser is successful, it returns the abstract syntax tree (AST) representing the program. The next step is to verify that variables are declared before use and that the types of variables are consistent with what they are assigned. Scope and type checking is done as a two pass process. The first pass reads the classes and methods of each class. A representation containing information about each class and method is saved in the classes \texttt{ClassScope} and \texttt{MethodScope}. In each \texttt{MethodScope} the list of parameters and their type is saved. The local variables are also saved. The first pass is now done.
+If the parser is successful, it returns the abstract syntax tree (AST) representing the program. The next step is to verify that variables are declared before use and that the types of variables are consistent with what they are assigned. Scope and type checking is done as a two pass process. The first pass reads the classes and methods of each class. A representation containing information about each class and method is saved in the classes \texttt{ClassScope} and \texttt{MethodScope}. In each \texttt{MethodScope} the list of parameters and their type is saved. The local variables are also saved. The first pass is now done.
 
-	The second pass is implemented in the class \texttt{SlowTypeVisitor}. It verifies that the types in assignments, method calls and expressions are correct. If the left hand side of an assignment has type \textit{A}, the \texttt{SlowTypeVisitor} verifies that the right hand side is also of type \textit{A}. This is done using a visitor pattern, where the type of a node is returned in each visit. Figure ~\ref{fig:timestypecheck} illustrates how this type checking is done per node in the tree.
+The second pass is implemented in the class \texttt{SlowTypeVisitor}. It verifies that the types in assignments, method calls and expressions are correct. If the left hand side of an assignment has type \textit{A}, the \texttt{SlowTypeVisitor} verifies that the right hand side is also of type \textit{A}. This is done using a visitor pattern, where the type of a node is returned in each visit. Figure ~\ref{fig:timestypecheck} illustrates an example for how this type checking is done in a typical node in the tree.
 
-	\begin{figure}[H]
-		\label{fig:timestypecheck}
-		\begin{lstlisting}
+\begin{figure}[H]
+\label{fig:timestypecheck}
+\begin{verbatim}
 Type visit(Times node) {
-	if not node.e1.accept() is of type Integer
-		error "Left hand side not of type Integer"
-	if not node.e2.accept() is of type Integer
-		error "Right hand side not of type Integer"
+    if not node.e1.accept() is of type Integer
+        error "Left hand side not of type Integer"
+    if not node.e2.accept() is of type Integer
+        error "Right hand side not of type Integer"
 
-	return IntegerType
+    return IntegerType
 }
-		\end{lstlisting}
-		\caption{Simplified visit example in JasminVisitor}
-	\end{figure}
+\end{verbatim}
+\caption{Simplified visit example in JasminVisitor}
+\end{figure}
 
 \section{Translation to Jasmin}
-	One of MiniJava compiler backend targets is the JVM. The JVM target requires Jasmin\cite{jasmin} output which is then compiled into .class files that Java can run. The MiniJava compiler implements the Jasmin code generation in a single class called \texttt{JasminVisitor}. It outputs one \texttt{.j} file for each class in the input file.
+One of MiniJava compiler backend targets is the JVM. The JVM target requires Jasmin\cite{jasmin} output which is then compiled into .class files that Java can run. The MiniJava compiler implements the Jasmin code generation in a single class called \texttt{JasminVisitor}. It outputs one \texttt{.j} file for each class in the input file.
 
-	The whole program is at this point represented in the form of an abstract syntax tree (AST). The \texttt{JasminVisitor} works by visiting the AST in a depth-first fashion. Each visit of a node outputs the corresponding Jasmin code. Visiting a node expects that to leave the calculated value (if any) on the stack. An example of visiting a \texttt{Times} node is shown in figure ~\ref{fig:timesexample}. The \texttt{Times} node has a left and a right expression. After the left and right have been visited their resulting values are expected to be found on the stack. The instruction \texttt{imul} multiplies the two top elements on the stack and replaces them with the result.
+The whole program is at this point represented in the form of an abstract syntax tree (AST). The \texttt{JasminVisitor} works by visiting the AST in a depth-first fashion. Each visit of a node outputs the corresponding Jasmin code. Visiting a node expects that to leave the calculated value (if any) on the stack. An example of visiting a \texttt{Times} node is shown in figure ~\ref{fig:timesexample}. The \texttt{Times} node has a left and a right expression. After the left and right have been visited their resulting values are expected to be found on the stack. The instruction \texttt{imul} multiplies the two top elements on the stack and replaces them with the result.
 
-	\begin{figure}[H]
-		\label{fig:timesexample}
-		\begin{lstlisting}
+\begin{figure}[H]
+\label{fig:timesexample}
+\begin{verbatim}
 visit(Times node) {
-	visit(node.e1);
-	visit(node.e2);
-	write("imul");
+    visit(node.e1);
+    visit(node.e2);
+    write("imul");
 }
-		\end{lstlisting}
-		\caption{Simplified visit example in JasminVisitor}
-	\end{figure}
+\end{verbatim}
+\caption{Simplified visit example in JasminVisitor}
+\end{figure}
 
-	The JVM requires a minimal stack depth to be specified for each method and thus the Jasmin interpreter also requires a stack depth to be specified per method. This depth is calculated while visiting the nodes. Each visit method returns the depth required to perform the calculation. The two visit calls in the \texttt{Times} example in figure ~\ref{fig:timesexample} return their required depth. The depth of the \texttt{Times} visit itself is then the maximal value of the two depths -- plus the depth required to store the intermediate value. 
+The JVM requires a minimal stack depth to be specified for each method and thus the Jasmin interpreter also requires a stack depth to be specified per method. This depth is calculated while visiting the nodes. Each visit method returns the depth required to perform the calculation. The two visit calls in the \texttt{Times} example in figure ~\ref{fig:timesexample} return their required depth. The depth of the \texttt{Times} visit itself is then the maximal value of the two depths -- plus the depth required to store the intermediate value. 
 
 \section{Translation to Intermediate Code}
 All stages up to, and partly including, the stage of intermediate code generation is commonly referred to as the \textit{frontend}, the stages following current stages is referred to as the \textit{backend}, intermediate code is what separates the two. Intermediate code (IR) is a sort of pseudo assembler and used to make the translation several different architectures easier. 
