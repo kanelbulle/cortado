@@ -64,7 +64,7 @@ public class JVMMain {
 			}
 
 			JasminVisitor jv = new JasminVisitor(symbolTable, !mStrictMode);
-			prog.accept(jv);
+			jv.visit(prog);
 		} catch (Exception e) {
 			System.out.println("ERROR: " + e.getMessage());
 			e.printStackTrace();
