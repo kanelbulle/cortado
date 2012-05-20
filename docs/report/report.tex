@@ -92,7 +92,6 @@ Type visit(Times node) {
 
 \section{Translation to Jasmin}
 	One of the MiniJava compiler backend targets is the JVM. The JVM target requires Jasmin\cite{jasmin} output which is then compiled into .class files that Java can run. The MiniJava compiler implements the Jasmin code generation in a single class called \texttt{JasminVisitor}. It outputs one \texttt{.j} file for each class in the input file.
->>>>>>> Stashed changes
 
 The whole program is at this point represented in the form of an abstract syntax tree (AST). The \texttt{JasminVisitor} works by visiting the AST in a depth-first fashion. Each visit of a node outputs the corresponding Jasmin code. Visiting a node expects that to leave the calculated value (if any) on the stack. An example of visiting a \texttt{Times} node is shown in figure ~\ref{fig:timesexample}. The \texttt{Times} node has a left and a right expression. After the left and right have been visited their resulting values are expected to be found on the stack. The instruction \texttt{imul} multiplies the two top elements on the stack and replaces them with the result.
 
