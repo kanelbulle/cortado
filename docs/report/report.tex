@@ -19,12 +19,12 @@
 \section{Introduction}
 A compiler is a complicated piece of machinery, a computer program, designed to transform high level source code written in some programming language into some lower level language understandable, and runnable on various target architectures i.e. different types of processors.
 
-This report presents the construction, and inner workings, of a compiler for the high level programming language \textit{MiniJava} (which is a subset of the Java programming language) created as a project int the course \textit{DD2488 - Compiler Construction}\cite{appel}. We named the project \textbf{Cortado} which is a small and strong type of italian coffee.\footnote{Wordplay is another of our amusements besides building compilers}
+This report presents the construction, and inner workings, of a compiler for the high level programming language \textit{MiniJava} (which is a subset of the Java programming language) created as a project in the course \textit{DD2488 - Compiler Construction}\cite{appel}. We named the project \textbf{Cortado} which is a small and strong type of italian coffee.\footnote{Wordplay is another of our amusements besides building compilers}
 
-The report will present the various tools used to facilitate the construction of the compiler and explain the how the different stages of compilation have been implemented. The intended reader is a person who has rudimentary understanding of the workings of a compiler and our goal is to give the reader insight and a basic understanding of the inner workings and design choices we made for our implementation of MiniJava. This report is also intended as documentation for ourselves on things we found difficult and their solution.
+The report will present the various tools used to facilitate the construction of the compiler and explain how the different stages of compilation have been implemented. The intended reader is a person who has rudimentary understanding of the workings of a compiler and our goal is to give the reader insight and a basic understanding of the inner workings and design choices we made for our implementation of MiniJava. This report is also intended as documentation for ourselves on things we found difficult and their solution.
 
 \section{Overview}
-During the course of compilation a compiler goes through several stages where the input (i.e. the file of MiniJava source code) is tested and/or transformed into various representations (most common: a tree structure in various forms). This is to make the compiler more modular and easier to maintain, an input at some stage is usually the output from the previous stage. On the whole, the entire process of transforming input source code to an executable file is usually separated into the following stages:
+During the course of compilation a compiler goes through several stages where the input (i.e. the file of MiniJava source code) is tested and/or transformed into various representations (most common: a tree structure in various forms). This is to make the compiler more modular and easier to maintain, an input at some stage is usually the output from the previous stage. On the whole, the entire process of transforming input source code to an executable file is separated into the following stages:
 
 \begin{itemize}
 \item Lexicographical analysis
@@ -37,7 +37,7 @@ During the course of compilation a compiler goes through several stages where th
 \item Assembly and linking (not covered)
 \end{itemize}
 
-As a reference and as an insight into our project each step will be explained briefly and for focus is towards how we covered each stage in our implementation. The last step of compilation \textit{Assembly and linking} was not part of this project and have been excluded from the compiler. To complete the process of creating a real exactable binary we here rely on ordinary assemblers such as \textit{nasm}\cite{nasm} to preform the last step. We note that upon successful compilation using our compiler a complete, syntactically correct, assembler source file will be given as output.
+As a reference and as an insight into our project each step will be explained briefly and focus is towards how we covered each stage in our implementation. The last step of compilation \textit{Assembly and linking} was not part of this project and have been excluded from the compiler. To complete the process of creating a real exactable binary we here rely on ordinary assemblers such as \textit{nasm}\cite{nasm} to preform the last step. We note that upon successful compilation using our compiler a complete, syntactically correct, assembler source file will be given as output.
 
 The project of creating a compiler for the MiniJava programming language (hereby just referred to as 'MiniJava') was implemented using the ordinary Java programming language. 
 
@@ -50,10 +50,10 @@ For running a precompiled binary of our complier the only requirement is a runti
 \item JUnit 4.10 (only needed for test cases)
 \end{itemize}
 
-To build the project simply extract the project package and type \texttt{make} in the root folder, this creates the compiler as a executable named \texttt{cortado}. To compile your own MiniJava source code files type \texttt{java ./cortado your-source-file}. This will preform all stages of compiling and output a .s files of assembler code.
+To build the project, extract the project package and type \texttt{ant} in the root folder, this creates a jar file containing the compiler. To compile your own MiniJava source code files type \texttt{./cortado your-source-file}. This will perform all stages of compiling and output .j files of Jasmin code in the directory \texttt{cortadoout}.
 
 \subsection{Architecture and MiniJava Extensions}
-The target architecture i.e. the platform for with assembler instructions will be generated is currently AMD64. We have limited ourselves to one architecture at the moment but have plans to extend the choice of target platform to include ARM in the near future. Since MiniJava is a limited subset of Java many operators and functionality have been exclude such as for loop and much of the boolean logic. As a bonus in the DD2488 course we were encouraged to implements some of this missing functionality as extensions, none of these have been implemented and our goal is to instead focusing on an other type of bonus, namely, the mentioned future implementation of the ARM backend.
+Our main target is the JVM, which outputs Jasmin code. Initially our target target architecture was AMD64 assembler, but due to lack of time this target was never completed. Since MiniJava is a limited subset of Java many operators and functionality have been exclude such as for loop and much of the boolean logic. As a bonus in the DD2488 course we were encouraged to implement some of this missing functionality as extensions. None of these have been implemented.
 
 \section{Lexing and Parsing}
 The first phase of the compiler consists of transforming the input source into tokens and parsing these against the grammar for MiniJava to discover possible syntax errors. At this stage we utilize two different tools: JFlex and JavaCUP. 
