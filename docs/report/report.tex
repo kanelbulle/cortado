@@ -6,6 +6,7 @@
 \usepackage{listings}
 \usepackage{amsmath}
 \usepackage{amsthm}
+\usepackage{float}
 \usepackage{url}
 \usepackage{verbatim}
 
@@ -70,21 +71,38 @@ The output form the lexing and parsing phase is a tree created and linked togeth
 Input specifications for lexing and parsing resides in the \textit{res/} folder of the project and output is generated in \texttt{gen/}. Classes used to create the syntax tree is located in the \texttt{syntaxtree} package.
 
 \section{Scope and Type Checking}
-Topics: scope and type, symbol tables
+	If the parser is successful, it returns the abstract syntax tree (AST) representing the program. The next step is to verify that variables are declared before use and that the types of variables are consistent with what they are assigned. Scope and type checking is done as a two pass process. The first pass reads the classes and methods of each class. A representation containing information about each class and method is saved in the classes \texttt{ClassScope} and \texttt{MethodScope}. In each \texttt{MethodScope} the list of parameters and their type is saved. The local variables are also saved. The first pass is now done.
+
+	The second pass is implemented in the class \texttt{SlowTypeVisitor}. It verifies that the types in assignments, method calls and expressions are correct. If the left hand side of an assignemnt has type \textit{A}, the \texttt{SlowTypeVisitor} verifies that the right hand side is also of type \textit{A}. This is done using a visitor pattern, where the type of a node is returned in each visit. Figure ~\ref{fig:timestypecheck} illustrates how this type checking is done per node in the tree.
+
+	\begin{figure}[H]
+		\label{fig:timestypecheck}
+		\begin{lstlisting}
+Type visit(Times node) {
+	if not node.e1.accept() is of type Integer
+		error "Left hand side not of type Integer"
+	if not node.e2.accept() is of type Integer
+		error "Right hand side not of type Integer"
+
+	return IntegerType
+}
+		\end{lstlisting}
+		\caption{Simplified visit example in JasminVisitor}
+	\end{figure}
 
 \section{Translation to Jasmin}
 	One of MiniJava compiler backend targets is the JVM. The JVM target requires Jasmin\cite{jasmin} output which is then compiled into .class files that Java can run. The MiniJava compiler implements the Jasmin code generation in a single class called \texttt{JasminVisitor}. It outputs one \texttt{.j} file for each class in the input file.
 
 	The whole program is at this point represented in the form of an abstract syntax tree (AST). The \texttt{JasminVisitor} works by visiting the AST in a depth-first fashion. Each visit of a node outputs the corresponding Jasmin code. Visiting a node expects that to leave the calculated value (if any) on the stack. An example of visiting a \texttt{Times} node is shown in figure ~\ref{fig:timesexample}. The \texttt{Times} node has a left and a right expression. After the left and right have been visited their resulting values are expected to be found on the stack. The instruction \texttt{imul} multiplies the two top elements on the stack and replaces them with the result.
 
-	\begin{figure}
+	\begin{figure}[H]
 		\label{fig:timesexample}
 		\begin{lstlisting}
-			visit(Times node) {
-				visit(node.e1);
-				visit(node.e2);
-				write("imul");
-			}
+visit(Times node) {
+	visit(node.e1);
+	visit(node.e2);
+	write("imul");
+}
 		\end{lstlisting}
 		\caption{Simplified visit example in JasminVisitor}
 	\end{figure}
@@ -123,7 +141,7 @@ During the finalization of the interference graph it is still assumed that the n
 \section{Conclusions}
 If one where to compare the development efforts required to implement the different backends (here comparing x86 with JVM implemented through Jasmin) we can conclude that creating an executable using Jasmin is several magnitudes easier than creating an backend for x86. This is due to several reasons.
 
-First regarding the literature used, the book we followed to complete the project, \textit{Modern Compiler Implementation in Java, 2nd edition} by Appel\cite{appel} is bad. Lets just get that out of our system. Appel tries to much without actually explaining anything with enough detail to actually be usable. The criticism is targeted towards the chapters about: IR code translation and code generation.
+First regarding the literature used, the book we followed to complete the project, \textit{Modern Compiler Implementation in Java, 2nd edition} by Appel\cite{appel} is bad. Lets just get that out of our system. Appel tries too much without actually explaining anything with enough detail to actually be usable. The criticism is targeted towards the chapters about: IR code translation and code generation.
 
 A big difference between a JVM backend and x86 is an additional constraint that comes with generating x86 code namely, register allocation and the requirement for a perfect linear program. Using Jasmin you can completely ignore those constraints and just emit code for each method separately and let the Jasmin translator care about that the code block are ordered in an executable fashion (i.e. creating \textit{traces}). Since Jasmin using a stack, one per method, you also don't need to bother about register allocation and thereby the translation of temporaries used to hold variables is straight forward, just push them on the stack.
 
