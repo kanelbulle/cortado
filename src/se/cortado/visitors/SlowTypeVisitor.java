@@ -1,6 +1,7 @@
 package se.cortado.visitors;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import se.cortado.syntaxtree.And;
 import se.cortado.syntaxtree.ArrayAssign;
@@ -51,6 +52,7 @@ import se.cortado.syntaxtree.VoidType;
 import se.cortado.syntaxtree.While;
 
 public class SlowTypeVisitor implements TypeVisitor {
+	
 	private static final String UNDECLARED_ERROR = "Undeclared identifier '%s'";
 	private static final String RIGHT_SIDE_ERROR = "Right side of '%s' must be of type %s.";
 	private static final String LEFT_SIDE_ERROR = "Left side of '%s' must be of type %s.";
@@ -60,22 +62,36 @@ public class SlowTypeVisitor implements TypeVisitor {
 	private static final String EXPECTED_EXPRESSION_OF_TYPE = "Expected expression of type %s here.";
 	private static final String ASSIGN_TYPE_ERROR = "Type of left hand side '%s' does not match type of right hand side '%s'.";
 
-	ArrayList<String> errors = new ArrayList<String>();
+	LinkedList<String> errors = new LinkedList<String>();
 	ClassDecl currentClass;
 	MethodDecl currentMethod;
 	private SymbolTable symbolTable;
-	public boolean errorOccurred;
-
 	int currentLine;
 
-	public void setSymbolTable(SymbolTable symbolTable) {
+	
+	public SlowTypeVisitor(SymbolTable symbolTable) {
 		this.symbolTable = symbolTable;
+	}
+	
+	public void check(Program program) throws Exception {
+		/* Start type check */
+		visit(program);
+		
+		if (errors.size() > 0) {
+			StringBuilder sb = new StringBuilder();
+			sb.append("\n=== TypeCheck Detected: " + errors.size() + " problem(s), please fix these and recompile ===\n");
+			
+			for (String elem : errors) {
+				sb.append(elem);
+			}
+			
+			throw new Exception(sb.toString());	
+		}
 	}
 
 	private void addError(String s, String... format) {
-		new Exception().printStackTrace();
-		errors.add("Line " + currentLine + ": "
-				+ String.format(s, (Object[]) format));
+//		new Exception().printStackTrace();
+		errors.add("Line " + currentLine + ": " + String.format(s, (Object[]) format));
 	}
 
 	private Type typeOfIdentifier(Identifier id) {
@@ -530,14 +546,6 @@ public class SlowTypeVisitor implements TypeVisitor {
 		node.mainClass.accept(this);
 		node.classDeclList.accept(this);
 
-		if (errors.size() > 0) {
-			for (String s : errors) {
-				System.out.println(s);
-			}
-
-			errorOccurred = true;
-		}
-
 		return null;
 	}
 
@@ -636,4 +644,5 @@ public class SlowTypeVisitor implements TypeVisitor {
 
 		return null;
 	}
+
 }

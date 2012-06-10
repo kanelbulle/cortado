@@ -53,43 +53,57 @@ import se.cortado.syntaxtree.While;
 
 /** @author Samuel Wejeus */
 public class ScopeVisitor implements Visitor {
+	
+	
 	private SymbolTable symbolTable;
 	private LinkedList<String> errors;
-	
-	public boolean errorOccurred = false;
-	
 	private ClassDecl CUR_CLASS;
 	private MethodDecl CUR_METHOD;
-	
 	private boolean mPrint;
+	private LinkedList<String> progressLog;
 	
-	public ScopeVisitor(SymbolTable symbolTable, boolean print) {
+	
+	public ScopeVisitor(boolean print) {
 		mPrint = print;
-		this.symbolTable = symbolTable;
+		symbolTable = new SymbolTable();
+		progressLog = new LinkedList<String>();
 		errors = new LinkedList<String>();
 	}
 	
 	public void log(String message) {
-		if (mPrint) {
-			System.out.println(message);
+		progressLog.add(message);
+	}
+	
+	public SymbolTable check(Program node) throws Exception {
+		
+		/* Do scope check by visit program tree */
+		visit(node);
+		
+		/* Last: print ALL errors encounterd during type/scope check */
+		if (errors.size() == 0) {
+			if (mPrint) {
+				for (String entry : progressLog) {
+					System.out.println(entry);
+				}
+			}
+			
+			return symbolTable;
+		} else {
+			StringBuilder sb = new StringBuilder();
+			sb.append("\n=== ScopeCheck Detected: " + errors.size() + " problem(s), please fix these and recompile ===");
+			
+			for (String error : errors) {
+				sb.append("ERROR: " + error);
+			}
+			
+			throw new Exception(sb.toString());
 		}
 	}
 	
 	@Override
 	public void visit(Program node) {
-
 		node.mainClass.accept(this);
 		node.classDeclList.accept(this);
-
-		/* Last: print ALL errors encounterd during type/scope check */
-		if (errors.size() != 0) {
-			log("\n\n=== Detected: " + errors.size() + " problem(s), please fix these and recompile ===");
-			for (String error : errors) {
-				log("ERROR: " + error);
-			}
-			
-			errorOccurred = true;
-		}
 	}
 	
 	@Override

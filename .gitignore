@@ -5,6 +5,7 @@ local.properties
 .metadata/
 *.class
 *.java~
+*.s
 /cortadoout
 /cortado_mjc
 submission.txt

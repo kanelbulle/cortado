@@ -16,7 +16,7 @@ public class Canonicalizer {
 		ProcFragment first = fragments;
 
 		while (fragments != null) {
-			System.out.println(fragments.labelName);
+//			System.out.println(fragments.labelName);
 			IR_StmList list = Canon.linearize(fragments.body);
 			BasicBlocks bb = new BasicBlocks(list);
 			TraceSchedule ts = new TraceSchedule(bb);
@@ -29,6 +29,7 @@ public class Canonicalizer {
 			fragments.canonicalized = list = tjRemover.stms();
 			
 			if (debugPrint) {
+				System.out.println();
 				Print printer = new Print(System.out);
 
 				while (list != null) {

@@ -16,9 +16,9 @@ action code {:
 		return parser.current_symbol.left;
 	}
 	
-	public void isMain(String method) throws Exception {
+	public void isMain(String method) throws InternalError {
 		if (!method.equals("main")) {
-			throw new Exception("Missing static main method!");
+			throw new InternalError("Missing static main method!");
 		}
 	}
 			

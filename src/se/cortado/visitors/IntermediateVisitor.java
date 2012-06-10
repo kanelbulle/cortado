@@ -78,10 +78,12 @@ public class IntermediateVisitor implements TranslateVisitor {
 	private final int			wordSize	= MethodScope.getMotherFrame().wordSize();
 
 	// for debug
-	se.cortado.ir.tree.Print	irPrinter	= new se.cortado.ir.tree.Print(System.out);	;
-
-	public IntermediateVisitor(SymbolTable symbolTable) {
+	se.cortado.ir.tree.Print	irPrinter	= new se.cortado.ir.tree.Print(System.out);
+	private boolean mPrint = false;
+	
+	public IntermediateVisitor(SymbolTable symbolTable, boolean print) {
 		this.symbolTable = symbolTable;
+		this.mPrint = print;
 	}
 
 	public ProcFragment getResult() {
@@ -89,13 +91,15 @@ public class IntermediateVisitor implements TranslateVisitor {
 	}
 	
 	public void log(String s) {
-		//log(s);
+		if (mPrint) {
+			System.out.println(s);
+		}
 	}
 
 	/* -------------- ITERATE PROGRAM/CLASSES -------------- */
 	@Override
 	public Translate visit(Program node) {
-		log("IR: Accept Program");
+		log("\nIR: Accept Program");
 
 		node.mainClass.accept(this);
 		node.classDeclList.accept(this);
