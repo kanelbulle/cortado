@@ -8,6 +8,7 @@ import se.cortado.regalloc.Liveness;
 import se.cortado.regalloc.RegAlloc;
 
 public class ProcFragment extends Fragment {
+	
 	public IR_Stm body;
 	public Frame frame;
 	public String labelName;

@@ -73,25 +73,26 @@ public class IntermediateVisitor implements TranslateVisitor {
 	private ClassDecl			curClass;
 	private MethodDecl			curMethod;
 
+	/* Flags */
 	private int					maxCallParams;
-
 	private final int			wordSize	= MethodScope.getMotherFrame().wordSize();
 
 	// for debug
 	se.cortado.ir.tree.Print	irPrinter	= new se.cortado.ir.tree.Print(System.out);
-	private boolean mPrint = false;
+	private boolean mPrintProgress = false;
 	
 	public IntermediateVisitor(SymbolTable symbolTable, boolean print) {
 		this.symbolTable = symbolTable;
-		this.mPrint = print;
+		this.mPrintProgress = print;
 	}
 
-	public ProcFragment getResult() {
+	public ProcFragment translate(Program program) {
+		visit(program);
 		return fragments;
 	}
 	
 	public void log(String s) {
-		if (mPrint) {
+		if (mPrintProgress) {
 			System.out.println(s);
 		}
 	}
@@ -119,9 +120,6 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 	@Override
 	public Translate visit(ClassDecl node) {
-		// log("IR: Accept ClassDecl: " + node.i.s);
-		// node.accept(this);
-
 		throw new Error(node.getClass().getCanonicalName() + ": Not implemented yet and/or not used");
 	}
 
@@ -198,8 +196,6 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 	@Override
 	public Translate visit(Formal node) {
-		log("IR: Accept Formal");
-
 		throw new Error("FORMAL: Not implemented yet and/or not used");
 	}
 
@@ -610,5 +606,6 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 		return new TR_Ex(new CONST(0));
 	}
+
 
 }

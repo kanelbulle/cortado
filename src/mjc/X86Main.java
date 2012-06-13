@@ -17,6 +17,8 @@ import se.cortado.frame.Proc;
 import se.cortado.ir.canon.Canonicalizer;
 import se.cortado.ir.temp.DefaultMap;
 import se.cortado.ir.translate.ProcFragment;
+import se.cortado.ir.tree.IR_StmList;
+import se.cortado.ir.tree.Print;
 import se.cortado.liveness.AssemFlowGraph;
 import se.cortado.regalloc.Liveness;
 import se.cortado.regalloc.RegAlloc;
@@ -42,15 +44,15 @@ public class X86Main {
 
 
 		try {
-			Program program = doParsing(inputFile);
-			SymbolTable symbolTable = doScopeCheck(program, false);
-			doTypeCheck(program, symbolTable);
-			ProcFragment fragments = doIRTranslation(program, symbolTable, false);
-			ProcFragment canonicalizedFragments = doCanonicalization(fragments, false);
-			ProcFragment nativeCodeFragments = doCodegen(canonicalizedFragments, false);
-			ProcFragment graphStuffShit = doGraphStuff(nativeCodeFragments, false);
-			List<ProcFragment> revFragments = doRegisterAllocation(graphStuffShit, false);
-			outputAssembly(revFragments);
+			Program program = parseSourceFile(inputFile, false);
+			SymbolTable symbolTable = scopeCheckProgram(program, false);
+			typeCheckProgram(program, symbolTable);
+			ProcFragment fragments = translateToIntermediateCode(program, symbolTable, false, true);
+//			ProcFragment canonicalizedFragments = doCanonicalization(fragments, false);
+//			ProcFragment nativeCodeFragments = doCodegen(canonicalizedFragments, false);
+//			ProcFragment graphStuffShit = doGraphStuff(nativeCodeFragments, false);
+//			List<ProcFragment> revFragments = doRegisterAllocation(graphStuffShit, false);
+//			outputAssembly(revFragments);
 			
 		} catch (Exception e) {
 			System.out.println("ERROR!\n");
@@ -167,7 +169,7 @@ public class X86Main {
 		return fragments;
 	}
 	
-	public static ProcFragment doCanonicalization(ProcFragment fragments, boolean print) {
+	public static ProcFragment canonicalizeFragments(ProcFragment fragments, boolean print) {
 		Canonicalizer canon = new Canonicalizer(print);
 		System.out.print("DOING DA CANONICALIZATION DUDE... ");
 		ProcFragment result = canon.canonicalize(fragments);
@@ -175,23 +177,34 @@ public class X86Main {
 		return result;
 	}
 	
-	public static ProcFragment doIRTranslation(Program program, SymbolTable symbolTable, boolean print) {
-		IntermediateVisitor irVisitor = new IntermediateVisitor(symbolTable, print);
+	public static ProcFragment translateToIntermediateCode(Program program, SymbolTable symbolTable, boolean printProgress, boolean printResult) {
+		IntermediateVisitor irVisitor = new IntermediateVisitor(symbolTable, printProgress);
 		System.out.print("DOING DA IR CONVERSION MAN... ");
-		irVisitor.visit(program);
-		ProcFragment result = irVisitor.getResult();
+		ProcFragment result = irVisitor.translate(program);
 		System.out.println("done!");
+		
+		if (printResult) {
+			Print printer = new Print(System.out);
+			ProcFragment currentFragment = result;
+			
+			while (currentFragment != null) {
+				System.out.println("\nFRAGMENT: " + currentFragment.labelName);
+				printer.prStm(currentFragment.body);
+				currentFragment = (ProcFragment) currentFragment.next;
+			}
+		}
+		
 		return result;
 	}
 	
-	public static void doTypeCheck(Program program, SymbolTable symbolTable) throws Exception {
+	public static void typeCheckProgram(Program program, SymbolTable symbolTable) throws Exception {
 		SlowTypeVisitor typeVisitor = new SlowTypeVisitor(symbolTable);
 		System.out.print("TYPE CHECKING FO SHIZZLE... ");
 		typeVisitor.check(program);
 		System.out.println("done!");
 	}
 	
-	public static SymbolTable doScopeCheck(Program program, boolean print) throws Exception {
+	public static SymbolTable scopeCheckProgram(Program program, boolean print) throws Exception {
 		System.out.print("BADASS SCOPE CHECKING... ");
 		ScopeVisitor scopeVisitor = new ScopeVisitor(print);
 		SymbolTable result = scopeVisitor.check(program);
@@ -199,7 +212,7 @@ public class X86Main {
 		return result;
 	}
 
-	public static Program doParsing(String inputFile) throws Exception {
+	public static Program parseSourceFile(String inputFile, boolean printResult) throws Exception {
 		FileReader inputFileReader = new FileReader(inputFile);
 		parser p = new parser(new Scanner(inputFileReader));
 		
@@ -207,6 +220,12 @@ public class X86Main {
 		Symbol s = p.parse();
 		Program prog = (Program) s.value;
 		System.out.println("done!");
+		
+		if (printResult) {
+			ASTPrintVisitor printVisitor = new ASTPrintVisitor();
+			printVisitor.visit(prog);
+		}
+		
 		return prog;
 	}
 	
