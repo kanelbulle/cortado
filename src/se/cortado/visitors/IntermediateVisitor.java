@@ -2,8 +2,8 @@ package se.cortado.visitors;
 
 import se.cortado.frame.Access;
 import se.cortado.frame.Frame;
+import se.cortado.ir.common.SimpleFragment;
 import se.cortado.ir.temp.Label;
-import se.cortado.ir.translate.ProcFragment;
 import se.cortado.ir.translate.TR_Ex;
 import se.cortado.ir.translate.TR_Nx;
 import se.cortado.ir.translate.TR_RelCx;
@@ -66,7 +66,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 	private SymbolTable			symbolTable;
 
 	/* Stored fragments */
-	private ProcFragment		fragments;
+	private SimpleFragment		fragments;
 
 	/* Temporaries used during construction */
 	private Frame				curFrame;
@@ -86,7 +86,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 		this.mPrintProgress = print;
 	}
 
-	public ProcFragment translate(Program program) {
+	public SimpleFragment translate(Program program) {
 		visit(program);
 		return fragments;
 	}
@@ -241,7 +241,7 @@ public class IntermediateVisitor implements TranslateVisitor {
 		MethodScope ms = cs.getMethodMatching(node);
 		String labelname = ms.getLabelName();
 
-		ProcFragment fragment = new ProcFragment(bodyStm, curFrame, labelname);
+		SimpleFragment fragment = new SimpleFragment(bodyStm, curFrame, labelname);
 		curFrame.setMaxCallParams(maxCallParams);
 		maxCallParams = 0;
 
