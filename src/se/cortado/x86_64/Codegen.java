@@ -7,6 +7,8 @@ import se.cortado.assem.Instr;
 import se.cortado.assem.OPER;
 import se.cortado.frame.Access;
 import se.cortado.frame.Frame;
+import se.cortado.ir.common.CanonicalizedFragment;
+import se.cortado.ir.common.Fragment;
 import se.cortado.ir.temp.Label;
 import se.cortado.ir.temp.LabelList;
 import se.cortado.ir.temp.Temp;
@@ -30,14 +32,19 @@ import se.cortado.x86_64.frame.Hardware;
 
 public class Codegen {
 	private List<Instr>	ilist;
-	private Frame		frame;
+	private CanonicalizedFragment fragment;
+	private Frame frame;
 
-	public Codegen(Frame frame) {
-		ilist = new ArrayList<Instr>();
-		this.frame = frame;
+	public Codegen(CanonicalizedFragment fragment) {
+		this.ilist = new ArrayList<Instr>();
+		this.fragment = fragment;
+		this.frame = fragment.frame;
 	}
 
-	public List<Instr> codegen(IR_StmList sl) {		
+//	public List<Instr> codegen(IR_StmList sl) {
+	public List<Instr> codegen() {
+		IR_StmList sl = fragment.body;
+		
 		while (sl.tail != null) {
 			munchStm(sl.head);
 			sl = sl.tail;

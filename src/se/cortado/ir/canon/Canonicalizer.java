@@ -1,5 +1,6 @@
 package se.cortado.ir.canon;
 
+import se.cortado.ir.common.CanonicalizedFragment;
 import se.cortado.ir.common.SimpleFragment;
 import se.cortado.ir.tree.IR_StmList;
 import se.cortado.ir.tree.Print;
@@ -12,21 +13,33 @@ public class Canonicalizer {
 		this.debugPrint = print;
 	}
 
-	public SimpleFragment canonicalize(SimpleFragment fragments) {
-		SimpleFragment first = fragments;
-
+	/* Traverses each SimpleFragments consisting of raw IR code and converts
+	 * into better canonicalized code */
+	public CanonicalizedFragment canonicalize(SimpleFragment fragments) {
+		CanonicalizedFragment firstCanonFrag = null;
+		CanonicalizedFragment currentCanonFrag = null;
+		
 		while (fragments != null) {
 
 			IR_StmList list = Canon.linearize(fragments.body);
 			BasicBlocks basicBlocks = new BasicBlocks(list);
-			TraceSchedule traceSchedule = new TraceSchedule(basicBlocks);
 			
+			TraceSchedule traceSchedule = new TraceSchedule(basicBlocks);
 			list = traceSchedule.stms;
-//			fragments.canonicalized = list;
 			
 			/* Finally remove all trivial jumps from canonicalized statement list */
 			RemoveTrivialJumps tjRemover = new RemoveTrivialJumps(list);
-//			fragments.canonicalized = list = tjRemover.stms();
+			list = tjRemover.stms();
+			
+			/* And then create the final (now canonicalized) fragment */
+			CanonicalizedFragment canonFrag = new CanonicalizedFragment(list, fragments.frame, fragments.labelName);
+			if (firstCanonFrag == null) {
+				firstCanonFrag = canonFrag; // just keep a reference to the first fragment
+				currentCanonFrag = firstCanonFrag;
+			} else {
+				currentCanonFrag.next = canonFrag;
+				currentCanonFrag = (CanonicalizedFragment) currentCanonFrag.next;
+			}
 			
 			if (debugPrint) {
 				System.out.println();
@@ -44,6 +57,6 @@ public class Canonicalizer {
 			fragments = (SimpleFragment) fragments.next;
 		}
 
-		return first;
+		return firstCanonFrag;
 	}
 }

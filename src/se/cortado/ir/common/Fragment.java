@@ -5,8 +5,13 @@ import se.cortado.ir.tree.IR_Stm;
 
 public abstract class Fragment {
 	
+	/* TODO: Should be refactored into more suitable structures... */
+//	public IR_StmList canonicalized;
+//	public Proc proc;
+//	public Liveness liveness;
+//	public RegAlloc regalloc;
+	
 	public String labelName;
-	public IR_Stm body;
 	public Frame frame;
 	public Fragment next;
 	

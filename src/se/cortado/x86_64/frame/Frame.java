@@ -38,6 +38,19 @@ public class Frame implements se.cortado.frame.Frame {
 
 	IR_StmList		moveArguments;
 
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append(name.toString());
+		sb.append("\n-------------------\n");
+		sb.append("numFormals: " + numFormals + "\n");
+		sb.append("numLocals: " + numLocals + "\n");
+		sb.append("-------------------");
+		return sb.toString();
+	}
+
 	public Frame() {
 
 	}

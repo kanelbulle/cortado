@@ -15,6 +15,7 @@ import se.cortado.parser;
 import se.cortado.assem.Instr;
 import se.cortado.frame.Proc;
 import se.cortado.ir.canon.Canonicalizer;
+import se.cortado.ir.common.CanonicalizedFragment;
 import se.cortado.ir.common.SimpleFragment;
 import se.cortado.ir.temp.DefaultMap;
 import se.cortado.ir.tree.IR_StmList;
@@ -45,9 +46,10 @@ public class X86Main {
 			Program program = parseSourceFile(inputFile, false);
 			SymbolTable symbolTable = scopeCheckProgram(program, false);
 			typeCheckProgram(program, symbolTable);
-			SimpleFragment fragments = translateToIntermediateCode(program, symbolTable, false, true);
-//			ProcFragment canonicalizedFragments = doCanonicalization(fragments, false);
-//			ProcFragment nativeCodeFragments = doCodegen(canonicalizedFragments, false);
+			SimpleFragment fragments = translateToIntermediateCode(program, symbolTable, false, false);
+			CanonicalizedFragment canonicalizedFragments = canonicalizeFragments(fragments, false, false);
+//			SimpleFragment nativeCodeFragments = generateNativeCode(canonicalizedFragments, true);
+			generateNativeCode(canonicalizedFragments, true);
 //			ProcFragment graphStuffShit = doGraphStuff(nativeCodeFragments, false);
 //			List<ProcFragment> revFragments = doRegisterAllocation(graphStuffShit, false);
 //			outputAssembly(revFragments);
@@ -141,37 +143,55 @@ public class X86Main {
 		return fragments;
 	}
 	
-	public static SimpleFragment doCodegen(SimpleFragment fragments, boolean print) {
+	// TODO: 
+	// * Should return native code fragment
+	// * Proc stuff is not handled (incorporate into NativeFragment class)
+	public static void generateNativeCode(CanonicalizedFragment fragments, boolean print) {
 		System.out.print("DOING DA CODEGEN DUDE...");
 		
-		SimpleFragment firstFrag = fragments;
+		CanonicalizedFragment firstFrag = fragments;
 		
 		while (fragments != null) {
-//			Codegen codegen = new Codegen(fragments.frame);
-//			
-//			List<Instr> instr = codegen.codegen(fragments.canonicalized);
-//			instr = fragments.frame.procEntryExit2(instr);
-//			Proc proc = fragments.frame.procEntryExit3(instr);
-//			
-//			// printstuff
-//			if (print) {
-//				System.out.println(proc.toString(new DefaultMap()));
-//			}
-//			
+			Codegen codegen = new Codegen(fragments);
+			
+			List<Instr> instr = codegen.codegen();
+			instr = fragments.frame.procEntryExit2(instr);
+			Proc proc = fragments.frame.procEntryExit3(instr);
+			
+			// printstuff
+			if (print) {
+				System.out.println(proc.toString(new DefaultMap()));
+			}
+			
 //			fragments.proc = proc;
-//			fragments = (SimpleFragment) fragments.next;
+			fragments = (CanonicalizedFragment) fragments.next;
 		}
 		
 		fragments = firstFrag;
 		System.out.println("done!");
-		return fragments;
+		
+//		return fragments;
 	}
 	
-	public static SimpleFragment canonicalizeFragments(SimpleFragment fragments, boolean print) {
-		Canonicalizer canon = new Canonicalizer(print);
+	public static CanonicalizedFragment canonicalizeFragments(SimpleFragment fragments, boolean printProgress, boolean printResult) {
+		Canonicalizer canon = new Canonicalizer(printProgress);
 		System.out.print("DOING DA CANONICALIZATION DUDE... ");
-		SimpleFragment result = canon.canonicalize(fragments);
+		CanonicalizedFragment result = canon.canonicalize(fragments);
 		System.out.println("done!");
+		
+		if (printResult) {
+			Print printer = new Print(System.out);
+			CanonicalizedFragment currentFragment = result;
+			
+			while (currentFragment != null) {
+				System.out.println("FRAME STRUCTURE: " + currentFragment.frame);
+				System.out.println("IR CODE FOR FRAGMENT:");
+				printer.prStm(currentFragment.body.head);
+				currentFragment = (CanonicalizedFragment) currentFragment.next;
+				System.out.println();
+			}
+		}
+		
 		return result;
 	}
 	
@@ -186,10 +206,11 @@ public class X86Main {
 			SimpleFragment currentFragment = result;
 			
 			while (currentFragment != null) {
-				System.out.println("\nFRAGMENT: " + currentFragment.labelName);
 				System.out.println("FRAME STRUCTURE: " + currentFragment.frame);
+				System.out.println("IR CODE FOR FRAGMENT:");
 				printer.prStm(currentFragment.body);
 				currentFragment = (SimpleFragment) currentFragment.next;
+				System.out.println();
 			}
 		}
 		
