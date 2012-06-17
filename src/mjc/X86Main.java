@@ -39,10 +39,8 @@ public class X86Main {
 		// Test input + parameters
 		String inputFile = args[0];
 		
-
-//		ASTPrintVisitor printVisitor = new ASTPrintVisitor();
-
-
+		Architecture.setArchitecture("X86");
+		
 		try {
 			Program program = parseSourceFile(inputFile, false);
 			SymbolTable symbolTable = scopeCheckProgram(program, false);
@@ -73,7 +71,8 @@ public class X86Main {
 		// No exceptions thrown? -> clean exit
 		System.exit(0);
 	}
-
+ 
+	
 	public static void outputAssembly(List<ProcFragment> revFragments) throws IOException {
 		System.out.print("BROTTA' OUTPUTZ IT ALL, SLICK AZZEMBLY... ");
 	
@@ -177,7 +176,7 @@ public class X86Main {
 		return result;
 	}
 	
-	public static ProcFragment translateToIntermediateCode(Program program, SymbolTable symbolTable, boolean printProgress, boolean printResult) {
+	public static ProcFragment translateToIntermediateCode(Program program, SymbolTable symbolTable, boolean printProgress, boolean printResult) throws Exception {
 		IntermediateVisitor irVisitor = new IntermediateVisitor(symbolTable, printProgress);
 		System.out.print("DOING DA IR CONVERSION MAN... ");
 		ProcFragment result = irVisitor.translate(program);

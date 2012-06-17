@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import mjc.Architecture;
+
 import se.cortado.frame.Access;
 import se.cortado.frame.Frame;
 import se.cortado.ir.temp.Label;
@@ -14,18 +16,45 @@ import se.cortado.syntaxtree.MethodDecl;
 import se.cortado.syntaxtree.Type;
 import se.cortado.syntaxtree.VarDecl;
 
-/** @author Samuel Wejeus */
+/** 
+ * For each method a sepatate methodscope object is created.
+ * The methodscope is simply a more advance abstract hashmap
+ * consisting of all meta data about a method such as variables
+ * it contains, method parameters and return type and such.
+ * 
+ * The method scope is created iteratively if duplicate or
+ * conflicting types or variables (such as redeclaration) is
+ * added an error is thrown.
+ * 
+ * Each methodsscope aslo contains its corresponding Frame 
+ * structure (one for each methodsscope) AND a reference to 
+ * a global -motherFrame- that is common to all methods
+ * (this more or less corresponds to the main method and is
+ * the start of the program)
+ * 
+ * NOTE: Since this is coupled with a Frame object it is 
+ * dependent on target architecture and must thus be determined
+ * in runtime 
+ * 
+ * TODO; how this (architecture) is determined might change 
+ * but is currently coupled and depends on target being decided
+ * in CompilerMain
+ * 
+ * @author Samuel Wejeus */
 public class MethodScope {
-	private static Frame motherFrame;
+	
+	/* Global to all methodsScope's */
+//	private static Frame motherFrame;
+//	
+//	public static Frame getMotherFrame() {
+//		if (motherFrame == null) {
+//			motherFrame = new Architecture.getFrameType();
+//		}
+//
+//		return motherFrame;
+//	}
 
-	public static Frame getMotherFrame() {
-		if (motherFrame == null) {
-			motherFrame = new se.cortado.x86_64.frame.Frame();
-		}
-
-		return motherFrame;
-	}
-
+	/* MethodScope Structur */
 	private MethodDecl methodDecl;
 	private HashMap<String, Type> variables;
 	private HashMap<String, Access> accesses = new HashMap<String, Access>();
@@ -33,20 +62,17 @@ public class MethodScope {
 	private FormalList parameters;
 	private Type returnType;
 	private String labelName;
-
 	private Frame frame;
 
-	public MethodScope(Type returnType, MethodDecl mDecl) {
-
-		// create a list of "false" to signal that none of the parameters will
-		// escape
+	public MethodScope(Type returnType, MethodDecl mDecl) throws Exception {
+		// create a list of "false" to signal that none of the parameters will escape
 		List<Boolean> escapeList = new ArrayList<Boolean>();
 		for (int i = 0; i < mDecl.formalList.size(); i++) {
 			escapeList.add(false);
 		}
 
 		// create the frame
-		frame = getMotherFrame().newFrame(new Label(), escapeList);
+		frame = Architecture.getMotherFrame().newFrame(new Label(), escapeList);
 
 		// add "this" access
 		Access thisAccess = frame.allocLocal(false);

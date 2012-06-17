@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import mjc.Architecture;
+
 import se.cortado.frame.Access;
 import se.cortado.frame.Record;
 import se.cortado.syntaxtree.ClassDecl;
@@ -22,10 +24,10 @@ public class ClassScope {
 	private ClassDecl classDecl;
 	private Record record;
 
-	public ClassScope(ClassDecl classDecl) {
+	public ClassScope(ClassDecl classDecl) throws Exception {
 		this.setClassDecl(classDecl);
 
-		record = MethodScope.getMotherFrame().newRecord(classDecl.i.s);
+		record = Architecture.getMotherFrame().newRecord(classDecl.i.s);
 
 		variables = new HashMap<String, Type>();
 		accesses = new HashMap<String, Access>();
