@@ -1,5 +1,6 @@
 package se.cortado.visitors;
 
+import mjc.Architecture;
 import se.cortado.frame.Access;
 import se.cortado.frame.Frame;
 import se.cortado.ir.common.SimpleFragment;
@@ -75,13 +76,14 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 	/* Flags */
 	private int					maxCallParams;
-	private final int			wordSize	= MethodScope.getMotherFrame().wordSize();
+	private final int			wordSize;
 
 	// for debug
 	se.cortado.ir.tree.Print	irPrinter	= new se.cortado.ir.tree.Print(System.out);
 	private boolean mPrintProgress = false;
 	
-	public IntermediateVisitor(SymbolTable symbolTable, boolean print) {
+	public IntermediateVisitor(SymbolTable symbolTable, boolean print) throws Exception {
+		wordSize = Architecture.getMotherFrame().wordSize();
 		this.symbolTable = symbolTable;
 		this.mPrintProgress = print;
 	}
@@ -389,13 +391,19 @@ public class IntermediateVisitor implements TranslateVisitor {
 
 		// TODO array bounds check here maybe?
 
-		// first 'element' of array is the length
-		// so address of element relative to base is 1 + wordSize * index
-		IR_Exp offset = new BINOP(BINOP.MUL, index.getValue(), new CONST(MethodScope.getMotherFrame().wordSize()));
-		offset = new BINOP(BINOP.PLUS, new CONST(1), offset);
-		IR_Exp address = new BINOP(BINOP.PLUS, array.getValue(), offset);
-
-		return new TR_Ex(new MEM(address));
+		try {
+			// first 'element' of array is the length
+			// so address of element relative to base is 1 + wordSize * index
+			IR_Exp offset = new BINOP(BINOP.MUL, index.getValue(), new CONST(Architecture.getMotherFrame().wordSize()));
+			offset = new BINOP(BINOP.PLUS, new CONST(1), offset);
+			IR_Exp address = new BINOP(BINOP.PLUS, array.getValue(), offset);
+			
+			return new TR_Ex(new MEM(address));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 
 	@Override

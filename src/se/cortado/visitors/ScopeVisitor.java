@@ -109,13 +109,17 @@ public class ScopeVisitor implements Visitor {
 	@Override
 	public void visit(MainClass node) {
 		log("-- MAIN CLASS: " + node.i.s);
-		if (symbolTable.containsKey(node.i.s)) {
-			errors.add("Redeclaration of class");
-		} else {
-			CUR_CLASS = node;
-			CUR_METHOD = node.md;
-			symbolTable.put(node.i.s, new ClassScope(node));
-			node.md.accept(this);
+		try {
+			if (symbolTable.containsKey(node.i.s)) {
+				errors.add("Redeclaration of class");
+			} else {
+				CUR_CLASS = node;
+				CUR_METHOD = node.md;
+				symbolTable.put(node.i.s, new ClassScope(node));
+				node.md.accept(this);
+			}
+		} catch (Exception e) {
+			errors.add(e.getMessage());
 		}
 	}
 	
@@ -129,13 +133,17 @@ public class ScopeVisitor implements Visitor {
 	
 	@Override
 	public void visit(ClassDeclSimple node) {
-		if (symbolTable.containsKey(node.i.s)) {
-			errors.add("Redeclaration of class \"" + node.i.s + "\" on line: " + node.i.line);
-		} else {
-			CUR_CLASS = node;
-			symbolTable.put(node.i.s, new ClassScope(node));
-			node.vl.accept(this);
-			node.ml.accept(this);
+		try {
+			if (symbolTable.containsKey(node.i.s)) {
+				errors.add("Redeclaration of class \"" + node.i.s + "\" on line: " + node.i.line);
+			} else {
+				CUR_CLASS = node;
+				symbolTable.put(node.i.s, new ClassScope(node));
+				node.vl.accept(this);
+				node.ml.accept(this);
+			}
+		} catch (Exception e) {
+			errors.add(e.getMessage());
 		}
 	}
 	
@@ -167,7 +175,12 @@ public class ScopeVisitor implements Visitor {
 
 	@Override
 	public void visit(MethodDecl node) {
-		MethodScope ms = new MethodScope(node.type, node);
+		MethodScope ms = null;
+		try {
+			ms = new MethodScope(node.type, node);
+		} catch (Exception e) {
+			errors.add(e.getMessage());
+		}
 		log("\tMethod: " + node.identifier.s);
 		
 		/* Add method parameters */
