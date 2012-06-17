@@ -126,20 +126,25 @@ public class X86Main {
 		NativeFragment firstFrag = fragments;
 		
 		while (fragments != null) {
-			AssemFlowGraph afg = new AssemFlowGraph(fragments.proc.body);
+//			AssemFlowGraph afg = new AssemFlowGraph(fragments.proc.body);
+			AssemFlowGraph afg = new AssemFlowGraph(fragments.body);
 			
 			if (print) {
+				System.out.println("\nFLOW GRAPH FOR: " + fragments.labelName);
+				System.out.println("-----------------------------------------");
 				afg.show(System.out);
-				System.out.println("\n\n");
 			}
 			
-			Liveness liveness = new Liveness(afg, fragments.proc.body);
+//			Liveness liveness = new Liveness(afg, fragments.proc.body);
+			Liveness liveness = new Liveness(afg, fragments.body);
+			
 			if (print) {
-				System.out.println("Interference graph: ");
+				System.out.println("\nCORRESPONDING INTERFERENCE GRAPH (LIVENESS):");
+				System.out.println("-----------------------------------------");
 				liveness.show(System.out);
 			}
-			
 			fragments.liveness = liveness;
+			
 			fragments = (NativeFragment) fragments.next;
 		}
 		
@@ -152,6 +157,7 @@ public class X86Main {
 		System.out.print("DOING DA CODEGEN DUDE...");
 		NativeFragment firstFragment = null;
 		NativeFragment currentFragment = null;
+		boolean firstOutput = true; //for debug output
 		
 		while (fragments != null) {
 			Codegen codegen = new Codegen(fragments.frame);
@@ -160,7 +166,7 @@ public class X86Main {
 			instr = fragments.frame.procEntryExit2(instr);
 			Proc proc = fragments.frame.procEntryExit3(instr);
 		
-			NativeFragment frag = new NativeFragment(instr, fragments.frame, proc);
+			NativeFragment frag = new NativeFragment(instr, fragments.frame, proc, fragments.labelName);
 			if (firstFragment == null) {
 				firstFragment = frag;
 				currentFragment = firstFragment;
@@ -171,6 +177,10 @@ public class X86Main {
 			
 			// printstuff
 			if (print) {
+				if (firstOutput) {
+					System.out.println("\n");
+					firstOutput = false;
+				}
 				System.out.println(proc.toString(new DefaultMap()));
 			}
 			

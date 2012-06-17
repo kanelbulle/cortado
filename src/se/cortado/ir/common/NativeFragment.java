@@ -18,16 +18,15 @@ public class NativeFragment extends Fragment {
 //	public Fragment next;
 	
 	public Proc proc;
-	List<Instr> body;
+	public List<Instr> body;
 	public Liveness liveness;
 	public RegAlloc regalloc;
 	
-	public NativeFragment(List<Instr> body, Frame frame, Proc proc) {
+	public NativeFragment(List<Instr> body, Frame frame, Proc proc, String labelName) {
 		this.body = body;
 		this.frame = frame;
 		this.proc = proc;
-		// dont think label is needed in native code anymore.. safe to remove?
-//		this.labelName = labelName;
+		this.labelName = labelName;
 	}
 	
 }
