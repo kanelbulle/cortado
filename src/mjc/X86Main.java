@@ -16,6 +16,7 @@ import se.cortado.assem.Instr;
 import se.cortado.frame.Proc;
 import se.cortado.ir.canon.Canonicalizer;
 import se.cortado.ir.common.CanonicalizedFragment;
+import se.cortado.ir.common.NativeFragment;
 import se.cortado.ir.common.SimpleFragment;
 import se.cortado.ir.temp.DefaultMap;
 import se.cortado.ir.tree.IR_StmList;
@@ -37,9 +38,10 @@ public class X86Main {
 	
 	public static void main(String[] args) {
 		
-		// Test input + parameters
+		// TODO: Test input + parameters for correctness
 		String inputFile = args[0];
 		
+		// TODO: should be set depending on commandline parameter
 		Architecture.setArchitecture("X86");
 		
 		try {
@@ -48,11 +50,10 @@ public class X86Main {
 			typeCheckProgram(program, symbolTable);
 			SimpleFragment fragments = translateToIntermediateCode(program, symbolTable, false, false);
 			CanonicalizedFragment canonicalizedFragments = canonicalizeFragments(fragments, false, false);
-//			SimpleFragment nativeCodeFragments = generateNativeCode(canonicalizedFragments, true);
-			generateNativeCode(canonicalizedFragments, true);
-//			ProcFragment graphStuffShit = doGraphStuff(nativeCodeFragments, false);
-//			List<ProcFragment> revFragments = doRegisterAllocation(graphStuffShit, false);
-//			outputAssembly(revFragments);
+			NativeFragment nativeCodeFragments = generateNativeCode(canonicalizedFragments, false);
+			NativeFragment graphStuffShit = doGraphStuff(nativeCodeFragments, false);
+			List<NativeFragment> revFragments = doRegisterAllocation(graphStuffShit, false);
+			finilizeAssembly(revFragments, inputFile);
 			
 		} catch (Exception e) {
 			System.out.println("ERROR!\n");
@@ -74,103 +75,111 @@ public class X86Main {
 		System.exit(0);
 	}
 	
-	public static void outputAssembly(List<SimpleFragment> revFragments) throws IOException {
+	/* Adds assembly headers and outputs *.s assembly source file */
+	public static void finilizeAssembly(List<NativeFragment> revFragments, String fileName) throws IOException {
 		System.out.print("BROTTA' OUTPUTZ IT ALL, SLICK AZZEMBLY... ");
 	
 		// assume file ends in .java
-//		fileName = fileName.substring(fileName.lastIndexOf("/") + 1);
-//		fileName = fileName.substring(0, fileName.length() - 5) + ".s";
-//		BufferedWriter fileWriter = new BufferedWriter(new FileWriter(fileName));
+		fileName = fileName.substring(fileName.lastIndexOf("/") + 1);
+		fileName = fileName.substring(0, fileName.length() - 5) + ".s";
+		BufferedWriter fileWriter = new BufferedWriter(new FileWriter(fileName));
+		
+		fileWriter.write(".data\n\n");
+		fileWriter.write(".text\n\n");
+		fileWriter.write(".globl _main\n\n");
 
-//		BufferedWriter fileWriter = new BufferedWriter(new FileWriter("out.s"));
-//		
-//		fileWriter.write(".data\n\n");
-//		fileWriter.write(".text\n\n");
-//		fileWriter.write(".globl _main\n\n");
-//
-//		for (SimpleFragment proc : revFragments) {
-//			for (Instr instr : proc.proc.body) {
-//				fileWriter.write(instr.format(proc.regalloc));
-//			}
-//		}
-//		
-//		fileWriter.close();
-//		System.out.println("done!");
+		for (NativeFragment proc : revFragments) {
+			for (Instr instr : proc.proc.body) {
+				fileWriter.write(instr.format(proc.regalloc));
+			}
+		}
+		
+		fileWriter.close();
+		System.out.println("done!");
 	}
 	
-	public static List<SimpleFragment> doRegisterAllocation(SimpleFragment fragments, boolean print) {
+	public static List<NativeFragment> doRegisterAllocation(NativeFragment fragments, boolean print) {
 		System.out.print("ALLOCIN' SOME REGS FOR YO TEMPS DAWG... ");
 
-		List<SimpleFragment> revFragments = new ArrayList<SimpleFragment>();
-//		while (fragments != null) {
-//			RegAlloc regalloc = new RegAlloc(fragments.frame, fragments.proc.body, fragments.liveness);
-//			for (Instr instr : fragments.proc.body) {
-//				System.out.print(instr.format(regalloc));
-//			}
-//			fragments.regalloc = regalloc;
-//			
-//			revFragments.add(fragments);
-//			fragments = (SimpleFragment) fragments.next;
-//		}
-//		Collections.reverse(revFragments);
-//		System.out.println("done!");
+		List<NativeFragment> revFragments = new ArrayList<NativeFragment>();
+		while (fragments != null) {
+			RegAlloc regalloc = new RegAlloc(fragments.frame, fragments.proc.body, fragments.liveness);
+			
+			if (print) {
+				for (Instr instr : fragments.proc.body) {
+					System.out.print(instr.format(regalloc));
+				}
+			}
+			
+			fragments.regalloc = regalloc;
+			revFragments.add(fragments);
+			fragments = (NativeFragment) fragments.next;
+		}
+		Collections.reverse(revFragments);
+		System.out.println("done!");
 		
 		return revFragments;
 	}
 	
-	public static SimpleFragment doGraphStuff(SimpleFragment fragments, boolean print) {
+	public static NativeFragment doGraphStuff(NativeFragment fragments, boolean print) {
 		System.out.print("BUILDIN' SOME GRAPHS AND NIZZLE... ");
-
+		NativeFragment firstFrag = fragments;
+		
 		while (fragments != null) {
-//			AssemFlowGraph afg = new AssemFlowGraph(fragments.proc.body);
-//			
-//			if (print) {
-//				afg.show(System.out);
-//				System.out.println("\n\n");
-//			}
-//			
-//			Liveness liveness = new Liveness(afg, fragments.proc.body);
-//			if (print) {
-//				System.out.println("Interference graph: ");
-//				liveness.show(System.out);
-//			}
-//			
-//			fragments.liveness = liveness;
-//			fragments = (SimpleFragment) fragments.next;
+			AssemFlowGraph afg = new AssemFlowGraph(fragments.proc.body);
+			
+			if (print) {
+				afg.show(System.out);
+				System.out.println("\n\n");
+			}
+			
+			Liveness liveness = new Liveness(afg, fragments.proc.body);
+			if (print) {
+				System.out.println("Interference graph: ");
+				liveness.show(System.out);
+			}
+			
+			fragments.liveness = liveness;
+			fragments = (NativeFragment) fragments.next;
 		}
-//		fragments = firstFrag;
+		
+		fragments = firstFrag;
 		System.out.println("done!");
 		return fragments;
 	}
 	
-	// TODO: 
-	// * Should return native code fragment
-	// * Proc stuff is not handled (incorporate into NativeFragment class)
-	public static void generateNativeCode(CanonicalizedFragment fragments, boolean print) {
+	public static NativeFragment generateNativeCode(CanonicalizedFragment fragments, boolean print) {
 		System.out.print("DOING DA CODEGEN DUDE...");
-		
-		CanonicalizedFragment firstFrag = fragments;
+		NativeFragment firstFragment = null;
+		NativeFragment currentFragment = null;
 		
 		while (fragments != null) {
-			Codegen codegen = new Codegen(fragments);
+			Codegen codegen = new Codegen(fragments.frame);
 			
-			List<Instr> instr = codegen.codegen();
+			List<Instr> instr = codegen.codegen(fragments.body);
 			instr = fragments.frame.procEntryExit2(instr);
 			Proc proc = fragments.frame.procEntryExit3(instr);
+		
+			NativeFragment frag = new NativeFragment(instr, fragments.frame, proc);
+			if (firstFragment == null) {
+				firstFragment = frag;
+				currentFragment = firstFragment;
+			} else {
+				currentFragment.next = frag;
+				currentFragment = (NativeFragment) currentFragment.next;
+			}
 			
 			// printstuff
 			if (print) {
 				System.out.println(proc.toString(new DefaultMap()));
 			}
 			
-//			fragments.proc = proc;
 			fragments = (CanonicalizedFragment) fragments.next;
 		}
 		
-		fragments = firstFrag;
 		System.out.println("done!");
 		
-//		return fragments;
+		return firstFragment;
 	}
 	
 	public static CanonicalizedFragment canonicalizeFragments(SimpleFragment fragments, boolean printProgress, boolean printResult) {
@@ -185,7 +194,7 @@ public class X86Main {
 			
 			while (currentFragment != null) {
 				System.out.println("FRAME STRUCTURE: " + currentFragment.frame);
-				System.out.println("IR CODE FOR FRAGMENT:");
+				System.out.println("CANONICALIZED IR CODE FOR FRAGMENT:");
 				printer.prStm(currentFragment.body.head);
 				currentFragment = (CanonicalizedFragment) currentFragment.next;
 				System.out.println();

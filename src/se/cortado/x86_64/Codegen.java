@@ -32,19 +32,17 @@ import se.cortado.x86_64.frame.Hardware;
 
 public class Codegen {
 	private List<Instr>	ilist;
-	private CanonicalizedFragment fragment;
+//	private CanonicalizedFragment fragment;
 	private Frame frame;
 
-	public Codegen(CanonicalizedFragment fragment) {
+	public Codegen(Frame fragment) {
 		this.ilist = new ArrayList<Instr>();
-		this.fragment = fragment;
-		this.frame = fragment.frame;
+//		this.fragment = fragment;
+		this.frame = frame;
 	}
 
 //	public List<Instr> codegen(IR_StmList sl) {
-	public List<Instr> codegen() {
-		IR_StmList sl = fragment.body;
-		
+	public List<Instr> codegen(IR_StmList sl) {
 		while (sl.tail != null) {
 			munchStm(sl.head);
 			sl = sl.tail;

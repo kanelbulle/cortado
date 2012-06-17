@@ -1,5 +1,8 @@
 package se.cortado.ir.common;
 
+import java.util.List;
+
+import se.cortado.assem.Instr;
 import se.cortado.frame.Frame;
 import se.cortado.frame.Proc;
 import se.cortado.ir.tree.IR_Stm;
@@ -15,12 +18,16 @@ public class NativeFragment extends Fragment {
 //	public Fragment next;
 	
 	public Proc proc;
-	public IR_StmList body;
+	List<Instr> body;
+	public Liveness liveness;
+	public RegAlloc regalloc;
 	
-	public NativeFragment(IR_StmList body, Frame frame, String labelName) {
+	public NativeFragment(List<Instr> body, Frame frame, Proc proc) {
 		this.body = body;
 		this.frame = frame;
-		this.labelName = labelName;
+		this.proc = proc;
+		// dont think label is needed in native code anymore.. safe to remove?
+//		this.labelName = labelName;
 	}
 	
 }
