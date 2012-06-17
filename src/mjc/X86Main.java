@@ -51,9 +51,9 @@ public class X86Main {
 			SimpleFragment fragments = translateToIntermediateCode(program, symbolTable, false, false);
 			CanonicalizedFragment canonicalizedFragments = canonicalizeFragments(fragments, false, false);
 			NativeFragment nativeCodeFragments = generateNativeCode(canonicalizedFragments, false);
-			NativeFragment graphStuffShit = doGraphStuff(nativeCodeFragments, false);
-			List<NativeFragment> revFragments = doRegisterAllocation(graphStuffShit, false);
-			finilizeAssembly(revFragments, inputFile);
+			NativeFragment graphStuffShit = doGraphStuff(nativeCodeFragments, true);
+//			List<NativeFragment> revFragments = doRegisterAllocation(graphStuffShit, true);
+//			finilizeAssembly(revFragments, inputFile);
 			
 		} catch (Exception e) {
 			System.out.println("ERROR!\n");

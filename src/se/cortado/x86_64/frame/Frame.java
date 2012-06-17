@@ -164,10 +164,7 @@ public class Frame implements se.cortado.frame.Frame {
 	}
 
 	@Override
-	public Proc procEntryExit3(List<Instr> body) {
-		System.out.println("procEntryExit3 for " + name);
-		System.out.println("size: " + size());
-		
+	public Proc procEntryExit3(List<Instr> body) {	
 		// prologue
 		// push all callee saved regs
 		List<Instr> prologue = new ArrayList<Instr>();
